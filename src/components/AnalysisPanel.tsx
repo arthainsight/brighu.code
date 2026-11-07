@@ -27,16 +27,18 @@ import LagnaPhalaPanel from './LagnaPhalaPanel';
 import FinancialResearchPanel from './FinancialResearchPanel';
 import ArgalaPanel from './ArgalaPanel';
 import BhavaChalitPanel from './BhavaChalitPanel';
+import KpPanel from './KpPanel';
+import PlanetaryDataPanel from './PlanetaryDataPanel';
 import FullWidthToggle from './FullWidthToggle';
 import { useT } from '@/lib/i18n';
 
-export type AnalysisView = 'grahas' | 'varga' | 'bala' | 'degrees' | 'nadi' | 'ashtakavarga' | 'gochara' | 'drishti' | 'argala' | 'chalit' | 'tara' | 'dik' | 'sphutas' | 'sarvatobhadra' | 'kota' | 'prashna' | 'bhavesha' | 'topicyogas' | 'upagrahas' | 'dvigraha' | 'grahabhava' | 'lagnaphala' | 'financial';
+export type AnalysisView = 'grahas' | 'varga' | 'bala' | 'degrees' | 'nadi' | 'ashtakavarga' | 'gochara' | 'drishti' | 'argala' | 'chalit' | 'kp' | 'planetdata' | 'tara' | 'dik' | 'sphutas' | 'sarvatobhadra' | 'kota' | 'prashna' | 'bhavesha' | 'topicyogas' | 'upagrahas' | 'dvigraha' | 'grahabhava' | 'lagnaphala' | 'financial';
 
 const VIEW_GROUPS: { label: string; views: { key: AnalysisView; label: string }[] }[] = [
   { label: 'Chart & strength', views: [
     { key: 'grahas', label: 'Grahas' }, { key: 'varga', label: 'Varga' },
     { key: 'bala', label: 'Bala' }, { key: 'degrees', label: 'Sensitive Degrees' },
-    { key: 'chalit', label: 'Bhava Chalit' }, { key: 'sphutas', label: 'Special Sphutas' },
+    { key: 'chalit', label: 'Bhava Chalit' }, { key: 'kp', label: 'KP' }, { key: 'planetdata', label: 'Planetary data' }, { key: 'sphutas', label: 'Special Sphutas' },
   ] },
   { label: 'Relationships', views: [
     { key: 'nadi', label: 'Nāḍī' }, { key: 'drishti', label: 'Dṛṣṭi' }, { key: 'argala', label: 'Argala' },
@@ -206,6 +208,14 @@ export default function AnalysisPanel({
 
       {view === 'chalit' && (
         <BhavaChalitPanel chart={chart} />
+      )}
+
+      {view === 'kp' && (
+        <div className="min-w-0 overflow-x-auto"><KpPanel chart={chart} /></div>
+      )}
+
+      {view === 'planetdata' && (
+        <div className="min-w-0 overflow-x-auto"><PlanetaryDataPanel chart={chart} /></div>
       )}
 
       {view === 'tara' && (

@@ -26,6 +26,22 @@ export interface BcpResult {
   activeMonthHouse: number;
 }
 
+/** Where a body stands in the sky at the chart's moment and place. Angles in degrees. */
+export interface PlanetaryData {
+  /** The tropical ecliptic latitude; 0 for the nodes. */
+  eclipticLatitude: number;
+  rightAscension: number;
+  declination: number;
+  /** The distance from the Earth in astronomical units; the nodes have none. */
+  distance?: number;
+  /** From the north through the east. */
+  azimuth: number;
+  /** Above the horizon, without refraction; negative below it. */
+  altitude: number;
+  /** The angle from the Sun; the Sun itself has none. */
+  elongation?: number;
+}
+
 export interface PlanetData {
   name: string;
   longitude: number;
@@ -37,6 +53,8 @@ export interface PlanetData {
   speed?: number;
   /** True equatorial declination in degrees. Drives Ayana Bala. */
   declination?: number;
+  /** The data of the body at the chart's moment and place, for the planetary data view (charts saved before v4.24 have none). */
+  data?: PlanetaryData;
   /** The sensitive degrees and combustion of the planet, set on the planets that a chart draws (for its hover text). */
   marks?: PlanetMarks;
 }
@@ -110,6 +128,11 @@ export interface ChartData {
   specialSphutaTiming?: SpecialSphutaTiming;
   /** Sidereal longitude of the Midheaven (the 10th cusp), for the Śrīpati bhāvas. */
   midheaven?: number;
+  /**
+   * The sidereal cusps (the 1st first) of the quadrant house systems, as the Swiss Ephemeris casts them. Placidus and Koch
+   * are left out where they are not defined (beyond the polar circles); charts saved before v4.24 have none.
+   */
+  houseCusps?: Partial<Record<'placidus' | 'koch' | 'regiomontanus' | 'campanus' | 'alcabitius', number[]>>;
   /** The Lagna at the beginning, middle and end of Saturn's part of the day or night (Gulika and Māndi); missing when the Sun neither rises nor sets. */
   saturnPortion?: SaturnPortionLagnas;
   /** The amānta lunar month running at the chart moment. */

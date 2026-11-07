@@ -983,7 +983,7 @@ test('ANALYSIS Bala has a diagram and a table for the Ṣaḍbala, the Bhāva Ba
   await sunBar.focus();
   await expect(visible(page, page.getByRole('status'))).toContainText('390 vp');
   // The table is below the diagrams.
-  await expect(visible(page, page.getByText('shadbala.beta'))).toBeVisible();
+  await expect(visible(page, page.getByText('> shadbala', { exact: true }))).toBeVisible();
 
   // The calculation choices: the Sun's Cheṣṭā Bala can be left out of the total, which lowers the Sun's total.
   const sunTotal = async () => Number(((await sunBar.getAttribute('aria-label')) ?? '').match(/Total (\d+) vp/)?.[1]);

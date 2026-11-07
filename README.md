@@ -46,7 +46,7 @@ This is not meant to replace traditional study — it's meant to **accelerate it
 * Tithi Praveśa annual chart with Tithi Aṣṭottarī daśā
 * Nakṣatra Praveśa and Yoga Praveśa annual charts (the Moon's return to its natal longitude, and the return of the Sun-and-Moon sum), with two rules for the year's start and a Vimśottarī daśā of the year
 * Year at a glance: the four annual charts on one time axis
-* Tājika Varṣaphala: Muntha, year lord, Pañcavargīya Bala and Mudda daśā
+* Tājika Varṣaphala: Muntha, year lord, Pañcavargīya, Dvādaśavargīya and Harṣa Bala (after Balabhadra's Hāyanaratna, docs/tajika-bala-sources.md) and Mudda daśā
 * Sudarśana Chakra: the chart counted from the Lagna, the Moon and the Sun in three rings, and the Sudarśana daśā: the house each year of age makes active in all three, with the twelve months and twelve days of the year
 
 ### Daśā
@@ -79,7 +79,9 @@ Overlap and Systems), among them:
 ### Strength and divisional analysis
 
 * Varga matrix and charts: D1–D12 (with D5, D6, D8 and D11), D16, D20, D24, D27, D30, D40, D45 and D60; every division is checked against PyJHora in the tests, and so are the three Parivṛtti rules (Settings → display), which place the parts of the signs by running on round the zodiac
-* Bala view with a diagram and a table each: Ṣaḍbala (beta; against the required strength and its six parts), Bhāva Bala (beta; a column per house) and Viṁśopaka Bala (four schemes)
+* Bala view with a diagram and a table each: Ṣaḍbala (against the required strength and its six parts), Bhāva Bala (beta; a column per house) and Viṁśopaka Bala (four schemes)
+* House systems (ANALYSIS → Bhava Chalit): Śrīpati, Equal (the Lagna in the middle, or at the beginning, of the 1st), Placidus, Koch, Regiomontanus, Campanus and Alcabitius; KP (ANALYSIS → KP): the Placidus cusps and the grahas with the lords of sign, star, sub and sub-sub; Planetary data (ANALYSIS → Planetary data): right ascension, declination, latitude, distance, azimuth, altitude and elongation
+* Chart search (LIBRARY → Research): which saved charts have a graha in a sign, house or nakṣatra, two grahas in one sign, or a retrograde graha
 * Sensitive degrees: Sandhi, Gandanta, Mṛtyu Bhāga, Puṣkara Navāṁśa and Puṣkara Bhāga and combustion for the Lagna, the grahas and Māndi, in the rāśi chart or in any divisional chart; marked in the graha table and in the hover text of the charts
 * Yogi, Sahayogi and Avayogi (in the Special Sphutas, and as a chart layer)
 * Graha dṛṣṭi and rāśi dṛṣṭi (Jaimini)

@@ -79,7 +79,7 @@ export default function ShadbalaPanel({ chart, options }: { chart: ChartData; op
       />
 
       <div className="space-y-2">
-        <Heading command="shadbala.beta">{t('Values in virūpa, by the Sanskrit text of BPHS 27, unless a calculation choice above says otherwise. Yuddha Bala is not included.')}</Heading>
+        <Heading command="shadbala">{t('Values in virūpa, by the Sanskrit text of BPHS 27, unless a calculation choice above says otherwise. Yuddha Bala is not included.')}</Heading>
         <ScrollTable minWidth="min-w-[1100px]" headers={[t('Planet'), 'Sthāna', 'Dig', 'Kāla', 'Cheṣṭā', 'Naisargika', 'Dṛg', 'Total vp', 'Req vp', '%', t('Status')]}>
           {rows.map(row => {
             const status = shadbalaStatus(row.ratio);
