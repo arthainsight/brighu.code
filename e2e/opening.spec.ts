@@ -15,6 +15,18 @@ async function birthDataForm(page: Page) {
   return { moment, place: visible(page, page.getByPlaceholder('e.g. New Delhi')) };
 }
 
+/**
+ * Waits until the birth data form shows the place (and the moment, when given). On a phone the form folds away whenever a new chart is
+ * loaded, so the form is opened again and read again until it has settled, instead of being read once.
+ */
+async function expectForm(page: Page, expected: { place: string; moment?: RegExp }) {
+  await expect(async () => {
+    const { moment, place } = await birthDataForm(page);
+    await expect(place).toHaveValue(expected.place, { timeout: 1500 });
+    if (expected.moment) await expect(moment).toHaveValue(expected.moment, { timeout: 1500 });
+  }).toPass({ timeout: 20_000 });
+}
+
 /** The window the page opens with. */
 const welcome = (page: Page) => page.locator('[data-welcome]').first();
 /** Closes the window the way a visitor who wants to look at the page does: "Decide later" when there is a question, "Close" when there is none. */
@@ -25,6 +37,15 @@ async function closeWelcome(page: Page) {
   await expect(dialog).toHaveCount(0);
 }
 const CHART = 'svg[aria-label="North Indian Jyotish chart"]';
+/**
+ * Says yes to the place and waits for the chart that follows it to be calculated: the form folds away (on a phone) when the new chart
+ * is loaded, so it is read after that and not before.
+ */
+async function sayYes(page: Page) {
+  const calculated = page.waitForResponse(response => response.url().includes('/api/chart'));
+  await welcome(page).getByRole('button', { name: 'Yes, use my place' }).click();
+  await calculated;
+}
 const TOKYO = { city: 'Tokyo', country: 'JP', latitude: 35.6895, longitude: 139.6917, timezone: 'Asia/Tokyo' };
 
 test.describe('the page opens with a chart', () => {
@@ -66,14 +87,10 @@ test.describe('the page opens with a chart', () => {
     await page.route('**/api/locale', (route) => route.fulfill({ json: TOKYO }));
     await page.goto('/');
     await expect(visible(page, page.locator('svg[aria-label="North Indian Jyotish chart"]'))).toBeVisible({ timeout: 30_000 });
-    await welcome(page).getByRole('button', { name: 'Yes, use my place' }).click();
-    // The chart moves to Tokyo when the place has been found; the form is read after that (on a phone it folds away with the new chart).
+    await sayYes(page);
     await expect(visible(page, page.getByText(/\+9h UTC/))).toBeVisible();
-    const { moment, place } = await birthDataForm(page);
-    await expect(place).toHaveValue('Tokyo');
-    await expect(place).toHaveValue('Tokyo');
     const today = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Tokyo', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date()).replace(/\//g, '.');
-    await expect(moment).toHaveValue(new RegExp('^' + today.replace(/\./g, '\\.') + ' \\d{2}\\.\\d{2}\\.\\d{2}$'));
+    await expectForm(page, { place: 'Tokyo', moment: new RegExp('^' + today.replace(/\./g, '\\.') + ' \\d{2}\\.\\d{2}\\.\\d{2}$') });
     // Tokyo is nine hours from Greenwich all the year.
     await expect(visible(page, page.getByText(/\+9h UTC/))).toBeVisible();
   });
@@ -82,8 +99,8 @@ test.describe('the page opens with a chart', () => {
     await page.route('**/api/locale', (route) => route.fulfill({ status: 500, body: 'no' }));
     await page.goto('/');
     await expect(visible(page, page.locator('svg[aria-label="North Indian Jyotish chart"]'))).toBeVisible({ timeout: 30_000 });
-    await welcome(page).getByRole('button', { name: 'Yes, use my place' }).click();
-    await expect((await birthDataForm(page)).place).toHaveValue('Porvoo');
+    await sayYes(page);
+    await expectForm(page, { place: 'Porvoo' });
   });
 
   test('Porvoo whatever the platform says, when Settings choose it', async ({ page }) => {
@@ -134,9 +151,9 @@ test.describe('the page opens with a chart', () => {
     expect(lookups).toBe(0);
 
     // A yes looks the place up once, moves the chart to it, and the question does not come again.
-    await dialog.getByRole('button', { name: 'Yes, use my place' }).click();
+    await sayYes(page);
     await expect(dialog).toHaveCount(0);
-    await expect((await birthDataForm(page)).place).toHaveValue('Tokyo');
+    await expectForm(page, { place: 'Tokyo' });
     expect(lookups).toBe(1);
     expect(await page.evaluate(() => localStorage.getItem('openWithNowChart'))).toBe('place');
     await page.reload();
