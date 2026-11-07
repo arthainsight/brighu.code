@@ -488,7 +488,8 @@ export default function Home() {
   const openSavedChart = useCallback((id: string, name: string, data: ChartSnapshot) => {
     setActiveSavedChartId(id);
     setActiveChartName(name);
-    loadChartSnapshot(normalizeSavedChartData(data));
+    // The chart workspace stays in view when the chart arrives (a chart picked in LOAD goes on to the grahas, which would move the page away from where it was asked for).
+    loadChartSnapshot(normalizeSavedChartData(data), { keepDataPanel: true });
     selectWorkspace('chart');
   }, [loadChartSnapshot, selectWorkspace]);
 
