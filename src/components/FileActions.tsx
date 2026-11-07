@@ -15,7 +15,9 @@ import {
   deleteSavedChart,
   saveChartAsNew,
   updateSavedChart,
+  ACTIVE_SAVED_CHART_EVENT,
   getActiveSavedChartId,
+  normalizeSavedChartData,
   setActiveSavedChartId,
   clearActiveSavedChartId,
   exportSavedCharts,
@@ -80,11 +82,14 @@ export default function FileActions({ snapshot, hasChart, onNew, onLoad, onRepor
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const normalizeSnapshot = (snap: SavedChartData): SavedChartData => ({
-    ...snap,
-    targetDate: snap.targetDate || new Date().toISOString().slice(0, 10),
-    showCoords: snap.showCoords ?? true,
-  });
+  // A chart opened elsewhere (from a search result) becomes the active one here too, so that SAVE writes to it and not to the one before.
+  useEffect(() => {
+    const follow = () => setActiveId(getActiveSavedChartId());
+    window.addEventListener(ACTIVE_SAVED_CHART_EVENT, follow);
+    return () => window.removeEventListener(ACTIVE_SAVED_CHART_EVENT, follow);
+  }, []);
+
+  const normalizeSnapshot = normalizeSavedChartData;
 
   const refreshList = useCallback(() => {
     setSavedList(loadSavedCharts());

@@ -3,12 +3,19 @@
 import { useState } from 'react';
 import type { CalculationSettings, ChartData } from '@/types';
 import { chartRequestUrl, type ResearchSource } from '@/lib/research/studyData';
+import type { SavedChartData } from '@/lib/savedCharts';
 import { SEARCH_POINTS, searchCharts, type Criterion, type SearchHit, type SearchMode, type SearchPoint } from '@/lib/research/chartSearch';
 import { NAKSHATRA_NAMES } from '@/lib/nakshatras';
 import { SIGN_NAMES } from '@/lib/signs';
 import { useT } from '@/lib/i18n';
 
-type Props = { sources: readonly ResearchSource[]; initialSelected: ReadonlySet<string>; calculationSettings?: CalculationSettings };
+type Props = {
+  sources: readonly ResearchSource[];
+  initialSelected: ReadonlySet<string>;
+  calculationSettings?: CalculationSettings;
+  /** Opens a saved chart in the app. */
+  onOpenChart?: (id: string, name: string, data: SavedChartData) => void;
+};
 type Kind = Criterion['kind'];
 
 const KINDS: { kind: Kind; label: string }[] = [
@@ -31,7 +38,7 @@ const blank = (kind: Kind, point: SearchPoint = 'Moon'): Criterion => {
  * The chart search: the saved charts that have a graha in a sign, a house (whole signs from the Lagna) or a nakṣatra, two grahas in one
  * sign, or a retrograde graha. The charts are calculated as the research calculates them, with the settings each was saved with.
  */
-export default function ChartSearchPanel({ sources, initialSelected, calculationSettings }: Props) {
+export default function ChartSearchPanel({ sources, initialSelected, calculationSettings, onOpenChart }: Props) {
   const t = useT();
   const [selected, setSelected] = useState<Set<string>>(() => new Set(initialSelected.size ? initialSelected : sources.map(source => source.id)));
   const [criteria, setCriteria] = useState<Criterion[]>([blank('sign')]);
@@ -153,6 +160,16 @@ export default function ChartSearchPanel({ sources, initialSelected, calculation
               <li key={hit.id} data-hit={hit.id} className="rounded border border-zinc-200 px-2 py-1.5 text-[11px] font-mono dark:border-zinc-700">
                 <span className="font-semibold text-zinc-800 dark:text-zinc-100">{hit.name}</span>
                 {hit.client && <span className="ml-2 text-zinc-400">{hit.client}</span>}
+                {onOpenChart && (
+                  <button
+                    type="button"
+                    data-open-chart={hit.id}
+                    onClick={() => { const source = sources.find(item => item.id === hit.id); if (source) onOpenChart(source.id, source.name, source.saved); }}
+                    className="ml-2 rounded border border-violet-300 px-2 py-0.5 text-[10px] text-violet-700 dark:border-violet-700 dark:text-violet-300"
+                  >
+                    {t('Open')}
+                  </button>
+                )}
                 {hit.met.length > 0 && <div className="text-zinc-500 dark:text-zinc-400">{hit.met.map(index => describe(criteria[index])).join(' · ')}</div>}
               </li>
             ))}

@@ -110,5 +110,11 @@ test('LIBRARY Chart search finds the saved charts by the sign of the Lagna, and 
   await search.getByRole('button', { name: 'Search', exact: true }).click();
   await expect(results).toContainText('1 / 2');
   await expect(results.locator('[data-hit="c2"]')).toContainText('Beta');
+
+  // A result opens its chart: the chart workspace shows the birth moment of the second chart, the header names it, and SAVE would write to it.
+  await results.locator('[data-open-chart="c2"]').click();
+  await expect(visible(page, page.getByPlaceholder('15.08.1947 09.15.00'))).toHaveValue('03.03.1975 06.30.00');
+  await expect(visible(page, page.locator('header').getByText('Beta', { exact: true }))).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('bcp_active_saved_chart_id'))).toBe('c2');
   expect(errors).toEqual([]);
 });

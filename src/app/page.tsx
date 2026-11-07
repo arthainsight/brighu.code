@@ -7,6 +7,7 @@ import { calculateBcp, parseDateTime } from '@/lib/bcp';
 import { localToUtcOffsetHours, parseBirthDatetimeForTz } from '@/lib/timezone';
 import { APP_NAME, APP_VERSION } from '@/lib/config';
 import PrimaryNav, { type Workspace } from '@/components/PrimaryNav';
+import { normalizeSavedChartData, setActiveSavedChartId } from '@/lib/savedCharts';
 import DataPanel from '@/components/DataPanel';
 import type { AnalysisRequest } from '@/components/AnalysisPanel';
 import ChartSection from '@/components/ChartSection';
@@ -481,6 +482,14 @@ export default function Home() {
   // What the saved charts and the file actions call: a chart given as a whole, shown the usual way.
   const handleLoadChartSnapshot = useCallback((snap: ChartSnapshot) => loadChartSnapshot(snap), [loadChartSnapshot]);
 
+  // A saved chart opened from a search result: the same as picking it in LOAD, and then the chart is shown.
+  const openSavedChart = useCallback((id: string, name: string, data: ChartSnapshot) => {
+    setActiveSavedChartId(id);
+    setActiveChartName(name);
+    loadChartSnapshot(normalizeSavedChartData(data));
+    selectWorkspace('chart');
+  }, [loadChartSnapshot, selectWorkspace]);
+
   // A link made with SHARE carries the birth data after the #: the form is filled in and the chart calculated, once the stored settings are in.
   // Without one the page opens with the chart of this moment at Porvoo (unless Settings say to open blank): the name is left empty and
   // the place and the moment are in the form to change.
@@ -773,7 +782,7 @@ export default function Home() {
               {desktopTab === 'grahas' && analysisPanel({ wide: fullAnalysis, onToggleWide: toggleAnalysisFull })}
               {desktopTab === 'dasha' && timingPanel({ wide: fullTiming, onToggleWide: toggleTimingFull })}
               {desktopTab === 'palm' && <PalmWorkspace wide={fullPalm} onToggleWide={togglePalmFull} />}
-              {desktopTab === 'library' && <LibraryPanel calculationSettings={calculationSettings} />}
+              {desktopTab === 'library' && <LibraryPanel calculationSettings={calculationSettings} onOpenChart={openSavedChart} />}
               {desktopTab === 'settings' && <SettingsPanel {...settingsProps} />}
             </Panel>
           </div>
@@ -838,7 +847,7 @@ export default function Home() {
             )}
 
             {activeTab === 'library' && (
-              <Panel><LibraryPanel calculationSettings={calculationSettings} /></Panel>
+              <Panel><LibraryPanel calculationSettings={calculationSettings} onOpenChart={openSavedChart} /></Panel>
             )}
 
             {activeTab === 'settings' && (
