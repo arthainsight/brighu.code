@@ -113,7 +113,12 @@ test('LIBRARY Chart search finds the saved charts by the sign of the Lagna, and 
 
   // A result opens its chart: the chart workspace shows the birth moment of the second chart, the header names it, and SAVE would write to it.
   await results.locator('[data-open-chart="c2"]').click();
-  await expect(visible(page, page.getByPlaceholder('15.08.1947 09.15.00'))).toHaveValue('03.03.1975 06.30.00');
+  // The birth data form folds away when a chart is loaded, so it is opened again (when it is shut) and read again until it has settled.
+  await expect(async () => {
+    const moment = visible(page, page.getByPlaceholder('15.08.1947 09.15.00'));
+    if (!(await moment.isVisible())) await visible(page, page.getByRole('button', { name: /edit$/ })).click({ timeout: 1500 });
+    await expect(moment).toHaveValue('03.03.1975 06.30.00', { timeout: 1500 });
+  }).toPass({ timeout: 20_000 });
   await expect(visible(page, page.locator('header').getByText('Beta', { exact: true }))).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('bcp_active_saved_chart_id'))).toBe('c2');
   expect(errors).toEqual([]);

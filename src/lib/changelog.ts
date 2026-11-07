@@ -1,5 +1,17 @@
 export const CHANGELOG = [
   {
+    version: 'v4.26',
+    date: '2026-11-07',
+    title: 'Ashtakoota matching and Yuddha Bala',
+    changes: [
+      'LIBRARY → Compatibility: the Ashtakoota (the eight kutas, 36 points) of two saved charts by their Moons, or by their Lagnas or any other graha as Kala does; the boy and the girl are chosen, the doshas (Nadi, Bhakoot, Gana) are marked, and the four extra matchings (Mahendra, Vedha, Rajju, Strii Dirgha) and the Kuja dosha of each chart are shown. The Vashya is shown by both published tables.',
+      'The tables are those of common practice, not of one classical verse (docs/ashtakoota-sources.md says so, and what is not done: the cancellations of the doshas, the Southern ten-fold scoring, overlays and composite charts). They are checked against PyJHora over all 11,664 pairs of Moon star and quarter: the Yoni, Graha Maitri, Gana, Nadi, Mahendra, Rajju and Stri Dirgha agree on every pair. Three places where PyJHora differs are pinned in the test and not followed: its Tara is the reverse of the rule, its Vedha fails thirty pairs the tradition does not, and its Bhakoot table has one wrong cell. It also puts the earth and air signs in the other varnas.',
+      'Ṣaḍbala → calculation choices: Yuddha Bala (the planetary war, BPHS 27.20) can now be given a rule: the difference as the verse has it, the winner the more northerly (Sūrya Siddhānta); the difference over the difference of the discs, the winner the more northerly (Śrīpati); or the same quotient with the smaller longitude the winner (Raman). It is left out by default, so no number changes. A war is two of Mars, Mercury, Jupiter, Venus and Saturn closer than 1°. While it is left out the page names the grahas that are at war.',
+      'Tests: the matching by hand (a pair worked through, each kuta, the dosha and the extras), against PyJHora on every pair, Kuja dosha, the war (who is at war, the winner by each rule, nothing passed when the winner cannot be told, the sum of the strengths unchanged) and the war in the Ṣaḍbala of the reference chart; browser tests for the Compatibility view and the choice of the war.',
+      'Updated the application version to v4.26.',
+    ],
+  },
+  {
     version: 'v4.25',
     date: '2026-11-07',
     title: 'The page asks before it looks up your place; a window with the latest updates',

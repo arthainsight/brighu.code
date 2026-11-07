@@ -1,7 +1,8 @@
 'use client';
 
 import type { ChartData } from '@/types';
-import { buildShadbalaRows } from '@/lib/shadbala';
+import { buildShadbalaRows, shadbalaWars } from '@/lib/shadbala';
+import { findPlanetaryWars } from '@/lib/yuddha';
 import { buildIshtaKashtaRows, type IshtaKashtaVerdict } from '@/lib/ishtaKashta';
 import { DEFAULT_BALA_OPTIONS, type BalaOptions } from '@/lib/balaOptions';
 import { formatScore } from '@/lib/vargaMatrix';
@@ -22,6 +23,12 @@ export default function ShadbalaPanel({ chart, options }: { chart: ChartData; op
   const t = useT();
   const rows = buildShadbalaRows(chart, options);
   const phala = buildIshtaKashtaRows(chart, rows, options?.ishtaFormula ?? DEFAULT_BALA_OPTIONS.ishtaFormula);
+  const rule = (options ?? DEFAULT_BALA_OPTIONS).yuddha;
+  // The wars the rule counts (their Yuddha Bala is in the rows), or, while it is left out, the grahas that would be at war.
+  const wars = rule === 'off' ? [] : shadbalaWars(chart, rows, options);
+  const idleWars = rule === 'off'
+    ? findPlanetaryWars(chart.planets.map(planet => ({ name: planet.name, longitude: planet.longitude })))
+    : [];
   const series = SHADBALA_PARTS.map((key, index) => ({ key, label: PART_LABEL[key], color: SERIES_COLORS[index] }));
 
   return (
@@ -79,7 +86,9 @@ export default function ShadbalaPanel({ chart, options }: { chart: ChartData; op
       />
 
       <div className="space-y-2">
-        <Heading command="shadbala">{t('Values in virūpa, by the Sanskrit text of BPHS 27, unless a calculation choice above says otherwise. Yuddha Bala is not included.')}</Heading>
+        <Heading command="shadbala">{rule === 'off'
+          ? t('Values in virūpa, by the Sanskrit text of BPHS 27, unless a calculation choice above says otherwise. Yuddha Bala is not included.')
+          : t('Values in virūpa, by the Sanskrit text of BPHS 27, unless a calculation choice above says otherwise. Yuddha Bala is in Kāla Bala by the rule chosen.')}</Heading>
         <ScrollTable minWidth="min-w-[1100px]" headers={[t('Planet'), 'Sthāna', 'Dig', 'Kāla', 'Cheṣṭā', 'Naisargika', 'Dṛg', 'Total vp', 'Req vp', '%', t('Status')]}>
           {rows.map(row => {
             const status = shadbalaStatus(row.ratio);
@@ -103,6 +112,23 @@ export default function ShadbalaPanel({ chart, options }: { chart: ChartData; op
           })}
         </ScrollTable>
       </div>
+
+      {(wars.length > 0 || idleWars.length > 0) && (
+        <div className="space-y-1" data-shadbala="wars">
+          {idleWars.map(war => (
+            <p key={`${war.a}-${war.b}`} className="text-[11px] font-mono text-amber-700 dark:text-amber-400">
+              {war.a} · {war.b}: {t('are at war')} ({war.distance.toFixed(2)}°). {t('Yuddha Bala is left out; a rule can be chosen under the calculation choices (C12).')}
+            </p>
+          ))}
+          {wars.map(war => (
+            <p key={`${war.a}-${war.b}`} className="text-[11px] font-mono text-zinc-600 dark:text-zinc-300">
+              {war.a} · {war.b} ({war.distance.toFixed(2)}°): {war.winner && war.loser
+                ? `${war.winner} ${t('wins')} +${formatScore(war.amount)} vp, ${war.loser} −${formatScore(war.amount)} vp`
+                : t('the winner cannot be told by this rule (no latitude, or the same position); nothing is passed')}
+            </p>
+          ))}
+        </div>
+      )}
 
       <div className="space-y-2" data-testid="ishta-kashta">
         <Heading command="ishta_kashta">{t('Iṣṭa and Kaṣṭa Phala (BPHS 28.2–6): how much good and how much harm the daśā of a graha is likely to bring, from its Uccha Bala and its Cheṣṭā Bala by the kendra. For the Sun and the Moon the Cheṣṭā here is the one of the kendra, whatever the choices above say. Values in virūpa.')}</Heading>
