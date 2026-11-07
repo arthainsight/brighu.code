@@ -63,4 +63,21 @@ assert.deepEqual(chalit.planets.map(item => [item.name, item.rasiHouse, item.bha
 assert.equal(buildChalit({ ...chart, midheaven: undefined }, 'sripati'), null);
 assert.equal(buildChalit({ ...chart, midheaven: undefined }, 'equal')!.planets[0].bhavaHouse, 2, 'equal: 117° is past the sandhi at 115°');
 
+// The systems whose cusps begin the bhavas: each bhava runs from its cusp to the next one.
+const cuspChart = { ...chart, houseCusps: { placidus: [100, 125, 150, 180, 215, 250, 280, 305, 330, 0, 35, 70] } };
+const placidus = buildChalit(cuspChart, 'placidus')!;
+assert.deepEqual(placidus.bhavas.map(bhava => bhava.start), cuspChart.houseCusps.placidus, 'the sandhi at the start is the cusp');
+assert.equal(placidus.bhavas[0].end, 125, 'the 1st bhava ends at the 2nd cusp');
+assert.equal(placidus.bhavas[0].madhya, 112.5, 'the madhya is halfway between the cusps');
+assert.equal(placidus.bhavas[9].end, 35, 'the 10th bhava runs from 0° to 35°');
+// The Sun at 117° is in the 1st bhava here (100° to 125°), not the 2nd as with the Sripati sandhis; Mars at 86° is in the 12th (70° to 100°).
+assert.deepEqual(placidus.planets.map(item => [item.name, item.bhavaHouse]), [['Sun', 1], ['Moon', 1], ['Mars', 12]]);
+// A system the chart has no cusps for gives nothing; so does a chart saved before the cusps were kept.
+assert.equal(buildChalit(cuspChart, 'koch'), null);
+assert.equal(buildChalit(chart, 'placidus'), null);
+// Equal from the Lagna: the Lagna begins the 1st bhava.
+const equalStart = buildChalit(chart, 'equal-start')!;
+assert.deepEqual(equalStart.bhavas.slice(0, 3).map(bhava => [bhava.start, bhava.end]), [[100, 130], [130, 160], [160, 190]]);
+assert.equal(equalStart.planets[0].bhavaHouse, 1, '117° is in the first thirty degrees from the Lagna');
+
 console.log('Bhava Chalit tests passed');

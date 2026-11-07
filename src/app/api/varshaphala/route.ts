@@ -6,10 +6,11 @@ import { MUDDA_CYCLE, buildAnnualDasha, muddaFirstLord } from "@/lib/annualDasha
 import { SEVEN, munthaSign, panchaVargiyaBala, yearLord } from "@/lib/varshaphala";
 import { normalizeDegrees } from "@/lib/angles";
 import { patyamshaDasha } from "@/lib/patyamsha";
+import { SEVEN_GRAHAS, dvadashavargiyaBala, harshaBala } from "@/lib/tajikaBala";
 
 // Tājika Varṣaphala: the chart for the Sun's sidereal return in the year in
 // force at `target` (or for `tpYear`), with Muntha, the five office bearers,
-// the lord of the year, Pañcavargīya Bala and the Mudda daśā.
+// the lord of the year, Pañcavargīya, Dvādaśavargīya and Harṣa Bala and the Mudda daśā.
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const req = await parseAnnualRequest(searchParams);
@@ -41,6 +42,12 @@ export async function GET(request: NextRequest) {
     const muntha = munthaSign(natal.ascendant.sign, completedAge);
     const lord = yearLord(chart, natal.ascendant.sign, completedAge, dayYear);
     const bala = SEVEN.map((planet) => panchaVargiyaBala(planet, chart.planets.find((p) => p.name === planet)!.longitude));
+
+    // The Dvādaśavargīya Bala and the Harṣa Bala of the annual chart.
+    const annualGraha = (name: string) => chart.planets.find((p) => p.name === name)!;
+    const moonWaxing = normalizeDegrees(annualGraha("Moon").longitude - annualGraha("Sun").longitude) < 180;
+    const dvadashavargiya = SEVEN_GRAHAS.map((planet) => dvadashavargiyaBala(planet, annualGraha(planet).longitude, moonWaxing));
+    const harsha = SEVEN_GRAHAS.map((planet) => harshaBala(planet, annualGraha(planet).house, annualGraha(planet).sign, dayYear));
 
     const moon = natal.planets.find((p) => p.name === "Moon")!;
     const nakWidth = 360 / 27;
@@ -78,6 +85,8 @@ export async function GET(request: NextRequest) {
       muntha: { sign: muntha, house: ((muntha - chart.ascendant.sign + 12) % 12) + 1 },
       ...lord,
       bala,
+      dvadashavargiya,
+      harsha,
       dasha: localizePeriods(req, dasha),
       patyamshi: localizePeriods(req, patyamshi),
       next: { year: next.year, jd: next.jd, local: localPartsFromJd(next.jd, nextTz), tzOffset: nextTz },

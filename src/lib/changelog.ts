@@ -1,5 +1,21 @@
 export const CHANGELOG = [
   {
+    version: 'v4.24',
+    date: '2026-11-07',
+    title: 'Houses, KP, planetary data, Tājika strengths and a chart search',
+    changes: [
+      'ANALYSIS → Bhava Chalit: besides Śrīpati and Equal (the Lagna in the middle) there are now Equal from the Lagna, Placidus, Koch, Regiomontanus, Campanus and Alcabitius. The cusps of these begin the bhāvas, each running to the next cusp. The Swiss Ephemeris casts them (the wrapper of the library gives every system the same cusps, so the C function is called directly); Placidus and Koch are not defined beyond the polar circles. Charts saved before v4.24 have no cusps and ask to be calculated again.',
+      'ANALYSIS → KP: the twelve Placidus cusps and the grahas with the lords of their sign, star, sub and sub-sub (the nakṣatra shared among the nine lords in Vimśottarī proportion), and the house the cusps put each graha in. A note says when the chart does not use the Krishnamurti ayanāṁśa.',
+      'ANALYSIS → Planetary data: right ascension, declination, ecliptic latitude, distance, azimuth, altitude and elongation of every body at the place of the chart.',
+      'VARṢAPHALA: Dvādaśavargīya Bala and Harṣa Bala, from Balabhadra\'s Hāyanaratna (Tājika) and not from Kala, which gives no rule (docs/tajika-bala-sources.md). The Dvādaśavargīya Bala counts the good and the evil of the twelve divisions of each graha; the Harṣa Bala gives five points for each of four places of joy, at most 20. Venus\'s house of joy is the 5th as the text has it; PyJHora has the 12th.',
+      'LIBRARY → Research → Chart search: the saved charts that have a graha in a sign, a house or a nakṣatra, two grahas in one sign or a retrograde graha, all or any of the conditions, and by name or client.',
+      'The "beta" is gone from the Ṣaḍbala. It still leaves out Yuddha Bala (planetary war), as the page says.',
+      'The Māsa-praveśa and Dina-praveśa (monthly and daily charts of the Varṣaphala) were already in the app, under the Varṣaphala chart.',
+      'Tests: the cusps against the Swiss Ephemeris angles, the KP lords at the sub boundaries, the right ascension against the formula, the twelve divisions against the divisional charts of the app (a thousand longitudes), the Harṣa Bala against the worked example of P.V.R. Narasimha Rao, and the chart search.',
+      'Updated the application version to v4.24.',
+    ],
+  },
+  {
     version: 'v4.23',
     date: '2026-11-07',
     title: 'Aṣṭakavarga: what the numbers say',

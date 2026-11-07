@@ -7,6 +7,7 @@ interface SweInstance {
   get_ayanamsa_ut(jd: number): number;
   calc_ut(jd: number, planet: number, flags: number): Float64Array;
   houses(jd: number, lat: number, lng: number, hsys: string): { ascmc: Record<number, number> };
+  azalt(jd: number, flag: number, geopos: number[], pressure: number, temperature: number, point: number[]): { azimuth: number; trueAltitude: number; apparentAltitude: number };
   /** Greenwich mean sidereal time in hours. */
   sidtime(jd: number): number;
   /** The compiled library, for the calls the wrapper gets wrong. */
@@ -91,6 +92,40 @@ export async function sweCalcUtEquatorial(jd: number, planetId: number): Promise
   return { rightAscension: r[0], declination: r[1] };
 }
 
+/** The true obliquity of the ecliptic at the moment, in degrees. */
+export async function sweObliquity(jd: number): Promise<number> {
+  return (await getSwe()).calc_ut(jd, -1, 0)[0];
+}
+
+export interface BodyData {
+  /** Tropical ecliptic longitude and latitude, degrees. */
+  longitude: number;
+  latitude: number;
+  /** Distance from the Earth in astronomical units. */
+  distance: number;
+  rightAscension: number;
+  declination: number;
+  /** From the north through the east, degrees. */
+  azimuth: number;
+  /** Above the horizon, without refraction, degrees. */
+  altitude: number;
+}
+
+/** A body with its ecliptic, equatorial and horizontal coordinates at the place of the chart. */
+export async function sweBodyData(jd: number, bodyId: number, lat: number, lng: number): Promise<BodyData> {
+  const swe = await getSwe();
+  const ecliptic = swe.calc_ut(jd, bodyId, FLAGS_ECLIPTIC);
+  const equatorial = swe.calc_ut(jd, bodyId, FLAGS_EQUATORIAL);
+  return { longitude: ecliptic[0], latitude: ecliptic[1], distance: ecliptic[2], rightAscension: equatorial[0], declination: equatorial[1], ...(await horizontal(jd, ecliptic[0], ecliptic[1], ecliptic[2], lat, lng)) };
+}
+
+/** The azimuth (from the north through the east) and the altitude of a point given by its ecliptic coordinates. */
+export async function horizontal(jd: number, longitude: number, latitude: number, distance: number, lat: number, lng: number): Promise<{ azimuth: number; altitude: number }> {
+  const result = (await getSwe()).azalt(jd, 0, [lng, lat, 0], 0, 0, [longitude, latitude, distance]);
+  // The library measures the azimuth from the south through the west.
+  return { azimuth: (result.azimuth + 180) % 360, altitude: result.trueAltitude };
+}
+
 export async function sweSidtime(jd: number): Promise<number> {
   return (await getSwe()).sidtime(jd);
 }
@@ -103,6 +138,26 @@ export async function sweGetAscendant(jd: number, lat: number, lng: number): Pro
 export async function sweGetAngles(jd: number, lat: number, lng: number): Promise<{ ascendant: number; midheaven: number }> {
   const { ascmc } = (await getSwe()).houses(jd, lat, lng, 'W');
   return { ascendant: ascmc[0], midheaven: ascmc[1] };
+}
+/** Swiss Ephemeris house-system letters of the quadrant systems the app casts. */
+export const CUSP_SYSTEM_CODES = { placidus: 'P', koch: 'K', regiomontanus: 'R', campanus: 'C', alcabitius: 'B' } as const;
+export type CuspSystem = keyof typeof CUSP_SYSTEM_CODES;
+
+/**
+ * The twelve tropical cusps (1st first) of a quadrant house system, by the C function itself: the wrapper of the library
+ * passes the system letter as a string where the function wants the code of the character, and then every system comes out the same.
+ */
+export async function sweGetCusps(jd: number, lat: number, lng: number, system: CuspSystem): Promise<number[]> {
+  const { SweModule: module } = await getSwe();
+  const cusps = module._malloc(13 * 8);
+  const angles = module._malloc(10 * 8);
+  try {
+    module.ccall('swe_houses', 'number', ['number', 'number', 'number', 'number', 'pointer', 'pointer'], [jd, lat, lng, CUSP_SYSTEM_CODES[system].charCodeAt(0), cusps, angles]);
+    return Array.from(new Float64Array(module.HEAPF64.buffer, cusps, 13).slice(1, 13));
+  } finally {
+    module._free(cusps);
+    module._free(angles);
+  }
 }
 /**
  * The maximum of the next eclipse after `jd` by the C function itself (the wrapper of the library passes the arguments of

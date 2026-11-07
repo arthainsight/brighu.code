@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { CalculationSettings, ChartData, ChartDisplaySettings, ChartStyle } from '@/types';
 // Types only: the route does the ephemeris work.
 import type { OfficeBearer, PanchaVargiyaBala } from '@/lib/varshaphala';
+import type { DvadashavargiyaBala, HarshaBala } from '@/lib/tajikaBala';
 import { formatDegree } from '@/lib/formatDegree';
 import StyledChart from './StyledChart';
 import {
@@ -39,6 +40,8 @@ type VpResponse = {
   yearLord: string;
   reason: string;
   bala: PanchaVargiyaBala[];
+  dvadashavargiya: DvadashavargiyaBala[];
+  harsha: HarshaBala[];
   dasha: LocalMahadasha[];
   patyamshi: LocalMahadasha[];
   next: { year: number; local: LocalParts; tzOffset: number };
@@ -178,6 +181,74 @@ export default function VarshaphalaPanel({
                     <td className="py-1 pr-2">{fixed(b.drekkana)}</td>
                     <td className="py-1 pr-2">{fixed(b.navamsa)}</td>
                     <td className="py-1 font-semibold">{fixed(b.total)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="overflow-x-auto" data-tajika="dvadashavargiya">
+            <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-1">Dvādaśavargīya Bala</div>
+            <p className="mb-1 text-[9px] font-mono text-zinc-400 dark:text-zinc-600">
+              {t('The ruler of each of the twelve divisions the graha stands in (domicile, hora, decan, fourth, fifth, sixth, seventh, eighth, ninth, tenth, eleventh and twelfth part), good (+) when it is the graha itself, a friend, a benefic or the graha is exalted there, evil (−) when it is an enemy, a malefic or the graha is fallen there. The total is the good divisions less the evil ones.')}
+            </p>
+            <table className="w-full text-[11px] font-mono">
+              <thead>
+                <tr className="text-left text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600">
+                  <th className="py-1 pr-2 font-normal">graha</th>
+                  {['D1', 'Hora', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10', 'D11', 'D12'].map((label) => <th key={label} className="py-1 pr-1 font-normal">{label}</th>)}
+                  <th className="py-1 pr-2 font-normal">+</th>
+                  <th className="py-1 pr-2 font-normal">−</th>
+                  <th className="py-1 font-normal">{t('total')}</th>
+                </tr>
+              </thead>
+              <tbody className="tabular-nums text-zinc-700 dark:text-zinc-300">
+                {shown.dvadashavargiya.map((row) => (
+                  <tr key={row.planet} className="border-t border-zinc-100 dark:border-zinc-800">
+                    <td className="py-1 pr-2">{row.planet}</td>
+                    {row.divisions.map((division) => (
+                      <td
+                        key={division.key}
+                        title={[...division.good.map((reason) => `+ ${reason}`), ...division.evil.map((reason) => `− ${reason}`)].join(', ') || '—'}
+                        className={`py-1 pr-1 ${division.good.length && !division.evil.length ? 'text-emerald-700 dark:text-green-400' : division.evil.length && !division.good.length ? 'text-red-600 dark:text-red-400' : ''}`}
+                      >
+                        {division.ruler.slice(0, 2)}
+                      </td>
+                    ))}
+                    <td className="py-1 pr-2">{row.good}</td>
+                    <td className="py-1 pr-2">{row.evil}</td>
+                    <td className="py-1 font-semibold">{row.total}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="overflow-x-auto" data-tajika="harsha">
+            <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-1">Harṣa Bala</div>
+            <p className="mb-1 text-[9px] font-mono text-zinc-400 dark:text-zinc-600">
+              {t('Five points for each of four places of joy: the house of joy of the graha (Sun 9th, Moon 3rd, Mars 6th, Mercury 1st, Jupiter 11th, Venus 5th, Saturn 12th), its own sign or exaltation, the houses by threes from the lagna (the female grahas in 1–3 and 7–9, the male in 4–6 and 10–12) and the day for a male graha or the night for a female one. At most 20.')}
+            </p>
+            <table className="w-full text-[11px] font-mono">
+              <thead>
+                <tr className="text-left text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600">
+                  <th className="py-1 pr-2 font-normal">graha</th>
+                  <th className="py-1 pr-2 font-normal">{t('house')}</th>
+                  <th className="py-1 pr-2 font-normal">{t('own / exalted')}</th>
+                  <th className="py-1 pr-2 font-normal">{t('threes')}</th>
+                  <th className="py-1 pr-2 font-normal">{t('day / night')}</th>
+                  <th className="py-1 font-normal">{t('total')}</th>
+                </tr>
+              </thead>
+              <tbody className="tabular-nums text-zinc-700 dark:text-zinc-300">
+                {shown.harsha.map((row) => (
+                  <tr key={row.planet} className="border-t border-zinc-100 dark:border-zinc-800">
+                    <td className="py-1 pr-2">{row.planet}</td>
+                    <td className="py-1 pr-2">{row.sthana}</td>
+                    <td className="py-1 pr-2">{row.svagriha}</td>
+                    <td className="py-1 pr-2">{row.trika}</td>
+                    <td className="py-1 pr-2">{row.dinaRatri}</td>
+                    <td className="py-1 font-semibold">{row.total}</td>
                   </tr>
                 ))}
               </tbody>

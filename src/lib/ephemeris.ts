@@ -3,7 +3,7 @@ import {
   SE_SUN, SE_MOON, SE_MARS, SE_MERCURY, SE_JUPITER, SE_VENUS, SE_SATURN,
   SE_URANUS, SE_NEPTUNE, SE_PLUTO,
   SE_MEAN_NODE, SE_TRUE_NODE,
-  sweJulday, sweGetAyanamsa, sweCalcUt, sweCalcUtEquatorial, sweGetAscendant, sweGetAngles,
+  sweJulday, sweGetAyanamsa, sweCalcUt, sweCalcUtEquatorial, sweGetAscendant, sweGetAngles, sweGetCusps, CUSP_SYSTEM_CODES, type CuspSystem, sweBodyData, sweObliquity, horizontal,
 } from "./ephemerisAdapter";
 import { AYANAMSA_OPTIONS, applyAyanamsaOffset, resolveAyanamsaMode } from './ayanamsas';
 import { calculateSunTimes } from './sunTimes';
@@ -13,6 +13,10 @@ import { SATURN_PORTION_MOMENTS, saturnPortion, saturnPortionHour } from './upag
 import { calculateSpecialSphutas, equationOfTimeMinutes, ishtaGhatis, type SunriseMode } from './specialSphutas';
 import { pad2 } from './dateFormat';
 import { orderGrahas } from './grahaOrder';
+import { angularSeparation, eclipticToEquatorial } from './celestial';
+
+/** Placidus and Koch need the Sun to rise and set; north or south of this latitude (90° less the obliquity) they do not exist. */
+const POLAR_CIRCLE_LATITUDE = 66.5;
 
 const PLANET_NAMES: Record<number, string> = {
   [SE_SUN]: "Sun",
@@ -76,6 +80,39 @@ async function calculatePlanetPositions(jd: number, ayanamsa: number, useTropica
   return planets;
 }
 
+/** Gives every body its coordinates in the sky at the place of the chart; the nodes are points on the ecliptic. */
+async function addPlanetaryData(planets: PlanetData[], jd: number, lat: number, lng: number, ayanamsa: number, useTropical: boolean) {
+  const idOf = new Map<string, number>(Object.entries(PLANET_NAMES).map(([id, name]) => [name, Number(id)]));
+  const obliquity = await sweObliquity(jd);
+  const tropical = (planet: PlanetData) => normalize(useTropical ? planet.longitude : planet.longitude + ayanamsa);
+  const sun = await sweBodyData(jd, SE_SUN, lat, lng);
+  for (const planet of planets) {
+    const id = idOf.get(planet.name);
+    if (id !== undefined) {
+      const body = await sweBodyData(jd, id, lat, lng);
+      planet.data = {
+        eclipticLatitude: body.latitude,
+        rightAscension: body.rightAscension,
+        declination: body.declination,
+        distance: body.distance,
+        azimuth: body.azimuth,
+        altitude: body.altitude,
+        ...(id === SE_SUN ? {} : { elongation: angularSeparation(body.longitude, body.latitude, sun.longitude, sun.latitude) }),
+      };
+    } else if (planet.name === 'Rahu' || planet.name === 'Ketu') {
+      const longitude = tropical(planet);
+      const place = await horizontal(jd, longitude, 0, 1, lat, lng);
+      planet.data = {
+        eclipticLatitude: 0,
+        ...eclipticToEquatorial(longitude, 0, obliquity),
+        azimuth: place.azimuth,
+        altitude: place.altitude,
+        elongation: angularSeparation(longitude, 0, sun.longitude, sun.latitude),
+      };
+    }
+  }
+}
+
 async function addNodes(planets: PlanetData[], jd: number, ayanamsa: number, useTropical: boolean, nodeMode: 'mean' | 'true') {
   const nodeId = nodeMode === 'true' ? SE_TRUE_NODE : SE_MEAN_NODE;
   const { longitude: rahuTropical, speed: nodeSpeed } = await sweCalcUt(jd, nodeId);
@@ -128,12 +165,20 @@ export async function calculateChart(
   await addNodes(bodies, jd, ayanamsa, useTropical, nodeMode);
   // The grahas, Rahu and Ketu, and then the outer planets: every list of the app follows this order.
   const planets = orderGrahas(bodies);
+  await addPlanetaryData(planets, jd, lat, lng, ayanamsa, useTropical);
 
   const { ascendant: ascTropical, midheaven: mcTropical } = await sweGetAngles(jd, lat, lng);
   const ascLon = useTropical ? normalize(ascTropical) : normalize(ascTropical - ayanamsa);
   const midheaven = useTropical ? normalize(mcTropical) : normalize(mcTropical - ayanamsa);
   const ascSignIndex = Math.floor(ascLon / 30);
   const ascDegree = ascLon % 30;
+  const houseCusps: Partial<Record<CuspSystem, number[]>> = {};
+  for (const system of Object.keys(CUSP_SYSTEM_CODES) as CuspSystem[]) {
+    // Placidus and Koch are not defined beyond the polar circles; the library then falls back to Porphyry.
+    if ((system === 'placidus' || system === 'koch') && Math.abs(lat) >= POLAR_CIRCLE_LATITUDE) continue;
+    const cusps = await sweGetCusps(jd, lat, lng, system);
+    houseCusps[system] = cusps.map((cusp) => (useTropical ? normalize(cusp) : normalize(cusp - ayanamsa)));
+  }
 
   for (const p of planets) {
     const planetSignIndex = Math.floor(p.longitude / 30);
@@ -236,6 +281,7 @@ export async function calculateChart(
     specialSphutaTiming,
     saturnPortion: saturnPortionLagnas,
     midheaven,
+    houseCusps,
     lunarMonth: { masaIndex: lunarMonth.masaIndex, adhika: lunarMonth.adhika },
     debug,
   };

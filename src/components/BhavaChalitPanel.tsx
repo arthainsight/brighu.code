@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import type { ChartData } from '@/types';
-import { buildChalit, type ChalitSystem } from '@/lib/bhavaChalit';
+import { buildChalit, CUSP_CHALIT_SYSTEMS, type ChalitSystem } from '@/lib/bhavaChalit';
 import { useT } from '@/lib/i18n';
 import { useGrahaNames } from '@/lib/grahaNames';
 import NorthIndianChart from './NorthIndianChart';
@@ -56,11 +56,17 @@ export default function BhavaChalitPanel({ chart }: { chart: ChartData }) {
         >
           <option value="sripati">{t('Sripati (Porphyry cusps)')}</option>
           <option value="equal">{t('Equal (the Lagna in the middle of the 1st)')}</option>
+          <option value="equal-start">{t('Equal (the Lagna at the beginning of the 1st)')}</option>
+          <option value="placidus">{t('Placidus (the cusps begin the bhavas; KP)')}</option>
+          <option value="koch">{t('Koch (the cusps begin the bhavas)')}</option>
+          <option value="regiomontanus">{t('Regiomontanus (the cusps begin the bhavas)')}</option>
+          <option value="campanus">{t('Campanus (the cusps begin the bhavas)')}</option>
+          <option value="alcabitius">{t('Alcabitius (the cusps begin the bhavas)')}</option>
         </select>
       </label>
 
       {!chalit ? (
-        <p className="text-xs font-mono text-zinc-400 dark:text-zinc-600">{t('This chart has no Midheaven; calculate it again.')}</p>
+        <p className="text-xs font-mono text-zinc-400 dark:text-zinc-600">{(CUSP_CHALIT_SYSTEMS as readonly string[]).includes(system) ? t('This system has no cusps for this chart: it is not defined beyond the polar circles, or the chart was calculated before the cusps were kept; calculate it again.') : t('This chart has no Midheaven; calculate it again.')}</p>
       ) : (
         <>
           <div className="mx-auto w-full max-w-[420px]" data-chalit="chart">
