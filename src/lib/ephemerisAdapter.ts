@@ -97,6 +97,26 @@ export async function sweObliquity(jd: number): Promise<number> {
   return (await getSwe()).calc_ut(jd, -1, 0)[0];
 }
 
+/**
+ * The apparent magnitude and the apparent diameter of the disc of a body, by the C function (swe_pheno_ut). The magnitude is smaller
+ * the brighter the body is; the diameter is in seconds of arc. Nothing for a body the function does not know (the nodes).
+ */
+export async function swePheno(jd: number, bodyId: number): Promise<{ magnitude: number; diameter: number } | null> {
+  const { SweModule: module } = await getSwe();
+  const attr = module._malloc(20 * 8);
+  const message = module._malloc(256);
+  try {
+    const flag = module.ccall('swe_pheno_ut', 'number', ['number', 'number', 'number', 'pointer', 'pointer'], [jd, bodyId, 2, attr, message]);
+    if (flag < 0) return null;
+    const values = new Float64Array(module.HEAPF64.buffer, attr, 20);
+    // attr[3] is the diameter of the disc in degrees, attr[4] the magnitude.
+    return { magnitude: values[4], diameter: values[3] * 3600 };
+  } finally {
+    module._free(attr);
+    module._free(message);
+  }
+}
+
 export interface BodyData {
   /** Tropical ecliptic longitude and latitude, degrees. */
   longitude: number;

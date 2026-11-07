@@ -3,7 +3,7 @@ import {
   SE_SUN, SE_MOON, SE_MARS, SE_MERCURY, SE_JUPITER, SE_VENUS, SE_SATURN,
   SE_URANUS, SE_NEPTUNE, SE_PLUTO,
   SE_MEAN_NODE, SE_TRUE_NODE,
-  sweJulday, sweGetAyanamsa, sweCalcUt, sweCalcUtEquatorial, sweGetAscendant, sweGetAngles, sweGetCusps, CUSP_SYSTEM_CODES, type CuspSystem, sweBodyData, sweObliquity, horizontal,
+  sweJulday, sweGetAyanamsa, sweCalcUt, sweCalcUtEquatorial, sweGetAscendant, sweGetAngles, sweGetCusps, CUSP_SYSTEM_CODES, type CuspSystem, sweBodyData, sweObliquity, horizontal, swePheno,
 } from "./ephemerisAdapter";
 import { AYANAMSA_OPTIONS, applyAyanamsaOffset, resolveAyanamsaMode } from './ayanamsas';
 import { calculateSunTimes } from './sunTimes';
@@ -90,7 +90,9 @@ async function addPlanetaryData(planets: PlanetData[], jd: number, lat: number, 
     const id = idOf.get(planet.name);
     if (id !== undefined) {
       const body = await sweBodyData(jd, id, lat, lng);
+      const pheno = await swePheno(jd, id);
       planet.data = {
+        ...(pheno ? { magnitude: pheno.magnitude, diameter: pheno.diameter } : {}),
         eclipticLatitude: body.latitude,
         rightAscension: body.rightAscension,
         declination: body.declination,

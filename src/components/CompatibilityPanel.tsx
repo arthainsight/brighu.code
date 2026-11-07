@@ -5,7 +5,7 @@ import type { CalculationSettings, ChartData } from '@/types';
 import { loadSavedCharts, type SavedChart } from '@/lib/savedCharts';
 import { chartRequestUrl } from '@/lib/research/studyData';
 import {
-  ashtakoota, kujaBalance, kujaDosha, type Ashtakoota, type KujaDosha, type KutaKey, type VashyaTable,
+  ashtakoota, kujaBalance, kujaDosha, type Ashtakoota, type GanaTable, type KujaDosha, type KutaKey, type VashyaTable,
 } from '@/lib/ashtakoota';
 import { useT } from '@/lib/i18n';
 
@@ -63,6 +63,7 @@ export default function CompatibilityPanel({ calculationSettings, charts: given 
   const [girlId, setGirlId] = useState(charts[1]?.id ?? charts[0]?.id ?? '');
   const [point, setPoint] = useState<Point>('Moon');
   const [table, setTable] = useState<VashyaTable>('saravali');
+  const [ganaTable, setGanaTable] = useState<GanaTable>('muhurta');
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState('');
@@ -89,7 +90,7 @@ export default function CompatibilityPanel({ calculationSettings, charts: given 
       const boyKuja = kujaOf(boyChart);
       const girlKuja = kujaOf(girlChart);
       setOutcome({
-        match: ashtakoota(boyLongitude, girlLongitude, { vashyaTable: table }),
+        match: ashtakoota(boyLongitude, girlLongitude, { vashyaTable: table, ganaTable }),
         boyName: boy.name,
         girlName: girl.name,
         kuja: boyKuja && girlKuja ? { boy: boyKuja, girl: girlKuja } : null,
@@ -113,7 +114,7 @@ export default function CompatibilityPanel({ calculationSettings, charts: given 
       <div>
         <h3 className="text-[11px] font-mono uppercase tracking-widest text-violet-700 dark:text-violet-300">{t('Compatibility · Ashtakoota')}</h3>
         <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
-          {t('The eight kutas (36 points) of the Moons of two saved charts, the four extra matchings and the Kuja dosha of each. The first chart is the boy and the second the girl, because the tables are not symmetric. The tables are those of common practice, not of one classical verse; see docs/ashtakoota-sources.md.')}
+          {t('The eight kutas (36 points) of the Moons of two saved charts, the four extra matchings and the Kuja dosha of each. The first chart is the boy and the second the girl, because the tables are not symmetric. The eight kutas are checked against Muhurta Chintamani 6.21–6.34; see docs/ashtakoota-sources.md.')}
         </p>
       </div>
 
@@ -137,6 +138,12 @@ export default function CompatibilityPanel({ calculationSettings, charts: given 
           <select aria-label={t('Vashya table')} value={table} onChange={event => setTable(event.target.value as VashyaTable)} className={`${selectClass} block`}>
             <option value="saravali">saravali.de</option>
             <option value="astroyogi">astroyogi.com</option>
+          </select>
+        </label>
+        <label className="space-y-1 text-[10px] font-mono text-zinc-500">{t('Gana table')}
+          <select aria-label={t('Gana table')} value={ganaTable} onChange={event => setGanaTable(event.target.value as GanaTable)} className={`${selectClass} block`}>
+            <option value="muhurta">{t('Muhurta Chintamani')}</option>
+            <option value="common">{t('common (PyJHora)')}</option>
           </select>
         </label>
         <button type="button" disabled={running || !boyId || !girlId} onClick={run} className="rounded bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">
@@ -192,6 +199,7 @@ export default function CompatibilityPanel({ calculationSettings, charts: given 
 
           <p className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400" data-compat="vashya-other">
             {t('Vashya by the other table')} ({outcome.match.vashyaOther.table === 'astroyogi' ? 'astroyogi.com' : 'saravali.de'}): {outcome.match.vashyaOther.points} / 2
+            {' · '}{t('Gana by the other table')} ({outcome.match.ganaOther.table === 'muhurta' ? t('Muhurta Chintamani') : t('common (PyJHora)')}): {outcome.match.ganaOther.points} / 6
           </p>
 
           {(outcome.match.doshas.nadi || outcome.match.doshas.bhakoot || outcome.match.doshas.gana) && (
@@ -214,6 +222,8 @@ export default function CompatibilityPanel({ calculationSettings, charts: given 
               <tr data-extra="stri-dirgha"><th scope="row" className={`${cell} text-left`}>Stri Dirgha</th><td className={cell}>{verdictOf(outcome.match.extras.striDirgha)}</td></tr>
             </tbody>
           </table>
+
+          <p className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">{t('Mahendra, Vedha, Rajju and Stri Dirgha are of the Southern tradition; Muhurta Chintamani does not have them.')}</p>
 
           {outcome.kuja && (
             <div className="space-y-1" data-compat="kuja">

@@ -63,10 +63,24 @@ for (let a = 1; a <= 12; a += 1) for (let b = 1; b <= 12; b += 1) assert.equal(b
 const nadi = ashtakoota(star(1), star(6));
 assert.equal(nadi.kutas.find(item => item.key === 'nadi')!.points, 0);
 assert.equal(nadi.doshas.nadi, true);
-// Gaṇa: Deva boy with a Rākṣasa girl gets 1, a Rākṣasa boy with a Deva girl 0.
-assert.equal(ashtakoota(star(1), star(3)).kutas.find(item => item.key === 'gana')!.points, 1);
-assert.equal(ashtakoota(star(3), star(1)).kutas.find(item => item.key === 'gana')!.points, 0);
-assert.equal(ashtakoota(star(3), star(1)).doshas.gana, true);
+// Gaṇa by Muhūrta Cintāmaṇi (the default): the same gaṇa 6; Deva with Manuṣya 5, 4 where the woman is the Deva and the man the human; Deva or Manuṣya with a Rākṣasa
+// woman nothing; a Rākṣasa man with a Deva woman 2 and with a human woman 1.
+const gana = (boy: number, girl: number, ganaTable?: 'muhurta' | 'common') => ashtakoota(star(boy), star(girl), { ganaTable }).kutas.find(item => item.key === 'gana')!.points;
+const DEVA = 1, MANUSHYA = 2, RAKSHASA = 3; // Ashwini, Bharani, Krittika
+assert.deepEqual([gana(DEVA, DEVA), gana(MANUSHYA, MANUSHYA), gana(RAKSHASA, RAKSHASA)], [6, 6, 6]);
+assert.equal(gana(DEVA, MANUSHYA), 5, 'the boy a Deva, the girl a human');
+assert.equal(gana(MANUSHYA, DEVA), 4, 'the girl a Deva, the boy a human');
+assert.equal(gana(RAKSHASA, DEVA), 2, 'a Rākṣasa man with a Deva woman');
+assert.equal(gana(RAKSHASA, MANUSHYA), 1, 'a Rākṣasa man with a human woman');
+assert.equal(gana(DEVA, RAKSHASA), 0, 'a Deva man with a Rākṣasa woman');
+assert.equal(gana(MANUSHYA, RAKSHASA), 0, 'a human man with a Rākṣasa woman (his death, say Nārada and Kaśyapa)');
+// The common table (PyJHora's) differs in four cells.
+assert.deepEqual([gana(MANUSHYA, DEVA, 'common'), gana(RAKSHASA, DEVA, 'common'), gana(RAKSHASA, MANUSHYA, 'common'), gana(DEVA, RAKSHASA, 'common')], [6, 0, 0, 1]);
+assert.equal(ashtakoota(star(DEVA), star(RAKSHASA)).ganaOther.table, 'common');
+assert.equal(ashtakoota(star(DEVA), star(RAKSHASA)).ganaOther.points, 1);
+assert.equal(ashtakoota(star(RAKSHASA), star(DEVA)).doshas.gana, false, 'two points are not the dosha');
+assert.equal(ashtakoota(star(DEVA), star(RAKSHASA)).doshas.gana, true, 'a Deva man with a Rākṣasa woman: 0, the dosha');
+
 // Maitri: Sun with Venus (enemies) 0; Mars and Jupiter (friends) 5; Mercury–Jupiter 0.5.
 const maitri = (boySign: number, girlSign: number) => ashtakoota((boySign - 1) * 30 + 5, (girlSign - 1) * 30 + 5).kutas.find(item => item.key === 'maitri')!.points;
 assert.equal(maitri(5, 2), 0, 'Leo (Sun) and Taurus (Venus)');

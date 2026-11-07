@@ -1,5 +1,18 @@
 export const CHANGELOG = [
   {
+    version: 'v4.27',
+    date: '2026-11-07',
+    title: 'Yuddha Bala and the Ashtakoota read from the Sanskrit',
+    changes: [
+      'Yuddha Bala: the war and its victor are now read in the Sanskrit of the Sūrya Siddhānta (7.19, 7.21) and the Bṛhat Saṃhitā (17.9–10), not taken from a commentator: a war is two of Mars, Mercury, Jupiter, Venus and Saturn less than a degree apart; the graha farther north wins unless the one in the south is both larger and brighter. BPHS 27.20 gives only the amount (the difference of the strengths). The rule of B. V. Raman (the smaller longitude) is in none of these texts and is gone; the choice C12 is now "left out", "the difference as the verse has it" and "the difference over the discs" (Śrīpati, quoted second-hand).',
+      'The apparent magnitude and the apparent diameter of every body are now kept with the chart (swe_pheno_ut) and shown in ANALYSIS → Planetary data; they decide whether a southern graha in a war is larger and brighter. Charts saved earlier take the northern one and the page says so.',
+      'Ashtakoota: the tables were read against Muhūrta Cintāmaṇi, Vivāha Prakaraṇa 6.21–6.34 (the scan of the Nirṇaya Sāgara edition with the Pīyūṣadhārā, and the Hindi commentary of Mahīdhara Śarmā). Varṇa, the yoni of the 27 stars and the sworn enemies, the friendships and the points of Graha Maitrī (all 144 pairs of signs), the gaṇa of the stars, Bhakoot, Tārā (the remainders 3, 5, 7) and the Nāḍī of the stars agree with the text, and a test typed in from the pages keeps them so.',
+      'The Gaṇa points differ: the text (the Daivajñamanohara in the Pīyūṣadhārā) gives a human man with a Deva woman 4, a Rākṣasa man with a Deva woman 2 and with a human woman 1, a Deva man with a Rākṣasa woman 0; the table the app had (PyJHora\'s) gave 6, 0, 0 and 1. The text is now the default and the other table a choice in the view, with the points by the other table shown.',
+      'Not in the text: the Vaśya (the verse gives two points or none and leaves most signs to the practice of the world, so both published tables stay, as common practice) and Mahendra, Vedha, Rajju and Strī-dīrgha (Southern tradition); the view says so. docs/ashtakoota-sources.md has every verse and every difference.',
+      'Updated the application version to v4.27.',
+    ],
+  },
+  {
     version: 'v4.26',
     date: '2026-11-07',
     title: 'Ashtakoota matching and Yuddha Bala',

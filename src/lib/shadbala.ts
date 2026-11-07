@@ -36,8 +36,8 @@ export type ShadbalaChartPlanet = {
   speed?: number;
   /** True equatorial declination in degrees. Ayana Bala falls back on it when the ayanamsa is not known. */
   declination?: number;
-  /** The data of the body in the sky; the ecliptic latitude decides the victor of a planetary war (charts saved before v4.24 have none). */
-  data?: { eclipticLatitude?: number };
+  /** The data of the body in the sky; the ecliptic latitude, the magnitude and the diameter decide the victor of a planetary war (charts saved before v4.24 have none, before v4.27 no magnitude or diameter). */
+  data?: { eclipticLatitude?: number; magnitude?: number; diameter?: number };
 };
 
 export type ShadbalaChartLike = {
@@ -781,7 +781,7 @@ export function buildShadbalaRows(chart: ShadbalaChartLike, options: BalaOptions
 /** The bodies of a chart as the planetary war reads them. */
 function warBodiesOf(chart: ShadbalaChartLike): WarBody[] {
   return (chart?.planets ?? []).flatMap(planet => (typeof planet.longitude === 'number'
-    ? [{ name: planet.name, longitude: planet.longitude, latitude: planet.data?.eclipticLatitude }]
+    ? [{ name: planet.name, longitude: planet.longitude, latitude: planet.data?.eclipticLatitude, magnitude: planet.data?.magnitude, diameter: planet.data?.diameter }]
     : []));
 }
 

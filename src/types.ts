@@ -40,6 +40,9 @@ export interface PlanetaryData {
   altitude: number;
   /** The angle from the Sun; the Sun itself has none. */
   elongation?: number;
+  /** The apparent magnitude (smaller is brighter) and the apparent diameter of the disc in seconds of arc; the nodes have none. */
+  magnitude?: number;
+  diameter?: number;
 }
 
 export interface PlanetData {
