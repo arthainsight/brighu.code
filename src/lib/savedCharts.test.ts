@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { filterSavedCharts, groupSavedCharts, listClients, readSavedChartsExport, type SavedChart } from './savedCharts';
+import { filterSavedCharts, groupSavedCharts, listClients, normalizeSavedChartData, readSavedChartsExport, type SavedChart } from './savedCharts';
 
 const chart = (extra: Record<string, unknown> = {}) => ({
   id: 'a', name: 'Test', createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-02T00:00:00.000Z',
@@ -78,4 +78,14 @@ console.log('Saved chart export tests passed');
   const read = readSavedChartsExport(file([chart({ id: 'a', client: '  Virtanen ' }), chart({ id: 'b', client: 42 })]));
   assert.equal(read[0].client, 'Virtanen');
   assert.equal(read[1].client, undefined);
+}
+
+// A saved chart as the page takes it in: an old save without a target day gets today, one without the coordinates switch gets it on.
+{
+  const base = { birthDatetime: '15.08.1947 09.15.00', city: 'Delhi', manualLat: '28.6', manualLng: '77.2', ianaTimezone: 'Asia/Kolkata', tzOverride: '', targetDate: '', showCoords: undefined as unknown as boolean };
+  const normalized = normalizeSavedChartData(base);
+  assert.equal(normalized.targetDate, new Date().toISOString().slice(0, 10));
+  assert.equal(normalized.showCoords, true);
+  assert.equal(normalizeSavedChartData({ ...base, targetDate: '2026-01-02', showCoords: false }).targetDate, '2026-01-02');
+  assert.equal(normalizeSavedChartData({ ...base, showCoords: false }).showCoords, false, 'a chosen switch is kept');
 }

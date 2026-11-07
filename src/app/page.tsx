@@ -7,6 +7,7 @@ import { calculateBcp, parseDateTime } from '@/lib/bcp';
 import { localToUtcOffsetHours, parseBirthDatetimeForTz } from '@/lib/timezone';
 import { APP_NAME, APP_VERSION } from '@/lib/config';
 import PrimaryNav, { type Workspace } from '@/components/PrimaryNav';
+import { normalizeSavedChartData, setActiveSavedChartId } from '@/lib/savedCharts';
 import DataPanel from '@/components/DataPanel';
 import type { AnalysisRequest } from '@/components/AnalysisPanel';
 import ChartSection from '@/components/ChartSection';
@@ -26,7 +27,9 @@ import { GrahaMarksContext } from '@/lib/grahaMarks';
 import { yogiRoles } from '@/lib/yogiPoints';
 import { ChartFontContext, clampFontScale } from '@/lib/chartFont';
 import { setSplitView, useSplitView } from '@/hooks/useSplitView';
-import { DEFAULT_PLACE, openingChoice, wallClockIn } from '@/lib/defaultChart';
+import { DEFAULT_PLACE, openingChoice, storeOpeningChoice, wallClockIn } from '@/lib/defaultChart';
+import { LAST_SEEN_VERSION_KEY } from '@/lib/welcome';
+import WelcomeDialog from '@/components/WelcomeDialog';
 import { fetchVisitorPlace } from '@/lib/visitorPlace';
 import { useStoredFlag } from '@/hooks/useStoredFlag';
 import { applyChartEdits, moveBody, resetBody, type ChartEdits } from '@/lib/chartEdit';
@@ -481,6 +484,46 @@ export default function Home() {
   // What the saved charts and the file actions call: a chart given as a whole, shown the usual way.
   const handleLoadChartSnapshot = useCallback((snap: ChartSnapshot) => loadChartSnapshot(snap), [loadChartSnapshot]);
 
+  // A saved chart opened from a search result: the same as picking it in LOAD, and then the chart is shown.
+  const openSavedChart = useCallback((id: string, name: string, data: ChartSnapshot) => {
+    setActiveSavedChartId(id);
+    setActiveChartName(name);
+    loadChartSnapshot(normalizeSavedChartData(data));
+    selectWorkspace('chart');
+  }, [loadChartSnapshot, selectWorkspace]);
+
+  // The chart of this moment at a place, North Indian, the name empty: the place and the moment are in the form to change.
+  const openChartAt = useCallback((place: { city: string; latitude: string; longitude: string; ianaTimezone: string }) => loadChartSnapshot({
+    birthDatetime: wallClockIn(place.ianaTimezone),
+    city: place.city,
+    manualLat: place.latitude,
+    manualLng: place.longitude,
+    ianaTimezone: place.ianaTimezone,
+    tzOverride: '',
+    targetDate: getTodayString(),
+    targetTime: getNowTimeString(),
+    showCoords: true,
+  }, { keepDataPanel: true }), [loadChartSnapshot]);
+  const openAtVisitorPlace = useCallback(() => fetchVisitorPlace().then(found => openChartAt(found
+    ? { city: found.city, latitude: String(Math.round(found.latitude * 10_000) / 10_000), longitude: String(Math.round(found.longitude * 10_000) / 10_000), ianaTimezone: found.timezone }
+    : DEFAULT_PLACE)), [openChartAt]);
+
+  // The window the page opens with (see WelcomeDialog); null when there is none.
+  const [welcome, setWelcome] = useState<{ askPlace: boolean; showUpdates: boolean } | null>(null);
+  const closeWelcome = useCallback(() => {
+    try { localStorage.setItem(LAST_SEEN_VERSION_KEY, APP_VERSION); } catch {}
+    setWelcome(null);
+  }, []);
+  const allowPlace = useCallback(() => {
+    storeOpeningChoice('place');
+    closeWelcome();
+    void openAtVisitorPlace();
+  }, [closeWelcome, openAtVisitorPlace]);
+  const declinePlace = useCallback(() => {
+    storeOpeningChoice('porvoo');
+    closeWelcome();
+  }, [closeWelcome]);
+
   // A link made with SHARE carries the birth data after the #: the form is filled in and the chart calculated, once the stored settings are in.
   // Without one the page opens with the chart of this moment at Porvoo (unless Settings say to open blank): the name is left empty and
   // the place and the moment are in the form to change.
@@ -489,36 +532,32 @@ export default function Home() {
     if (!settingsRestored || sharedHandled.current) return;
     sharedHandled.current = true;
     const shared = decodeShare(window.location.hash);
+    // The window the page opens with: the question about the place (only when the page would otherwise look it up and the visitor has not
+    // been asked) and the updates the visitor has not seen. A shared link opens its own chart and looks nothing up.
+    const stored = openingChoice();
+    let seen: string | null = null;
+    try { seen = localStorage.getItem(LAST_SEEN_VERSION_KEY); } catch {}
+    const askPlace = !shared && stored === 'ask';
+    const showUpdates = seen !== APP_VERSION;
+    // The state is set once, after mount: the storage cannot be read during the server render.
+    if (askPlace || showUpdates) setWelcome({ askPlace, showUpdates });
     if (!shared) {
-      const choice = openingChoice();
+      // Not yet asked: the chart opens at Porvoo and nothing is looked up; a yes moves it to the visitor's place.
+      const choice = stored === 'ask' ? 'porvoo' : stored;
       if (choice === 'blank') return;
       // The clock of the moment is read here, after mount: on the server it would be the time of the build; and the address
       // cannot be read during the server render either, so all of this has to happen after mount, once.
-      const open = (place: { city: string; latitude: string; longitude: string; ianaTimezone: string }) => loadChartSnapshot({
-        birthDatetime: wallClockIn(place.ianaTimezone),
-        city: place.city,
-        manualLat: place.latitude,
-        manualLng: place.longitude,
-        ianaTimezone: place.ianaTimezone,
-        tzOverride: '',
-        targetDate: getTodayString(),
-        targetTime: getNowTimeString(),
-        showCoords: true,
-      }, { keepDataPanel: true });
       if (choice === 'porvoo') {
-        void open(DEFAULT_PLACE);
+        openChartAt(DEFAULT_PLACE);
         return;
       }
       // The place the visitor opens the page from, as the hosting platform has it; Porvoo where there is none (or it comes too late).
-      void fetchVisitorPlace().then(found => open(found
-        ? { city: found.city, latitude: String(Math.round(found.latitude * 10_000) / 10_000), longitude: String(Math.round(found.longitude * 10_000) / 10_000), ianaTimezone: found.timezone }
-        : DEFAULT_PLACE));
+      void openAtVisitorPlace();
       return;
     }
     // The address is cleaned, so a reload does not start over and the data is not left in the address bar.
     window.history.replaceState(null, '', window.location.pathname + window.location.search);
     // The address cannot be read during the server render, so this has to happen after mount; it runs once.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void handleLoadChartSnapshot({
       birthDatetime: shared.birthDatetime,
       city: shared.city,
@@ -530,7 +569,7 @@ export default function Home() {
       targetTime: '12:00',
       showCoords: true,
     });
-  }, [settingsRestored, handleLoadChartSnapshot, loadChartSnapshot]);
+  }, [settingsRestored, handleLoadChartSnapshot, openChartAt, openAtVisitorPlace]);
 
   // "Open in chart" in the Dasha event list: read every target-date layer and
   // the transits for the event's day.
@@ -717,6 +756,9 @@ export default function Home() {
     <ChartFontContext.Provider value={clampFontScale(chartDisplaySettings.chartFontScale)}>
     <GrahaMarksContext.Provider value={grahaRoles}>
     <div key={dashaSettings.yearLength ?? 'julian'} className="min-h-screen overflow-x-clip bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200">
+      {welcome && (
+        <WelcomeDialog askPlace={welcome.askPlace} showUpdates={welcome.showUpdates} onAllowPlace={allowPlace} onDeclinePlace={declinePlace} onClose={closeWelcome} />
+      )}
       <AppHeader
         activeChartName={activeChartName}
         displayChartName={displayChartName}
@@ -773,7 +815,7 @@ export default function Home() {
               {desktopTab === 'grahas' && analysisPanel({ wide: fullAnalysis, onToggleWide: toggleAnalysisFull })}
               {desktopTab === 'dasha' && timingPanel({ wide: fullTiming, onToggleWide: toggleTimingFull })}
               {desktopTab === 'palm' && <PalmWorkspace wide={fullPalm} onToggleWide={togglePalmFull} />}
-              {desktopTab === 'library' && <LibraryPanel calculationSettings={calculationSettings} />}
+              {desktopTab === 'library' && <LibraryPanel calculationSettings={calculationSettings} onOpenChart={openSavedChart} />}
               {desktopTab === 'settings' && <SettingsPanel {...settingsProps} />}
             </Panel>
           </div>
@@ -838,7 +880,7 @@ export default function Home() {
             )}
 
             {activeTab === 'library' && (
-              <Panel><LibraryPanel calculationSettings={calculationSettings} /></Panel>
+              <Panel><LibraryPanel calculationSettings={calculationSettings} onOpenChart={openSavedChart} /></Panel>
             )}
 
             {activeTab === 'settings' && (

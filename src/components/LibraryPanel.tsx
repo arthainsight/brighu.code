@@ -1,15 +1,18 @@
 'use client';
 
 import type { CalculationSettings } from '@/types';
+import type { SavedChartData } from '@/lib/savedCharts';
 import { useT } from '@/lib/i18n';
 import ResearchPanel from './ResearchPanel';
 
 interface Props {
   calculationSettings?: CalculationSettings;
+  /** Opens a saved chart in the app (from a search result). */
+  onOpenChart?: (id: string, name: string, data: SavedChartData) => void;
 }
 
 /** The Library workspace provides a dedicated home for cross-chart research. */
-export default function LibraryPanel({ calculationSettings }: Props) {
+export default function LibraryPanel({ calculationSettings, onOpenChart }: Props) {
   const t = useT();
 
   return (
@@ -25,7 +28,7 @@ export default function LibraryPanel({ calculationSettings }: Props) {
           {t('Study recurring patterns across saved charts and life events.')}
         </p>
       </header>
-      <ResearchPanel calculationSettings={calculationSettings} />
+      <ResearchPanel calculationSettings={calculationSettings} onOpenChart={onOpenChart} />
     </section>
   );
 }

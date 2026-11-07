@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react';
 import { DEFAULT_CALCULATION_SETTINGS, type CalculationSettings, type ChartData } from '@/types';
-import { loadSavedCharts } from '@/lib/savedCharts';
+import { loadSavedCharts, type SavedChartData } from '@/lib/savedCharts';
 import { DASHA_EVENT_CATEGORIES, DASHA_EVENT_CATEGORY_LABELS, formatEventDate, type DashaEventCategory, type StoredDashaEvent } from '@/lib/dashaEventStore';
 import { birthTimeOf, chartRequestUrl, readStoredEvents, researchSources, studyEventsOf } from '@/lib/research/studyData';
 import { eventFeatures, runStudy, type FeatureKind, type StudyChart, type StudyOptions, type WindowChoice } from '@/lib/research/eventStudy';
@@ -43,6 +43,8 @@ import { FAMILY_LABELS, SOURCE_LABELS, WINDOWS, chip } from './researchUi';
 
 type Props = {
   calculationSettings?: CalculationSettings;
+  /** Opens a saved chart in the app (from a search result). */
+  onOpenChart?: (id: string, name: string, data: SavedChartData) => void;
 };
 
 type Mode = 'chance' | 'groups' | 'validate' | 'settings' | 'combine' | 'model';
@@ -96,7 +98,7 @@ const NO_FILTER: Filter = { category: 'all', tag: '', text: '' };
  * against the same chart at random moments of its life, with a permutation test and a correction for looking at many features at once, or compared with a
  * second set of events.
  */
-export default function ResearchPanel({ calculationSettings }: Props) {
+export default function ResearchPanel({ calculationSettings, onOpenChart }: Props) {
   const t = useT();
   const { code } = useGrahaNames();
   const sources = useMemo(() => researchSources(loadSavedCharts(), readStoredEvents), []);
@@ -404,7 +406,7 @@ export default function ResearchPanel({ calculationSettings }: Props) {
             <button type="button" aria-expanded={showEventRelations} onClick={() => setShowEventRelations(value => !value)} className={chip(showEventRelations)}>{t('Event Nadi relationships')}</button>
           </div>
           {showHitFinder && <ResearchHitFinder sources={sources} initialSelected={selected} calculationSettings={settings} />}
-          {showChartSearch && <ChartSearchPanel sources={sources} initialSelected={selected} calculationSettings={settings} />}
+          {showChartSearch && <ChartSearchPanel sources={sources} initialSelected={selected} calculationSettings={settings} onOpenChart={onOpenChart} />}
           {showEventRelations && <ResearchEventRelations sources={sources} initialSelected={selected} calculationSettings={settings} />}
 
           <div className="space-y-1">

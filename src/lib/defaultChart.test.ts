@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { DEFAULT_PLACE, OPEN_WITH_CHART_KEY, OPENING_CHOICES, isOpeningChoice, openingChoice, parseOpeningChoice, wallClockIn } from './defaultChart';
+import { DEFAULT_PLACE, OPEN_WITH_CHART_KEY, OPENING_CHOICES, isOpeningChoice, openingChoice, parseOpeningChoice, storeOpeningChoice, storedOpening, wallClockIn } from './defaultChart';
 import { parseBirthDatetimeForTz, localToUtcOffsetHours } from './timezone';
 
 // The clock of a place, in the form the birth data takes: dd.mm.yyyy hh.mm.ss.
@@ -38,15 +38,24 @@ assert.equal(parseOpeningChoice('blank'), 'blank');
 assert.equal(parseOpeningChoice('false'), 'blank', 'the old "off" is blank');
 assert.equal(parseOpeningChoice('true'), 'place', 'the old "on" is the place of the visitor');
 assert.equal(parseOpeningChoice('nonsense'), 'place', 'anything else is the usual');
-assert.equal(openingChoice(), 'place', 'no storage: the place of the visitor');
+assert.equal(openingChoice(), 'ask', 'no storage: the visitor has not been asked');
 const store = new Map<string, string>();
 Object.assign(globalThis, { localStorage: { getItem: (key: string) => store.get(key) ?? null, setItem: (key: string, value: string) => void store.set(key, value) } });
-assert.equal(openingChoice(), 'place', 'nothing stored');
+assert.equal(openingChoice(), 'ask', 'nothing stored: the visitor is asked, the place is not looked up');
 store.set(OPEN_WITH_CHART_KEY, 'blank');
 assert.equal(openingChoice(), 'blank');
 store.set(OPEN_WITH_CHART_KEY, 'false');
 assert.equal(openingChoice(), 'blank', 'a choice stored by an older version');
 store.set(OPEN_WITH_CHART_KEY, 'porvoo');
 assert.equal(openingChoice(), 'porvoo');
+store.set(OPEN_WITH_CHART_KEY, 'place');
+assert.equal(openingChoice(), 'place', 'a yes');
+store.set(OPEN_WITH_CHART_KEY, 'true');
+assert.equal(openingChoice(), 'ask', 'the old "on" was never a yes to the lookup of the place');
+storeOpeningChoice('porvoo');
+assert.equal(store.get(OPEN_WITH_CHART_KEY), 'porvoo', 'the answer is stored');
+assert.equal(storedOpening(null), 'ask');
+assert.equal(storedOpening('nonsense'), 'ask');
+assert.equal(storedOpening('false'), 'blank');
 
 console.log('Default chart tests passed');

@@ -106,6 +106,9 @@ export function getActiveSavedChartId(): string | null {
   }
 }
 
+/** Fired on the window when the active saved chart changes, so that every part of the page that shows it (the two file menus) follows. */
+export const ACTIVE_SAVED_CHART_EVENT = "bcp:active-saved-chart";
+
 export function setActiveSavedChartId(id: string | null): void {
   try {
     if (id) localStorage.setItem(ACTIVE_KEY, id);
@@ -113,6 +116,16 @@ export function setActiveSavedChartId(id: string | null): void {
   } catch {
     // ignore
   }
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(ACTIVE_SAVED_CHART_EVENT));
+}
+
+/** A saved chart as the page takes it in: an old save without a target day gets today, one without the coordinates switch gets it on. */
+export function normalizeSavedChartData(data: SavedChartData): SavedChartData {
+  return {
+    ...data,
+    targetDate: data.targetDate || new Date().toISOString().slice(0, 10),
+    showCoords: data.showCoords ?? true,
+  };
 }
 
 export function clearActiveSavedChartId(): void {
