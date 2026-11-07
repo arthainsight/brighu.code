@@ -18,6 +18,7 @@ import { SIGN_LORDS } from './signs';
 import { DEBILITATION, EXALTATION, NATURAL_ENEMIES, NATURAL_FRIENDS, OWN_SIGNS as OWN_SIGN_NUMBERS } from './dignity';
 import { aspectVirupa, isMoonBenefic } from './shadbalaAspects';
 import { DEFAULT_BALA_OPTIONS, type BalaOptions } from './balaOptions';
+import { resolveWars, yuddhaBalaOf, type WarBody, type WarResult } from './yuddha';
 import { cheshtaKendraBalaVirupa, type CheshtaGraha } from './shadbalaCheshta';
 import { ABDA_VIRUPA, HORA_VIRUPA, MASA_VIRUPA, VARA_VIRUPA, horaLord, yearMonthDayLords, type DayLord } from './shadbalaTime';
 
@@ -35,6 +36,8 @@ export type ShadbalaChartPlanet = {
   speed?: number;
   /** True equatorial declination in degrees. Ayana Bala falls back on it when the ayanamsa is not known. */
   declination?: number;
+  /** The data of the body in the sky; the ecliptic latitude decides the victor of a planetary war (charts saved before v4.24 have none). */
+  data?: { eclipticLatitude?: number };
 };
 
 export type ShadbalaChartLike = {
@@ -67,6 +70,8 @@ export type SthanaBalaBreakdown = {
 };
 
 export type KalaBalaBreakdown = {
+  /** Yuddha Bala, the strength gained (+) or lost (−) in a planetary war; present only when the choice C12 asks for it. It is in `total`. */
+  yuddha?: number;
   sect: 'day' | 'night' | 'unknown';
   natonnata: number;
   paksha: number;
@@ -733,7 +738,7 @@ export function buildShadbalaRows(chart: ShadbalaChartLike, options: BalaOptions
   const angles: DigAngles = options.digPoints === 'equal-houses' && typeof ascendantLongitude === 'number'
     ? { ascendant: ascendantLongitude, midheaven: ascendantLongitude + 270 }
     : { ascendant: ascendantLongitude, midheaven: chart?.midheaven };
-  return SCORE_PLANETS
+  const rows = SCORE_PLANETS
     .map((planetName): ShadbalaRow | null => {
       const planet = getPlanet(chart, planetName);
       if (!planet) return null;
@@ -770,4 +775,36 @@ export function buildShadbalaRows(chart: ShadbalaChartLike, options: BalaOptions
       };
     })
     .filter((row): row is ShadbalaRow => row !== null);
+  return options.yuddha === 'off' ? rows : withYuddha(rows, chart, options);
+}
+
+/** The bodies of a chart as the planetary war reads them. */
+function warBodiesOf(chart: ShadbalaChartLike): WarBody[] {
+  return (chart?.planets ?? []).flatMap(planet => (typeof planet.longitude === 'number'
+    ? [{ name: planet.name, longitude: planet.longitude, latitude: planet.data?.eclipticLatitude }]
+    : []));
+}
+
+/** The wars of a chart and what each passes on, from the rows as they are before Yuddha Bala is added to them. */
+export function shadbalaWars(chart: ShadbalaChartLike, rowsWithoutYuddha: readonly ShadbalaRow[], options: BalaOptions = DEFAULT_BALA_OPTIONS): WarResult[] {
+  const totals = Object.fromEntries(rowsWithoutYuddha.map(row => [row.planet, row.totalVirupa - (row.kalaBreakdown.yuddha ?? 0)]));
+  return resolveWars(warBodiesOf(chart), totals, options.yuddha);
+}
+
+/** The rows with Yuddha Bala in their Kāla Bala and their totals. */
+function withYuddha(rows: ShadbalaRow[], chart: ShadbalaChartLike, options: BalaOptions): ShadbalaRow[] {
+  const bala = yuddhaBalaOf(shadbalaWars(chart, rows, options));
+  return rows.map(row => {
+    const yuddha = (bala as Partial<Record<string, number>>)[row.planet] ?? 0;
+    const kalaBreakdown = { ...row.kalaBreakdown, yuddha, total: row.kalaBreakdown.total + yuddha };
+    const totalVirupa = row.totalVirupa + yuddha;
+    return {
+      ...row,
+      kalaBreakdown,
+      kala: virupaToRupa(kalaBreakdown.total),
+      total: virupaToRupa(totalVirupa),
+      totalVirupa,
+      ratio: row.requiredVirupa ? totalVirupa / row.requiredVirupa : 0,
+    };
+  });
 }

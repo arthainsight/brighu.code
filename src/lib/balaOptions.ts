@@ -4,6 +4,8 @@
 // The settings are kept in the browser (see balaOptionsStore.ts); they change only how the two views are
 // calculated, not the chart.
 
+import type { YuddhaRule } from './yuddha';
+
 export type MoonRule = 'dark-half' | 'tithi-8';
 export type MercuryRule = 'any-malefic' | 'majority' | 'always-benefic';
 export type SaptavargajaScores = 'sanskrit' | 'raman';
@@ -21,6 +23,7 @@ export type BhavaHouses = 'whole-sign' | 'sripati' | 'equal-from-lagna';
 export type BhavaCancer = 'lagna' | 'midheaven';
 export type BhavaMercuryJupiter = 'full-instead' | 'full-addon' | 'quarter';
 export type BhavaParts = 'five' | 'three';
+export type { YuddhaRule } from './yuddha';
 
 export interface BalaOptions {
   moonRule: MoonRule;
@@ -40,6 +43,7 @@ export interface BalaOptions {
   bhavaCancer: BhavaCancer;
   bhavaMercuryJupiter: BhavaMercuryJupiter;
   bhavaParts: BhavaParts;
+  yuddha: YuddhaRule;
 }
 
 /** The reading of the Sanskrit text, with the decisions of the audit (docs/shadbala-sources.md). */
@@ -61,6 +65,7 @@ export const DEFAULT_BALA_OPTIONS: BalaOptions = {
   bhavaCancer: 'lagna',
   bhavaMercuryJupiter: 'full-instead',
   bhavaParts: 'five',
+  yuddha: 'off',
 };
 
 /** The choices as JHora makes them, for comparing with it (the Sun's and the Moon's Cheṣṭā Bala not in the total). */
@@ -148,6 +153,16 @@ export const BALA_OPTION_DEFINITIONS: readonly BalaOptionDefinition[] = [
       { value: 'in-total', label: 'Both in Kāla and in Cheṣṭā, so twice in the total (the verses)' },
       { value: 'left-out', label: 'Not in the total, the Cheṣṭā column empty (JHora, Raman\'s example)' },
       { value: 'doubled-in-kala', label: 'Ayana of the Sun and Pakṣa of the Moon doubled in Kāla, the Cheṣṭā column empty (Raman, Santhanam)' },
+    ],
+  },
+  {
+    key: 'yuddha', view: 'shadbala', choicePoint: 'C12', label: 'Yuddha Bala: the planetary war',
+    note: 'BPHS 27.20 says the winner of a war between two of Mars, Mercury, Jupiter, Venus and Saturn gains, and the loser loses, the difference of their strengths; it does not say when two grahas fight or who wins. A war is a conjunction closer than 1° of longitude. The total compared is the Ṣaḍbala without Yuddha Bala.',
+    choices: [
+      { value: 'off', label: 'Left out (the sources disagree about the winner and the divisor)' },
+      { value: 'verse', label: 'The difference as the verse has it; the winner the one farther north in latitude (Sūrya Siddhānta, Bṛhat Saṃhitā)' },
+      { value: 'sripati', label: 'The difference divided by the difference of the discs; the winner the one farther north (Śrīpati, Sūryadeva Yajvan)' },
+      { value: 'raman', label: 'The difference divided by the difference of the discs; the winner the one with the smaller longitude (B. V. Raman)' },
     ],
   },
   {
