@@ -1,5 +1,17 @@
 export const CHANGELOG = [
   {
+    version: 'v4.25',
+    date: '2026-11-07',
+    title: 'The page asks before it looks up your place; a window with the latest updates',
+    changes: [
+      'The page no longer looks up the place you open it from without asking. When it is opened for the first time (or the choice of Settings has never been made), a window asks: "Open the chart where you are?" With a yes the chart of this moment opens at your approximate place, as in v4.22; with a no (or until you answer) it opens at Porvoo and nothing is looked up. "Decide later" closes the window and asks again next time. The answer is the "the page opens with" setting of Settings, which can be changed there.',
+      'The same window lists the changes of the newest version and the titles of the four before it, once for each version (the same "seen" mark as the NEW badge of the updates in Settings). A shared link (SHARE) looks nothing up and shows only the updates.',
+      'A search result of LIBRARY → Research → Chart search has an Open button: the chart opens as it does from LOAD, becomes the active saved chart (SAVE writes to it) and the chart workspace is shown.',
+      'Tests: the stored choice (nothing stored, the old "true" and anything unknown are a question, not a yes), the list of updates, the window in the browser (the lookup does not happen before a yes; a no, "decide later" and the shared link), and opening a chart from a search result.',
+      'Updated the application version to v4.25.',
+    ],
+  },
+  {
     version: 'v4.24',
     date: '2026-11-07',
     title: 'Houses, KP, planetary data, Tājika strengths and a chart search',

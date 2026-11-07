@@ -29,13 +29,28 @@ export function parseOpeningChoice(stored: string | null): OpeningChoice {
   return stored === 'false' ? 'blank' : 'place';
 }
 
+/**
+ * What the browser has of the choice: one of the three, or 'ask' when the visitor has not been asked. The visitor's place is looked
+ * up only after a yes, so nothing stored (or the old 'true' of before v4.22, which was never a yes to that) is a question.
+ */
+export type StoredOpening = OpeningChoice | 'ask';
+export function storedOpening(stored: string | null): StoredOpening {
+  if (isOpeningChoice(stored)) return stored;
+  return stored === 'false' ? 'blank' : 'ask';
+}
+
 /** What the page opens with. It is read at once, when the page has opened, not waited for. */
-export function openingChoice(): OpeningChoice {
+export function openingChoice(): StoredOpening {
   try {
-    return parseOpeningChoice(localStorage.getItem(OPEN_WITH_CHART_KEY));
+    return storedOpening(localStorage.getItem(OPEN_WITH_CHART_KEY));
   } catch {
-    return 'place';
+    return 'ask';
   }
+}
+
+/** Stores the visitor's answer. */
+export function storeOpeningChoice(choice: OpeningChoice): void {
+  try { localStorage.setItem(OPEN_WITH_CHART_KEY, choice); } catch {}
 }
 
 /**
