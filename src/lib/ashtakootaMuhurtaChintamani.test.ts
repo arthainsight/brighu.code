@@ -100,4 +100,58 @@ assert.equal(Object.values(NADIS).flat().length, 27);
 assert.equal(kuta('nadi', star(1), star(6)).points, 0);
 assert.equal(kuta('nadi', star(1), star(2)).points, 8);
 
+// 6.37 "rāśy-aikye ced bhinnam ṛkṣaṃ dvayoḥ syān nakṣatr-aikye rāśiyugmaṃ tathaiva / nāḍīdoṣo no gaṇānāṃ ca doṣo nakṣatr-aikye pādabhede tu śastaḥ": the Nāḍī dosha is gone when the two Moons
+// are in one sign and in two stars, in one star and two signs, or in one star and two quarters (the Gaṇa dosha too).
+const dosha = (boy: number, girl: number) => ashtakoota(boy, girl);
+// Ardra (70°) and Punarvasu (85°) are both Ādi and both in Gemini.
+assert.equal(dosha(70, 85).doshas.nadi, true);
+assert.deepEqual(dosha(70, 85).cancellations.nadi, ['same-sign-different-star']);
+// Punarvasu at 85° (Gemini, 2nd quarter) and at 91° (Cancer, 4th quarter): one star, two signs and two quarters.
+assert.deepEqual(dosha(85, 91).cancellations.nadi, ['same-star-different-sign', 'same-star-different-pada']);
+// One star, one quarter: the dosha stands.
+assert.deepEqual(dosha(85, 85.5).cancellations.nadi, []);
+// Two stars of the same Nāḍī in two signs: it stands too (Ashwini and Jyeshtha, both Ādi).
+assert.equal(dosha(5, 235).doshas.nadi, true);
+assert.deepEqual(dosha(5, 235).cancellations.nadi, []);
+// No dosha, nothing to cancel.
+assert.deepEqual(dosha(5, 20).cancellations.nadi, []);
+
+// 6.33 "bhakūṭa … gaṇānāṃ na doṣaḥ": the lords of the two signs being friends takes away the Gaṇa dosha. A Deva man (Ashwini, Aries, Mars) with a Rākṣasa woman (Magha, Leo, the Sun): 0 points,
+// and the Sun and Mars are friends of one another.
+const ganaPair = dosha(5, 125);
+assert.equal(ganaPair.kutas.find(item => item.key === 'gana')!.points, 0);
+assert.equal(ganaPair.doshas.gana, true);
+assert.deepEqual(ganaPair.cancellations.gana, ['friendly-lords']);
+// Enemy lords: nothing (Ashwini, Aries, Mars; a Rākṣasa woman in Gemini's neighbour Virgo, the lord Mercury: Chitra at 175°).
+const noFriends = dosha(5, 175);
+assert.equal(noFriends.doshas.gana, true);
+assert.deepEqual(noFriends.cancellations.gana, []);
+
+// 6.32 the Bhakoot dosha, 6/8, 5/9 or 2/12, is cancelled by one lord for both signs (ekādhipatya) or by lords who are friends, "nāḍyṛkṣaśuddhir yadi" (when the Nāḍī is good); the 6/8 also by a good Tārā.
+// Aries and Scorpio, the same lord Mars; Ashwini (Ādi) and Anuradha (Madhya).
+const sameLord = dosha(5, 220);
+assert.equal(sameLord.doshas.bhakoot, true);
+assert.deepEqual(sameLord.cancellations.bhakoot, ['same-lord']);
+// Aries and Leo (5/9), Mars and the Sun are friends; Ashwini (Ādi) and Magha (Antya).
+const friendly = dosha(5, 125);
+assert.equal(friendly.doshas.bhakoot, true);
+assert.deepEqual(friendly.cancellations.bhakoot, ['friendly-lords']);
+// The same Nāḍī stops all of it: Ashwini and Jyeshtha (Aries and Scorpio, one lord) would be cancelled by the lord, but the Nāḍī dosha is not cancelled.
+const blocked = dosha(5, 235);
+assert.deepEqual(blocked.cancellations.bhakoot, []);
+assert.equal(blocked.cancellations.bhakootBlockedByNadi, true);
+// A good Tārā takes away the 6/8 when the lords do not: look for such a pair (Aries and Virgo, Mars and Mercury, who are not friends).
+let tara = false;
+for (let boy = 0; boy < 30 && !tara; boy += 1.7) for (let girl = 150; girl < 180 && !tara; girl += 1.3) {
+  const pair = dosha(boy, girl);
+  if (!pair.doshas.bhakoot || pair.doshas.nadi || pair.kutas.find(item => item.key === 'tara')!.points !== 3) continue;
+  assert.deepEqual(pair.cancellations.bhakoot, ['tara-shuddhi'], 'Mars and Mercury are not friends: only the Tārā');
+  tara = true;
+}
+assert.ok(tara, 'such a pair exists');
+// The 5/9 and the 2/12 get no help from the Tārā: Aries and Taurus (2/12) with different lords that are not friends do not.
+const noTara = dosha(5, 40);
+assert.equal(noTara.doshas.bhakoot, true);
+assert.ok(!noTara.cancellations.bhakoot.includes('tara-shuddhi'));
+
 console.log('Ashtakoota against Muhurta Chintamani passed');

@@ -52,6 +52,11 @@ test('LIBRARY Compatibility matches two saved charts by the Ashtakoota', async (
   await expect(panel.locator('[data-kuta="bhakoot"]')).toContainText('7 / 7');
   await expect(panel.locator('[data-kuta="maitri"]')).toContainText('5 / 5');
   await expect(panel.locator('[data-compat="doshas"]')).toContainText('Nadi dosha');
+  // The same star in the same quarter: nothing cancels the Nāḍī dosha (Muhūrta Cintāmaṇi 6.37), and the same Rajju division fails with what it does (Kālaprakāśikā).
+  await expect(panel.locator('[data-dosha="nadi"]')).not.toContainText('Cancelled');
+  await expect(panel.locator('[data-extra="rajju"]')).toContainText('not passed');
+  await expect(panel.locator('[data-extra="rajju"]')).toContainText(/travel in foreign countries|loss of property|loss of offspring|death of the woman|death of the man/);
+  await expect(panel.locator('[data-extra="mahendra"]')).toContainText('1.');
 
   // The Lagnas can be matched instead of the Moons.
   await panel.getByLabel('matched by the').selectOption('Lagna');

@@ -28,24 +28,53 @@ The checks are in `ashtakootaMuhurtaChintamani.test.ts`: the lists are typed in 
 | Bhakoot | 7 | 6.31: death at the sixth and eighth, loss of children at the fifth and ninth, poverty at the second and twelfth; the other places happiness | **Same.** The exceptions of 6.32–33 (the same lord, friendly lords, Nāḍī and Tārā good …) are not applied |
 | Nāḍī | 8 | 6.34: Ādi Ashwini, Ardra, Punarvasu, Uttara Phalguni, Hasta, Jyeshtha, Mula, Shatabhisha, Purva Bhadrapada; Madhya Bharani, Mrigashira, Pushya, Purva Phalguni, Chitra, Anuradha, Purva Ashadha, Dhanishta, Uttara Bhadrapada; Antya Krittika, Rohini, Ashlesha, Magha, Swati, Vishakha, Uttara Ashadha, Shravana, Revati; the same Nāḍī is "asat" (the middle one is deadly for both). Some say the Ādi harms the groom, the Antya the bride | **Same** for the stars and the points. The exceptions (by region, the same star in another quarter …) are not applied |
 
-## Not in Muhūrta Cintāmaṇi
+## The Southern matchings: Mahendra, Vedha, Rajju, Strī-dīrgha
 
-Mahendra, Vedha (of the stars), Rajju and Strī-dīrgha were searched for in both texts and are not there (the Vedha that the Vivāha Prakaraṇa has is of another kind). They are of the Southern
-(Tamil "Poruttam") tradition, which Kala and PyJHora also show. No Sanskrit text was read for them, so the app has them as common practice (the rules of PyJHora, with the Vedha
-corrected below) and says so in the view.
+**A correction.** Before v4.28 this page said that these four are not in Muhūrta Cintāmaṇi, because a search of the OCR found nothing. The search was wrong (the OCR spells the words out of recognition): the
+*Pīyūṣadhārā* on 6.21 quotes Nārada's ten kūṭas (dina, gaṇa, mahendra, strī-dīrgha, yoni, rāśi, rāśyadhipa, rajju, vaśya, vedha) and Garga's eighteen, and says that the author takes the eight that are well known.
+They are therefore named in the commentary, but **no rule for them is given there**.
+
+The rules are those of the *Kālaprakāśikā* (the English of N. P. Subramania Iyer, 1982, archive.org `kalaprakasika`, chapter XIII "To determine the suitability of a match", the ten considerations); the text
+is an English translation, not the Sanskrit, and `ashtakootaKalaprakasika.test.ts` is typed in from it.
+
+| Matching | The text | The app |
+|---|---|---|
+| Mahendra | the groom's star the 4th, 7th, 10th, 13th, 16th, 19th, 22nd or 25th from the bride's | **Same** |
+| Strī-dīrgha | the groom's star beyond the 13th from the bride's; "some writers hold that it is enough if it be beyond the 7th" | **Same**; the strict reading decides, and a pair that passes only by the lenient one is marked |
+| Rajju | five divisions (Pādha: Ashwini, Ashlesha, Magha, Jyeshtha, Mula, Revati; Ūru: Bharani, Pushya, Purva Phalguni, Anuradha, Purva Ashadha, Uttara Bhadrapada; Nābhi: Krittika, Punarvasu, Uttara Phalguni, Vishakha, Uttara Ashadha, Purva Bhadrapada; Kaṇṭha: Rohini, Ardra, Hasta, Swati, Shravana, Shatabhisha; Śiras: Mrigashira, Chitra, Dhanishta); the same division fails: the foot "travel in foreign countries", the thigh loss of property, the navel loss of offspring, the neck the death of the woman, the head the death of the man | **Same**, and the view says which division and what it does |
+| Vedha | the pairs Ashwini–Jyeshtha, Bharani–Anuradha, Krittika–Vishakha, Rohini–Swati, Ardra–Shravana, Punarvasu–Uttara Ashadha, Pushya–Purva Ashadha, Ashlesha–Mula, Magha–Revati, Purva Phalguni–Uttara Bhadrapada, Uttara Phalguni–Purva Bhadrapada, Hasta–Shatabhisha, and the set Mrigashira, Chitra, Dhanishta | **Corrected**: the app had fourteen pairs; the set of three makes three pairs, so there are fifteen, and Chitra–Dhanishta was missing |
+
+The text adds an exception for Rajju, Vedha, Gaṇa and Rasi: the harm "need not be considered if (1) the lords of the Janma-Rasis are the same, (2) they be friendly planets and (3) their Janma-Rasis be diametrically
+opposite". The app applies the first and the third and shows them; the second is not applied, because the text has a table of friendships of its own for it (Mars's friends Mercury and Venus, Venus's all but the Sun and the Moon,
+…) that differs from the one of BPHS.
+
+Of the ten the text says "the horoscopes must agree in respect of at least five"; the app does not count them, because the other six (dina, rāśi, rāśyadhipa, vaśya, gaṇa and yoni of the Southern reading) are not the same as the
+Ashtakoota's and were not implemented.
+
+## The cancellations of the doshas (Muhūrta Cintāmaṇi 6.32–6.37)
+
+The doshas are marked as before and the points are not changed; the view now also says when the text cancels a dosha.
+
+| Dosha | Cancelled when | Verse |
+|---|---|---|
+| Nāḍī | the Moons are in one sign and in two stars; or in one star and two signs; or in one star and two quarters ("rāśy-aikye ced bhinnam ṛkṣaṃ dvayoḥ syān nakṣatr-aikye rāśiyugmaṃ tathaiva / nāḍīdoṣo no gaṇānāṃ ca doṣo nakṣatr-aikye pādabhede tu śastaḥ") | 6.37 |
+| Gaṇa | the same three; or the lords of the two signs are friends ("gaṇānāṃ na doṣaḥ" where the lords of the signs and of the navamsas are friends) | 6.37, 6.33 |
+| Bhakoot (6/8, 5/9, 2/12) | one lord for both signs (ekādhipatya), or lords who are friends; the 6/8 also by a good Tārā; **only when the Nāḍī is good** ("nāḍyṛkṣaśuddhir yadi", "nāḍī sabhī meṃ honī cāhiye") | 6.32–33 |
+
+Not applied: the exceptions by region (the Nāḍī dosha is not for those south of the Godāvarī, nor for Kṣatriyas), the strong lords of the navamsas as friends, and rāśi-vaśyatā (the Vaśya is not
+reproducible from the text, see above). Friendly lords are lords who are friends both ways by the friendships of 6.27–28; the same lord is counted apart.
 
 ## Where PyJHora differs and the app does not follow it
 
 * **Tārā**: PyJHora gives 1.5 for the remainders 3, 5, 7, the reverse of 6.24. For every pair the app's Tārā is 3 minus PyJHora's.
-* **Vedha**: PyJHora fails every pair whose star numbers add up to 19, 28 or 37, which holds the fourteen pairs of the tradition and thirty more; the app has the fourteen.
+* **Vedha**: PyJHora fails every pair whose star numbers add up to 19, 28 or 37, which holds the fifteen pairs of the text and many more; the app has the fifteen.
 * **Bhakoot**: one cell of its table (a girl in Aquarius, a boy in Cancer, a 6/8 relation) says 7: 81 pairs.
 * **Varṇa**: it puts the earth signs among the Śūdra and the air signs among the Vaiśya; 6.22 has them the other way round.
 * **Gaṇa**: the points, see above.
 
 ## What is not done
 
-* The cancellations of the doshas, which the texts give and which differ from text to text.
-* The Southern ten-fold scoring and its minimum conditions; the four extras are shown as passed or not, not added.
+* The Southern ten-fold counting (at least five of ten) and its other six kūṭas; the four extras are shown as passed or not, not added.
 * The overlays, the aspects between the charts, the composite and Davidson charts and the Ashtakavarga points of the pair that Kala shows; the Varga-kūṭa and the Bhāga-cakra of 6.35–36.
 * The verdict bands (under 18 not advised, 18–24 acceptable, 25–32 good, 33 and over excellent) are common reading, not a verse.
 

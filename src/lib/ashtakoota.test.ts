@@ -96,7 +96,7 @@ for (const [a, b] of VEDHA_PAIRS) {
   assert.equal(ashtakoota(star(a), star(b)).extras.vedha, false, `${a} and ${b}`);
   assert.equal(ashtakoota(star(b), star(a)).extras.vedha, false, `${b} and ${a}`);
 }
-assert.equal(VEDHA_PAIRS.length, 14);
+assert.equal(VEDHA_PAIRS.length, 15, 'twelve pairs and the three of Mrigashira, Chitra and Dhanishta');
 assert.equal(ashtakoota(star(1), star(2)).extras.vedha, true);
 assert.equal(ashtakoota(star(1), star(9)).extras.rajju, false, 'Ashwini and Ashlesha are both the foot');
 assert.equal(ashtakoota(star(1), star(2)).extras.rajju, true);

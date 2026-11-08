@@ -8,6 +8,7 @@
 
 import { NAKSHATRA_SIZE } from './nakshatras';
 import { normalizeDegrees } from './angles';
+import { NATURAL_FRIENDS } from './dignity';
 
 export interface MoonSign {
   /** 1 to 27. */
@@ -116,15 +117,24 @@ export const NADI_NAMES = ['Adi', 'Madhya', 'Antya'] as const;
 const RAJJU_OF_STAR = [0, 1, 2, 3, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 3, 2, 1, 0];
 export const RAJJU_NAMES = ['Foot (Pada)', 'Waist (Kati)', 'Stomach (Nabhi)', 'Neck (Kantha)', 'Head (Shiro)'] as const;
 
-/** The pairs of stars that obstruct one another (Vedha), by their numbers: the fourteen of the tradition. */
+/**
+ * The pairs of stars that obstruct one another (Vedha), by their numbers, after the Kālaprakāśikā (the English of N. P. Subramania Iyer, 1982, chapter XIII, tenth
+ * consideration): Ashwini–Jyeshtha, Bharani–Anuradha, Krittika–Vishakha, Rohini–Swati, Ardra–Shravana, Punarvasu–Uttara Ashadha, Pushya–Purva Ashadha, Ashlesha–Mula,
+ * Magha–Revati, Purva Phalguni–Uttara Bhadrapada, Uttara Phalguni–Purva Bhadrapada, Hasta–Shatabhisha, and the set of three Mrigashira, Chitra and Dhanishta, every two of
+ * which obstruct one another. Fifteen pairs.
+ */
 export const VEDHA_PAIRS: readonly (readonly [number, number])[] = [
-  [1, 18], [2, 17], [3, 16], [4, 15], [5, 14], [5, 23], [6, 22], [7, 21], [8, 20], [9, 19], [10, 27], [11, 26], [12, 25], [13, 24],
+  [1, 18], [2, 17], [3, 16], [4, 15], [6, 22], [7, 21], [8, 20], [9, 19], [10, 27], [11, 26], [12, 25], [13, 24], [5, 14], [5, 23], [14, 23],
 ];
+
+/** What the same Rajju of the two stars does, by the Kālaprakāśikā: foot, waist, stomach, neck, head. */
+export const RAJJU_EFFECTS = ['travel in foreign countries', 'loss of property', 'loss of offspring', 'death of the woman', 'death of the man'] as const;
 
 /** The counts of the boy's star from the girl's that give Mahendra. */
 export const MAHENDRA_COUNTS: readonly number[] = [4, 7, 10, 13, 16, 19, 22, 25];
-/** Strī-dīrgha wants the boy's star more than this many stars from the girl's. */
+/** Strī-dīrgha wants the boy's star more than this many stars from the girl's; some writers are content with more than 7 (the Kālaprakāśikā). */
 export const STRI_DIRGHA_MIN_COUNT = 13;
+export const STRI_DIRGHA_MIN_COUNT_LENIENT = 7;
 
 // ── The matching ───────────────────────────────────────────────────────
 
@@ -145,6 +155,9 @@ export interface AshtakootaOptions {
   ganaTable?: GanaTable;
 }
 
+/** The ways a dosha is cancelled (Muhūrta Cintāmaṇi 6.32–6.37), see `cancellations`. */
+export type DoshaRelief = 'same-sign-different-star' | 'same-star-different-sign' | 'same-star-different-pada' | 'same-lord' | 'friendly-lords' | 'tara-shuddhi';
+
 export interface Ashtakoota {
   boy: MoonSign;
   girl: MoonSign;
@@ -160,6 +173,20 @@ export interface Ashtakoota {
   extras: { mahendra: boolean; vedha: boolean; rajju: boolean; striDirgha: boolean };
   /** The counts the Tārā, the Mahendra and the Strī-dīrgha read: the boy's star from the girl's and the girl's from the boy's. */
   counts: { fromGirl: number; fromBoy: number };
+  /** What the four matchings found: the count, the pair that obstructs, the Rajju of each and what the same one does. */
+  extrasDetail: {
+    mahendra: { count: number };
+    vedha: { pair: [number, number] | null };
+    rajju: { boy: number; girl: number; effect: string | null };
+    striDirgha: { count: number; beyondSeven: boolean };
+  };
+  /**
+   * How each dosha is cancelled, when there is one: Nāḍī by the signs and stars of the two Moons (6.37); Gaṇa by that and by friendly lords (6.33); Bhakoot by the same
+   * lord, friendly lords and, for the 6/8, a good Tārā (6.32–33), but only when the Nāḍī is good. The points are not changed: the dosha is only said to be cancelled.
+   */
+  cancellations: { nadi: DoshaRelief[]; gana: DoshaRelief[]; bhakoot: DoshaRelief[]; bhakootBlockedByNadi: boolean };
+  /** What takes the harm out of a Rajju, Vedha, Gaṇa or Rasi dosha of the Southern tradition (Kālaprakāśikā): the same lord of the two signs, or opposite signs. */
+  southernRelief: ('same-lord' | 'opposite-signs')[];
 }
 
 const TARA_BAD = new Set([3, 5, 7]);
@@ -201,6 +228,26 @@ export function ashtakoota(boyLongitude: number, girlLongitude: number, options:
   ];
   const points = (key: KutaKey) => kutas.find(kuta => kuta.key === key)!.points;
 
+  // The cancellations. Friendly lords: the lords of the two Moon signs are the same graha, or friends of each other (the friendships of 6.27–28).
+  const sameLord = boyLord === girlLord;
+  const friends = (a: number, b: number) => NATURAL_FRIENDS[LORD_NAMES[a]].includes(LORD_NAMES[b]) && NATURAL_FRIENDS[LORD_NAMES[b]].includes(LORD_NAMES[a]);
+  const friendlyLords = !sameLord && friends(boyLord, girlLord);
+  const sameSign = boy.rasi === girl.rasi;
+  const sameStar = boy.nakshatra === girl.nakshatra;
+  const byStars: DoshaRelief[] = [
+    ...(sameSign && !sameStar ? ['same-sign-different-star' as const] : []),
+    ...(sameStar && !sameSign ? ['same-star-different-sign' as const] : []),
+    ...(sameStar && boy.pada !== girl.pada ? ['same-star-different-pada' as const] : []),
+  ];
+  const byLords: DoshaRelief[] = [...(sameLord ? ['same-lord' as const] : []), ...(friendlyLords ? ['friendly-lords' as const] : [])];
+  const nadiDosha = points('nadi') === 0;
+  const bhakootDosha = points('bhakoot') === 0;
+  const nadiRelief = nadiDosha ? byStars : [];
+  const nadiBlocks = nadiDosha && nadiRelief.length === 0;
+  const bhakootRelief: DoshaRelief[] = !bhakootDosha || nadiBlocks
+    ? []
+    : [...byLords, ...([6, 8].includes(signDistance) && points('tara') === 3 ? ['tara-shuddhi' as const] : [])];
+
   return {
     boy,
     girl,
@@ -209,7 +256,7 @@ export function ashtakoota(boyLongitude: number, girlLongitude: number, options:
     max: 36,
     vashyaOther: { table: otherTable, points: VASHYA_TABLES[otherTable][girlVashya][boyVashya] },
     ganaOther: { table: ganaOtherTable, points: GANA_TABLES[ganaOtherTable][girlGana][boyGana] },
-    doshas: { nadi: points('nadi') === 0, bhakoot: points('bhakoot') === 0, gana: points('gana') === 0 },
+    doshas: { nadi: nadiDosha, bhakoot: bhakootDosha, gana: points('gana') === 0 },
     extras: {
       mahendra: MAHENDRA_COUNTS.includes(fromGirl),
       vedha: !VEDHA_PAIRS.some(([a, b]) => (a === boy.nakshatra && b === girl.nakshatra) || (b === boy.nakshatra && a === girl.nakshatra)),
@@ -217,6 +264,23 @@ export function ashtakoota(boyLongitude: number, girlLongitude: number, options:
       striDirgha: fromGirl > STRI_DIRGHA_MIN_COUNT,
     },
     counts: { fromGirl, fromBoy },
+    extrasDetail: {
+      mahendra: { count: fromGirl },
+      vedha: { pair: VEDHA_PAIRS.some(([a, b]) => (a === boy.nakshatra && b === girl.nakshatra) || (b === boy.nakshatra && a === girl.nakshatra)) ? [Math.min(boy.nakshatra, girl.nakshatra), Math.max(boy.nakshatra, girl.nakshatra)] : null },
+      rajju: {
+        boy: RAJJU_OF_STAR[boy.nakshatra - 1],
+        girl: RAJJU_OF_STAR[girl.nakshatra - 1],
+        effect: RAJJU_OF_STAR[boy.nakshatra - 1] === RAJJU_OF_STAR[girl.nakshatra - 1] ? RAJJU_EFFECTS[RAJJU_OF_STAR[boy.nakshatra - 1]] : null,
+      },
+      striDirgha: { count: fromGirl, beyondSeven: fromGirl > STRI_DIRGHA_MIN_COUNT_LENIENT },
+    },
+    cancellations: {
+      nadi: nadiRelief,
+      gana: points('gana') === 0 ? [...byStars, ...byLords] : [],
+      bhakoot: bhakootRelief,
+      bhakootBlockedByNadi: bhakootDosha && nadiBlocks,
+    },
+    southernRelief: [...(sameLord ? ['same-lord' as const] : []), ...(signDistance === 7 ? ['opposite-signs' as const] : [])],
   };
 }
 
