@@ -1,5 +1,17 @@
 export const CHANGELOG = [
   {
+    version: 'v4.28',
+    date: '2026-11-08',
+    title: 'The cancellations of the doshas and the Southern matchings, from the texts',
+    changes: [
+      'LIBRARY → Compatibility: the view now says when Muhūrta Cintāmaṇi (6.32–6.37) cancels a dosha. The Nāḍī dosha is cancelled when the two Moons are in one sign and two stars, in one star and two signs, or in one star and two quarters; the Gaṇa dosha by the same and by friendly lords of the two signs; the Bhakoot dosha (6/8, 5/9, 2/12) by one lord for both signs or friendly lords, the 6/8 also by a good Tārā, and only when the Nāḍī is good. The points are not changed. Not applied: the exceptions by region and caste, and the strong lords of the navamsas.',
+      'Mahendra, Vedha, Rajju and Strī-dīrgha now come from a text: the Kālaprakāśikā (N. P. Subramania Iyer\'s English, chapter XIII), typed into a test. Rajju shows the division of each star and what the same division does (the foot travel abroad … the neck the death of the woman, the head the death of the man); Vedha the pair that obstructs; Mahendra and Strī-dīrgha the count, with the lenient "beyond the 7th" of some writers marked; and the text\'s exception (one lord, or opposite signs) is shown. The friendly planets of that exception use another table of friendships and are not applied.',
+      'Corrected: the Vedha had fourteen pairs; the set Mrigashira, Chitra, Dhanishta of the text makes three pairs, so there are fifteen, and Chitra–Dhanishta was missing. Corrected: v4.27 said that the four Southern matchings are not in Muhūrta Cintāmaṇi. They are named in its commentary (Nārada\'s ten kūṭas and Garga\'s eighteen) with no rule; the search that found nothing was misled by the OCR.',
+      'Tests: the cancellations by hand (each way, and the Nāḍī that stops the Bhakoot cancellation), and the Southern matchings against lists typed from the Kālaprakāśikā. docs/ashtakoota-sources.md has both.',
+      'Updated the application version to v4.28.',
+    ],
+  },
+  {
     version: 'v4.27',
     date: '2026-11-07',
     title: 'Yuddha Bala and the Ashtakoota read from the Sanskrit',

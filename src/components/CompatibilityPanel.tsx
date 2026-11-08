@@ -5,7 +5,7 @@ import type { CalculationSettings, ChartData } from '@/types';
 import { loadSavedCharts, type SavedChart } from '@/lib/savedCharts';
 import { chartRequestUrl } from '@/lib/research/studyData';
 import {
-  ashtakoota, kujaBalance, kujaDosha, type Ashtakoota, type GanaTable, type KujaDosha, type KutaKey, type VashyaTable,
+  ashtakoota, kujaBalance, kujaDosha, RAJJU_NAMES, type Ashtakoota, type DoshaRelief, type GanaTable, type KujaDosha, type KutaKey, type VashyaTable,
 } from '@/lib/ashtakoota';
 import { useT } from '@/lib/i18n';
 
@@ -21,6 +21,15 @@ const KUTA_LABEL: Record<KutaKey, { name: string; meaning: string }> = {
   gana: { name: 'Gana', meaning: 'Temperament: Deva, Manushya, Rakshasa' },
   bhakoot: { name: 'Bhakoot', meaning: 'Emotional bond and family welfare; 2/12, 5/9 and 6/8 are the dosha' },
   nadi: { name: 'Nadi', meaning: 'Health and progeny; the same Nadi is the dosha' },
+};
+
+const RELIEF_LABEL: Record<DoshaRelief, string> = {
+  'same-sign-different-star': 'the Moons are in one sign and in two stars',
+  'same-star-different-sign': 'the Moons are in one star and in two signs',
+  'same-star-different-pada': 'the Moons are in one star and in two quarters',
+  'same-lord': 'the two signs have one lord',
+  'friendly-lords': 'the lords of the two signs are friends',
+  'tara-shuddhi': 'the Tara is good both ways',
 };
 
 /** The sign and longitude of a point of a chart, or null when the chart lacks it. */
@@ -204,26 +213,37 @@ export default function CompatibilityPanel({ calculationSettings, charts: given 
 
           {(outcome.match.doshas.nadi || outcome.match.doshas.bhakoot || outcome.match.doshas.gana) && (
             <div className="space-y-1" data-compat="doshas">
-              {outcome.match.doshas.nadi && <p className="text-[11px] font-mono text-red-600 dark:text-red-400">{t('Nadi dosha: both have the same Nadi.')}</p>}
-              {outcome.match.doshas.bhakoot && <p className="text-[11px] font-mono text-red-600 dark:text-red-400">{t('Bhakoot dosha: the Moon signs stand 2/12, 5/9 or 6/8 from each other.')}</p>}
-              {outcome.match.doshas.gana && <p className="text-[11px] font-mono text-red-600 dark:text-red-400">{t('Gana dosha: the Ganas do not suit (0 points).')}</p>}
-              <p className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">{t('The classical cancellations of these doshas differ from text to text and are not applied.')}</p>
+              {([
+                ['nadi', outcome.match.doshas.nadi, 'Nadi dosha: both have the same Nadi.', outcome.match.cancellations.nadi],
+                ['bhakoot', outcome.match.doshas.bhakoot, 'Bhakoot dosha: the Moon signs stand 2/12, 5/9 or 6/8 from each other.', outcome.match.cancellations.bhakoot],
+                ['gana', outcome.match.doshas.gana, 'Gana dosha: the Ganas do not suit (0 points).', outcome.match.cancellations.gana],
+              ] as const).filter(([, present]) => present).map(([key, , text, ways]) => (
+                <p key={key} data-dosha={key} className={`text-[11px] font-mono ${ways.length > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {t(text)}{ways.length > 0 ? ` ${t('Cancelled (Muhurta Chintamani 6.32–6.37): ')}${ways.map(way => t(RELIEF_LABEL[way])).join('; ')}.` : ''}
+                  {key === 'bhakoot' && outcome.match.cancellations.bhakootBlockedByNadi ? ` ${t('It would be cancelled only when the Nadi is good, and the Nadi dosha stands.')}` : ''}
+                </p>
+              ))}
+              <p className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">{t('The points are not changed by a cancellation. The cancellations by region (south of the Godavari), by caste and by the strong lords of the navamsas are not applied.')}</p>
             </div>
           )}
 
-          <table className="w-full max-w-md border-collapse text-center font-mono text-xs" data-compat="extras">
+          <table className="w-full max-w-xl border-collapse text-center font-mono text-xs" data-compat="extras">
             <thead>
-              <tr className="bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"><th className={`${cell} text-left`}>{t('Extra matching')}</th><th className={cell}>{t('result')}</th></tr>
+              <tr className="bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"><th className={`${cell} text-left`}>{t('Extra matching')}</th><th className={cell}>{t('result')}</th><th className={`${cell} text-left`}>{t('what it found')}</th></tr>
             </thead>
             <tbody className="text-zinc-700 dark:text-zinc-200">
-              <tr data-extra="mahendra"><th scope="row" className={`${cell} text-left`}>Mahendra</th><td className={cell}>{verdictOf(outcome.match.extras.mahendra)}</td></tr>
-              <tr data-extra="vedha"><th scope="row" className={`${cell} text-left`}>Vedha</th><td className={cell}>{verdictOf(outcome.match.extras.vedha)}</td></tr>
-              <tr data-extra="rajju"><th scope="row" className={`${cell} text-left`}>Rajju</th><td className={cell}>{verdictOf(outcome.match.extras.rajju)}</td></tr>
-              <tr data-extra="stri-dirgha"><th scope="row" className={`${cell} text-left`}>Stri Dirgha</th><td className={cell}>{verdictOf(outcome.match.extras.striDirgha)}</td></tr>
+              <tr data-extra="mahendra"><th scope="row" className={`${cell} text-left`}>Mahendra</th><td className={cell}>{verdictOf(outcome.match.extras.mahendra)}</td><td className={`${cell} text-left text-[10px]`}>{t('the boy’s star is the')} {outcome.match.extrasDetail.mahendra.count}. {t('from the girl’s (4, 7, 10 … 25 pass)')}</td></tr>
+              <tr data-extra="vedha"><th scope="row" className={`${cell} text-left`}>Vedha</th><td className={cell}>{verdictOf(outcome.match.extras.vedha)}</td><td className={`${cell} text-left text-[10px]`}>{outcome.match.extrasDetail.vedha.pair ? `${t('the stars')} ${outcome.match.extrasDetail.vedha.pair[0]} ${t('and')} ${outcome.match.extrasDetail.vedha.pair[1]} ${t('obstruct one another')}` : '—'}</td></tr>
+              <tr data-extra="rajju"><th scope="row" className={`${cell} text-left`}>Rajju</th><td className={cell}>{verdictOf(outcome.match.extras.rajju)}</td><td className={`${cell} text-left text-[10px]`}>{RAJJU_NAMES[outcome.match.extrasDetail.rajju.boy]} / {RAJJU_NAMES[outcome.match.extrasDetail.rajju.girl]}{outcome.match.extrasDetail.rajju.effect ? ` — ${t(outcome.match.extrasDetail.rajju.effect)}` : ''}</td></tr>
+              <tr data-extra="stri-dirgha"><th scope="row" className={`${cell} text-left`}>Stri Dirgha</th><td className={cell}>{verdictOf(outcome.match.extras.striDirgha)}</td><td className={`${cell} text-left text-[10px]`}>{t('the boy’s star is the')} {outcome.match.extrasDetail.striDirgha.count}. {t('from the girl’s (over 13 passes; some writers accept over 7)')}{outcome.match.extrasDetail.striDirgha.beyondSeven && !outcome.match.extras.striDirgha ? ` — ${t('passes by the lenient reading')}` : ''}</td></tr>
             </tbody>
           </table>
-
-          <p className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">{t('Mahendra, Vedha, Rajju and Stri Dirgha are of the Southern tradition; Muhurta Chintamani does not have them.')}</p>
+          {(!outcome.match.extras.rajju || !outcome.match.extras.vedha) && outcome.match.southernRelief.length > 0 && (
+            <p className="text-[10px] font-mono text-amber-700 dark:text-amber-400" data-compat="southern-relief">
+              {t('Kalaprakasika: the harm of a Rajju or Vedha dosha need not be considered when the lords of the two signs are the same or the signs are opposite.')} ({outcome.match.southernRelief.map(way => t(way === 'same-lord' ? 'the two signs have one lord' : 'the two signs are opposite')).join('; ')})
+            </p>
+          )}
+          <p className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">{t('Mahendra, Vedha, Rajju and Stri Dirgha are of the Southern tradition (Narada’s ten kutas, named in the commentary of Muhurta Chintamani); their rules are those of the Kalaprakasika.')}</p>
 
           {outcome.kuja && (
             <div className="space-y-1" data-compat="kuja">
