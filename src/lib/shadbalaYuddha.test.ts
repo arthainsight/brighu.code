@@ -47,15 +47,28 @@ const withoutLatitude = buildShadbalaRows(warChart(), { ...DEFAULT_BALA_OPTIONS,
 assert.equal(by(withoutLatitude, 'Mars').kalaBreakdown.yuddha, 0);
 assert.equal(by(withoutLatitude, 'Mars').totalVirupa, by(buildShadbalaRows(warChart()), 'Mars').totalVirupa);
 
-// Raman wins by the smaller longitude: Mars (marsLongitude) over Mercury (+0.5°), whatever the latitudes; the amount over the discs (2.8).
-const raman = buildShadbalaRows(warChart(-5, 5), { ...DEFAULT_BALA_OPTIONS, yuddha: 'raman' });
-const offRaman = buildShadbalaRows(warChart(-5, 5));
-const ramanDifference = Math.abs(by(offRaman, 'Mars').totalVirupa - by(offRaman, 'Mercury').totalVirupa);
-assert.ok(Math.abs(by(raman, 'Mars').kalaBreakdown.yuddha! - ramanDifference / 2.8) < 1e-9);
-assert.ok(by(raman, 'Mercury').kalaBreakdown.yuddha! < 0);
+// Śrīpati: the same victor, the amount over the difference of the discs (Mars 9.4″, Mercury 6.6″: 2.8).
+const sripati = buildShadbalaRows(chart, { ...DEFAULT_BALA_OPTIONS, yuddha: 'sripati' });
+assert.ok(Math.abs(by(sripati, 'Mars').kalaBreakdown.yuddha! - difference / 2.8) < 1e-9);
+assert.ok(by(sripati, 'Mercury').kalaBreakdown.yuddha! < 0);
+
+// A larger and brighter graha in the south wins there as well: Mercury (south) with the magnitude and the disc of Venus beats Mars (north).
+const withLight = (marsLatitude: number, mercuryLatitude: number, mercury: { magnitude: number; diameter: number }): ShadbalaChartLike => ({
+  ...REFERENCE_CHART,
+  planets: REFERENCE_CHART.planets!.map(planet => {
+    if (planet.name === 'Mars') return { ...planet, data: { eclipticLatitude: marsLatitude, magnitude: 1.5, diameter: 8 } };
+    if (planet.name === 'Mercury') return { ...planet, ...near('Mercury', marsLongitude + 0.5), data: { eclipticLatitude: mercuryLatitude, ...mercury } };
+    return planet;
+  }),
+});
+const bright = buildShadbalaRows(withLight(1.2, -0.4, { magnitude: -4, diameter: 40 }), { ...DEFAULT_BALA_OPTIONS, yuddha: 'verse' });
+assert.ok(by(bright, 'Mercury').kalaBreakdown.yuddha! > 0 && by(bright, 'Mars').kalaBreakdown.yuddha! < 0, 'the southern one is larger and brighter');
+const dim = buildShadbalaRows(withLight(1.2, -0.4, { magnitude: 3, diameter: 5 }), { ...DEFAULT_BALA_OPTIONS, yuddha: 'verse' });
+assert.ok(by(dim, 'Mars').kalaBreakdown.yuddha! > 0 && by(dim, 'Mercury').kalaBreakdown.yuddha! < 0, 'the southern one is neither: the northern wins');
 
 // The stored choice is read, and an unknown one falls back on off.
-assert.equal(readBalaOptions({ yuddha: 'raman' }).yuddha, 'raman');
+assert.equal(readBalaOptions({ yuddha: 'sripati' }).yuddha, 'sripati');
+assert.equal(readBalaOptions({ yuddha: 'raman' }).yuddha, 'off', 'the rule of Raman was taken out: a stored choice of it is the default');
 assert.equal(readBalaOptions({ yuddha: 'nonsense' }).yuddha, 'off');
 
 console.log('Shadbala Yuddha tests passed');

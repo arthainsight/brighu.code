@@ -77,7 +77,7 @@ test('ANALYSIS Bala: the planetary war can be given a rule, and the page says so
   await visible(page, page.getByText('Calculation choices')).click();
   const choice = visible(page, page.getByLabel('Yuddha Bala: the planetary war', { exact: true }));
   await expect(choice).toHaveValue('off');
-  await choice.selectOption('raman');
+  await choice.selectOption('verse');
   await expect(visible(page, page.getByText(/Yuddha Bala is in Kāla Bala by the rule chosen/))).toBeVisible();
   await visible(page, page.getByRole('button', { name: 'Back to the Sanskrit reading', exact: true })).click();
   await expect(visible(page, page.getByText(/Yuddha Bala is not included/))).toBeVisible();

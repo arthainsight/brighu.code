@@ -60,8 +60,18 @@ const VASHYA_TABLES: Record<VashyaTable, number[][]> = {
 /** Gaṇa of the 27 stars: 0 Deva, 1 Manuṣya, 2 Rākṣasa. */
 const GANA_OF_STAR = [0, 1, 2, 1, 0, 1, 0, 0, 2, 2, 1, 1, 0, 2, 0, 2, 0, 2, 2, 1, 1, 0, 2, 2, 1, 1, 0];
 export const GANA_NAMES = ['Deva', 'Manushya', 'Rakshasa'] as const;
-/** [girl][boy]. */
-const GANA_TABLE = [[6, 6, 0], [5, 6, 0], [1, 0, 6]];
+export type GanaTable = 'muhurta' | 'common';
+/**
+ * [girl][boy], Deva, Manuṣya, Rākṣasa. `muhurta` is the Daivajñamanohara quoted in the Pīyūṣadhārā on Muhūrta Cintāmaṇi 6.30 (read in the scan of the 1925
+ * Nirṇaya Sāgara edition): "ṣaḍ guṇā guṇasādṛśye pañca syuḥ suramānuṣe / nāryā devo naraḥ puṃsaś catvāro vā guṇās trayaḥ / devarākṣasayoḥ śūnyaṃ tathaiva
+ * nararakṣasoḥ / puṃso rakṣogaṇo yatra nāryā devo 'thavā naraḥ / guṇau dvau kramataś caiko …": the same gaṇa 6; Deva with Manuṣya 5, but 4 (or 3) where the
+ * woman is a Deva and the man a human; Deva or Manuṣya with Rākṣasa nothing, but 2 or 1 where the man is the Rākṣasa and the woman a Deva or a human. `common` is
+ * the table PyJHora has (6 6 0 / 5 6 0 / 1 0 6), which differs in four cells.
+ */
+const GANA_TABLES: Record<GanaTable, number[][]> = {
+  muhurta: [[6, 4, 2], [5, 6, 1], [0, 0, 6]],
+  common: [[6, 6, 0], [5, 6, 0], [1, 0, 6]],
+};
 
 /** The yoni (the animal) of the 27 stars, an index into YONI_NAMES. */
 const YONI_OF_STAR = [0, 1, 2, 3, 3, 4, 5, 2, 5, 6, 6, 7, 8, 9, 8, 9, 10, 10, 4, 11, 12, 11, 13, 0, 13, 7, 1];
@@ -131,6 +141,8 @@ export interface Kuta {
 
 export interface AshtakootaOptions {
   vashyaTable?: VashyaTable;
+  /** The table of the Gaṇa kūṭa: the one of Muhūrta Cintāmaṇi (the default) or the common one. */
+  ganaTable?: GanaTable;
 }
 
 export interface Ashtakoota {
@@ -141,6 +153,8 @@ export interface Ashtakoota {
   max: 36;
   /** The Vaśya by the other published table, for comparing (the total uses the one chosen). */
   vashyaOther: { table: VashyaTable; points: number };
+  /** The Gaṇa by the other table. */
+  ganaOther: { table: GanaTable; points: number };
   doshas: { nadi: boolean; bhakoot: boolean; gana: boolean };
   /** The four matchings of the Southern tradition, each passed or not. */
   extras: { mahendra: boolean; vedha: boolean; rajju: boolean; striDirgha: boolean };
@@ -155,6 +169,8 @@ export function ashtakoota(boyLongitude: number, girlLongitude: number, options:
   const girl = moonSign(girlLongitude);
   const table = options.vashyaTable ?? 'saravali';
   const otherTable: VashyaTable = table === 'saravali' ? 'astroyogi' : 'saravali';
+  const ganaTable = options.ganaTable ?? 'muhurta';
+  const ganaOtherTable: GanaTable = ganaTable === 'muhurta' ? 'common' : 'muhurta';
 
   const boyVarna = VARNA_OF_SIGN[boy.rasi - 1];
   const girlVarna = VARNA_OF_SIGN[girl.rasi - 1];
@@ -179,7 +195,7 @@ export function ashtakoota(boyLongitude: number, girlLongitude: number, options:
     { key: 'tara', points: taraGood(fromGirl) + taraGood(fromBoy), max: 3, boy: String(fromBoy), girl: String(fromGirl) },
     { key: 'yoni', points: YONI_TABLE[girlYoni][boyYoni], max: 4, boy: YONI_NAMES[boyYoni], girl: YONI_NAMES[girlYoni] },
     { key: 'maitri', points: MAITRI_TABLE[girlLord][boyLord], max: 5, boy: LORD_NAMES[boyLord], girl: LORD_NAMES[girlLord] },
-    { key: 'gana', points: GANA_TABLE[girlGana][boyGana], max: 6, boy: GANA_NAMES[boyGana], girl: GANA_NAMES[girlGana] },
+    { key: 'gana', points: GANA_TABLES[ganaTable][girlGana][boyGana], max: 6, boy: GANA_NAMES[boyGana], girl: GANA_NAMES[girlGana] },
     { key: 'bhakoot', points: [2, 12, 5, 9, 6, 8].includes(signDistance) ? 0 : 7, max: 7, boy: String(boy.rasi), girl: String(girl.rasi) },
     { key: 'nadi', points: boyNadi === girlNadi ? 0 : 8, max: 8, boy: NADI_NAMES[boyNadi], girl: NADI_NAMES[girlNadi] },
   ];
@@ -192,6 +208,7 @@ export function ashtakoota(boyLongitude: number, girlLongitude: number, options:
     total: kutas.reduce((sum, kuta) => sum + kuta.points, 0),
     max: 36,
     vashyaOther: { table: otherTable, points: VASHYA_TABLES[otherTable][girlVashya][boyVashya] },
+    ganaOther: { table: ganaOtherTable, points: GANA_TABLES[ganaOtherTable][girlGana][boyGana] },
     doshas: { nadi: points('nadi') === 0, bhakoot: points('bhakoot') === 0, gana: points('gana') === 0 },
     extras: {
       mahendra: MAHENDRA_COUNTS.includes(fromGirl),

@@ -16,6 +16,11 @@ const STATUS_TEXT: Record<BalaStatus, string> = { weak: 'text-red-600 dark:text-
 const VERDICT_TEXT: Record<IshtaKashtaVerdict, string> = { ishta: 'Iṣṭa greater', kashta: 'Kaṣṭa greater', equal: 'Equal' };
 const VERDICT_ICON: Record<IshtaKashtaVerdict, string> = { ishta: '✓', kashta: '✕', equal: '=' };
 const VERDICT_CLASS: Record<IshtaKashtaVerdict, string> = { ishta: STATUS_TEXT.strong, kashta: STATUS_TEXT.weak, equal: STATUS_TEXT.ok };
+const WAR_BASIS = {
+  north: 'the farther north',
+  'south-larger-brighter': 'in the south, but larger and brighter',
+  'north-no-brightness': 'the farther north; this chart has no brightness data',
+} as const;
 const PART_LABEL: Record<ShadbalaPart, string> = { sthana: 'Sthāna', dig: 'Dig', kala: 'Kāla', cheshta: 'Cheṣṭā', naisargika: 'Naisargika', drik: 'Dṛg' };
 
 /** Ṣaḍbala: the strength of each graha against what it needs, how it is made of the six balas, and the table. */
@@ -123,8 +128,8 @@ export default function ShadbalaPanel({ chart, options }: { chart: ChartData; op
           {wars.map(war => (
             <p key={`${war.a}-${war.b}`} className="text-[11px] font-mono text-zinc-600 dark:text-zinc-300">
               {war.a} · {war.b} ({war.distance.toFixed(2)}°): {war.winner && war.loser
-                ? `${war.winner} ${t('wins')} +${formatScore(war.amount)} vp, ${war.loser} −${formatScore(war.amount)} vp`
-                : t('the winner cannot be told by this rule (no latitude, or the same position); nothing is passed')}
+                ? `${war.winner} ${t('wins')} +${formatScore(war.amount)} vp, ${war.loser} −${formatScore(war.amount)} vp (${t(WAR_BASIS[war.basis ?? 'north'])})`
+                : t('the winner cannot be told (no latitude, or the same position); nothing is passed')}
             </p>
           ))}
         </div>

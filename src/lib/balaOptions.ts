@@ -157,12 +157,11 @@ export const BALA_OPTION_DEFINITIONS: readonly BalaOptionDefinition[] = [
   },
   {
     key: 'yuddha', view: 'shadbala', choicePoint: 'C12', label: 'Yuddha Bala: the planetary war',
-    note: 'BPHS 27.20 says the winner of a war between two of Mars, Mercury, Jupiter, Venus and Saturn gains, and the loser loses, the difference of their strengths; it does not say when two grahas fight or who wins. A war is a conjunction closer than 1° of longitude. The total compared is the Ṣaḍbala without Yuddha Bala.',
+    note: 'BPHS 27.20 says the difference of the strengths of two of Mars, Mercury, Jupiter, Venus and Saturn at war is added to the victor and subtracted from the vanquished. A war is a conjunction closer than 1° (Sūrya Siddhānta 7.19). The victor is the one farther north, unless the one in the south is both larger and brighter (Sūrya Siddhānta 7.21, Bṛhat Saṃhitā 17.9–10). The total compared is the Ṣaḍbala without Yuddha Bala.',
     choices: [
-      { value: 'off', label: 'Left out (the sources disagree about the winner and the divisor)' },
-      { value: 'verse', label: 'The difference as the verse has it; the winner the one farther north in latitude (Sūrya Siddhānta, Bṛhat Saṃhitā)' },
-      { value: 'sripati', label: 'The difference divided by the difference of the discs; the winner the one farther north (Śrīpati, Sūryadeva Yajvan)' },
-      { value: 'raman', label: 'The difference divided by the difference of the discs; the winner the one with the smaller longitude (B. V. Raman)' },
+      { value: 'off', label: 'Left out' },
+      { value: 'verse', label: 'The difference of the strengths as it is (BPHS 27.20)' },
+      { value: 'sripati', label: 'The difference divided by the difference of the discs (Śrīpati, after Sūryadeva Yajvan as quoted; the original was not read)' },
     ],
   },
   {

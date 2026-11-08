@@ -19,7 +19,8 @@ let index = 0;
 let vedhaOnlyTheirs = 0;
 const classical = new Set(VEDHA_PAIRS.map(([a, b]) => `${a}-${b}`).concat(VEDHA_PAIRS.map(([a, b]) => `${b}-${a}`)));
 for (let bn = 1; bn <= 27; bn += 1) for (let bp = 1; bp <= 4; bp += 1) for (let gn = 1; gn <= 27; gn += 1) for (let gp = 1; gp <= 4; gp += 1) {
-  const result = ashtakoota(longitude(bn, bp), longitude(gn, gp));
+  // The Gaṇa is compared by the common table (PyJHora's); the default of the app is the table of Muhūrta Cintāmaṇi, which differs in four cells.
+  const result = ashtakoota(longitude(bn, bp), longitude(gn, gp), { ganaTable: 'common' });
   const points = Object.fromEntries(result.kutas.map(kuta => [kuta.key, kuta.points]));
   const check = (field: string, mine: number, expected: number) => { if (Math.abs(mine - expected) > 1e-9) note(field); };
 

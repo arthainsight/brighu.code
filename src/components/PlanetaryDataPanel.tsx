@@ -28,14 +28,14 @@ export default function PlanetaryDataPanel({ chart }: { chart: ChartData }) {
       <div>
         <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600">{t('Planetary data')}</div>
         <p className="mt-1 text-[9px] font-mono text-zinc-400 dark:text-zinc-600">
-          {t('Right ascension and declination of the date, the ecliptic latitude, the distance from the Earth, and the azimuth (from the north through the east) and altitude (no refraction) at the place of the chart. The elongation is the angle from the Sun. The nodes are points on the ecliptic.')}
+          {t('Right ascension and declination of the date, the ecliptic latitude, the distance from the Earth, and the azimuth (from the north through the east) and altitude (no refraction) at the place of the chart. The elongation is the angle from the Sun; the magnitude is smaller the brighter the body is, and the disc is its apparent diameter. The nodes are points on the ecliptic.')}
         </p>
       </div>
       {missing ? (
         <p className="text-xs font-mono text-zinc-400 dark:text-zinc-600">{t('This chart was calculated before the planetary data were kept; calculate it again.')}</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[820px] border-collapse text-center font-mono text-xs" data-planetary="table">
+          <table className="w-full min-w-[960px] border-collapse text-center font-mono text-xs" data-planetary="table">
             <thead>
               <tr className="bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
                 <th className={cell}>{t('Graha')}</th>
@@ -47,6 +47,8 @@ export default function PlanetaryDataPanel({ chart }: { chart: ChartData }) {
                 <th className={cell}>{t('Azimuth')}</th>
                 <th className={cell}>{t('Altitude')}</th>
                 <th className={cell}>{t('Elongation')}</th>
+                <th className={cell}>{t('Magnitude')}</th>
+                <th className={cell}>{t('Disc (″)')}</th>
                 <th className={cell}>{t('Speed (°/day)')}</th>
               </tr>
             </thead>
@@ -64,6 +66,8 @@ export default function PlanetaryDataPanel({ chart }: { chart: ChartData }) {
                     <td className={cell}>{data ? `${data.azimuth.toFixed(2)}° ${compassPoint(data.azimuth)}` : '—'}</td>
                     <td className={`${cell} ${data && data.altitude < 0 ? 'text-zinc-400 dark:text-zinc-500' : ''}`}>{data ? signedAngleText(data.altitude) : '—'}</td>
                     <td className={cell}>{data?.elongation !== undefined ? `${data.elongation.toFixed(2)}°` : '—'}</td>
+                    <td className={cell}>{data?.magnitude !== undefined ? data.magnitude.toFixed(2) : '—'}</td>
+                    <td className={cell}>{data?.diameter !== undefined ? data.diameter.toFixed(2) : '—'}</td>
                     <td className={cell}>{planet.speed !== undefined ? planet.speed.toFixed(4) : '—'}</td>
                   </tr>
                 );

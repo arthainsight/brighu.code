@@ -21,6 +21,16 @@ async function main() {
   assert.ok(moon.data!.elongation! >= 0 && moon.data!.elongation! <= 180);
   assert.equal(moon.data!.declination, moon.declination, 'the declination of the data is the one of Ayana Bala');
 
+  // The magnitude and the disc (swe_pheno_ut): the Sun is the brightest and the biggest disc, about half a degree across; the nodes have neither.
+  close(sun.data!.magnitude!, -26.7, 0.3, 'the magnitude of the Sun');
+  close(sun.data!.diameter!, 1930, 40, 'the disc of the Sun in seconds of arc');
+  assert.ok(moon.data!.diameter! > 1700 && moon.data!.diameter! < 2000, 'the disc of the Moon is about half a degree');
+  assert.equal(rahu.data!.magnitude, undefined);
+  assert.equal(ketu.data!.diameter, undefined);
+  const venus = kotka.planets.find(planet => planet.name === 'Venus')!;
+  const saturn = kotka.planets.find(planet => planet.name === 'Saturn')!;
+  assert.ok(venus.data!.magnitude! < saturn.data!.magnitude!, 'Venus is brighter than Saturn (a smaller magnitude)');
+
   // The right ascension of the library agrees with the one of the formula (for the Moon, with its own latitude).
   const jd = kotka.debug!.julianDay;
   const raw = await sweBodyData(jd, SE_MOON, 60.4667, 26.9458);
