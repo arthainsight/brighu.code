@@ -532,6 +532,7 @@ export const FI: Record<string, string> = {
   'Bhava Chalit': 'Bhava Chalit',
   'The grahas placed by the bhava they stand in. Each bhava runs from the sandhi halfway to the middle of the one before to the sandhi halfway to the middle of the next. The signs drawn are those of the rasi houses.': 'Grahat sijoitettuna siihen bhavaan, jossa ne ovat. Kukin bhava kulkee edellisen keskikohtaan nähden puolivälissä olevasta sandhista seuraavan keskikohtaan nähden puolivälissä olevaan sandhiin. Piirretyt merkit ovat rasi-talojen merkkejä.',
   'bhava system': 'bhava-järjestelmä',
+  'Kalaprakasika: the Gana dosha does not stand when the bride is a Rakshasa and her star is beyond the 14th from the groom’s.': 'Kālaprakāśikā: Gaṇa-doshaa ei ole, kun morsian on Rākṣasa ja hänen tähtensä on yli 14. sulhasen tähdestä.',
   'Cancelled (Muhurta Chintamani 6.32–6.37): ': 'Kumoutuu (Muhūrta Cintāmaṇi 6.32–6.37): ',
   'It would be cancelled only when the Nadi is good, and the Nadi dosha stands.': 'Se kumoutuisi vain, jos Nāḍī on hyvä, ja Nāḍī-dosha pysyy.',
   'The points are not changed by a cancellation. The cancellations by region (south of the Godavari), by caste and by the strong lords of the navamsas are not applied.': 'Kumoutuminen ei muuta pisteitä. Alueen (Godāvarīn eteläpuoli), kastin ja navāṁśojen vahvojen herrojen mukaisia kumoutumisia ei sovelleta.',

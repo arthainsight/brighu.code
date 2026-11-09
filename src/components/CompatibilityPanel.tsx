@@ -243,6 +243,11 @@ export default function CompatibilityPanel({ calculationSettings, charts: given 
               {t('Kalaprakasika: the harm of a Rajju or Vedha dosha need not be considered when the lords of the two signs are the same or the signs are opposite.')} ({outcome.match.southernRelief.map(way => t(way === 'same-lord' ? 'the two signs have one lord' : 'the two signs are opposite')).join('; ')})
             </p>
           )}
+          {outcome.match.ganaException && (
+            <p className="text-[10px] font-mono text-amber-700 dark:text-amber-400" data-compat="gana-exception">
+              {t('Kalaprakasika: the Gana dosha does not stand when the bride is a Rakshasa and her star is beyond the 14th from the groom’s.')}
+            </p>
+          )}
           <p className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">{t('Mahendra, Vedha, Rajju and Stri Dirgha are of the Southern tradition (Narada’s ten kutas, named in the commentary of Muhurta Chintamani); their rules are those of the Kalaprakasika.')}</p>
 
           {outcome.kuja && (

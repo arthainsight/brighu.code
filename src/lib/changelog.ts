@@ -1,5 +1,16 @@
 export const CHANGELOG = [
   {
+    version: 'v4.29',
+    date: '2026-11-09',
+    title: 'The Southern matchings read in the Sanskrit',
+    changes: [
+      'The Kālaprakāśikā\'s chapter XIII was read in the Devanagari of the printed edition, not only in the English: the Mahendra counts (4, 7, 10, 13, 16, 19, 22, 25), Strī-dīrgha (beyond the 13th, some beyond the 7th), the five Rajju divisions and what the same one does, and the fifteen Vedha pairs agree with the Sanskrit (verses 28–30, 48–55). Nothing in them changed.',
+      'New: the Gaṇa exception of the Sanskrit. When the bride is a Rākṣasa and her star is beyond the 14th from the groom\'s ("strī-rākṣase na doṣaḥ syāc caturdaśa-dinād param") the Gaṇa dosha does not stand; LIBRARY → Compatibility says so. The English had it only as "will diminish".',
+      'Read and not applied, with the reason in docs/ashtakoota-sources.md: the ascending and descending Rajju (verses 50–51 do not say which stars are which), the Southern yoni of 31–36, and the count of five of ten.',
+      'Updated the application version to v4.29.',
+    ],
+  },
+  {
     version: 'v4.28',
     date: '2026-11-08',
     title: 'The cancellations of the doshas and the Southern matchings, from the texts',

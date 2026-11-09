@@ -63,4 +63,13 @@ assert.deepEqual(ashtakoota(sign(1), sign(7)).southernRelief, ['opposite-signs']
 assert.deepEqual(ashtakoota(sign(2), sign(7)).southernRelief, ['same-lord'], 'Taurus and Libra: Venus');
 assert.deepEqual(ashtakoota(sign(1), sign(2)).southernRelief, []);
 
+// The Gaṇa exception (XIII.26): the bride a Rākṣasa and her star beyond the 14th from the groom's.
+const starAt = (n: number) => (n - 1) * (360 / 27) + 5;
+const exc = (boyStar: number, girlStar: number) => ashtakoota(starAt(boyStar), starAt(girlStar)).ganaException;
+assert.equal(exc(1, 18), true, 'Ashvini (Deva) groom, Jyeshtha (Rakshasa) bride, the 18th from his star');
+assert.equal(exc(1, 3), false, 'Krittika is a Rakshasa star, but only the 3rd from the groom’s');
+assert.equal(exc(1, 15), false, 'Svati is a Deva star: no Rakshasa bride');
+assert.equal(exc(1, 16), true, 'Vishakha (Rakshasa), the 16th');
+assert.equal(exc(1, 14), false, 'Chitra (Rakshasa) is the 14th, not beyond it');
+
 console.log('Ashtakoota against Kalaprakasika passed');
