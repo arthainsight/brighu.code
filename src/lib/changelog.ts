@@ -1,5 +1,16 @@
 export const CHANGELOG = [
   {
+    version: 'v4.30',
+    date: '2026-11-09',
+    title: 'The worksheet of the twelve houses in the Sudarśana Chakra',
+    changes: [
+      'TIMING → Sudarśana: a table of the twelve houses, after a worksheet from a video on the Sudarshana chakra (not a rule of BPHS). For each house number it shows the grahas in the three signs (benefic green, malefic red), the three lords with their state (E exalted 1, M moolatrikona 0.75, O own sign 0.5, F friendly 0.25, N neutral 0.125, D enemy or debilitated 0), the strength as a percent of the most, the grahas that aspect the house and the Sarvāṣṭakavarga of the sign from the Lagna.',
+      'V-AMSHA (the mean auspiciousness of the grahas in the house) needs the good counts of the nine grahas in the six divisional charts; the worksheet\'s author copies them from Jagannatha Hora\'s Shadvarga view, and the page has nine small boxes to type them into. They are not computed: no divisional-chart rule I tried (dignity or nature of the lord in D1, D2, D3, D9, D12, D30 and over a hundred other sets) gave the worksheet\'s numbers. The worksheet\'s Remarks (good, average, bad) are the author\'s own judgment and are not computed.',
+      'Checked against the worksheet for the chart of 3 December 1984 (Howrah): strength and V-AMSHA agree in 11 of 12 houses, the Sarvāṣṭakavarga in all that is shown. Two lines of the worksheet disagree with themselves (the 8th house strength, the Moon in the 4th); docs/sudarshana-table-sources.md has them and the aspect column that does not match.',
+      'Updated the application version to v4.30.',
+    ],
+  },
+  {
     version: 'v4.29',
     date: '2026-11-09',
     title: 'The Southern matchings read in the Sanskrit',
