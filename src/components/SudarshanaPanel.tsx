@@ -9,6 +9,7 @@ import {
 import { SIGN_ABBR } from '@/lib/signs';
 import { useGrahaNames } from '@/lib/grahaNames';
 import { fill, useT } from '@/lib/i18n';
+import SudarshanaTable from './SudarshanaTable';
 import { Row, YearStepper, buildAnnualParams, fmtDate, fmtLocal, fmtOffset, useAnnualFetch, type LocalParts } from './annualShared';
 
 type Props = {
@@ -208,6 +209,8 @@ export default function SudarshanaPanel({ chart, birthDatetime, targetDate, iana
           {t('The Lagna, the Moon and the Sun are not in three different signs, so BPHS says to judge from the Lagna chart alone.')}
         </p>
       )}
+
+      <SudarshanaTable chart={chart} />
 
       {shown && yearHouse && (
         <div className={`space-y-3 ${loading ? 'opacity-60' : ''}`}>

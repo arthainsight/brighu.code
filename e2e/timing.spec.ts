@@ -797,6 +797,17 @@ test('TIMING Sudarśana draws the three charts and makes the house of the year a
   // The Moon and the Sun are in Cancer together, so BPHS says to judge from the Lagna chart alone.
   await expect(visible(page, page.locator('[data-sud="not-applicable"]'))).toContainText('not in three different signs');
 
+  // The worksheet of the twelve houses: a row for each, the strength and the Sarvāṣṭakavarga always, the V-AMSHA once the good counts of the grahas are typed in.
+  const worksheet = visible(page, page.locator('[data-sud="table"]'));
+  await expect(worksheet.locator('[data-sud-table-row]')).toHaveCount(12);
+  await expect(worksheet.locator('[data-sud-table-row="1"] [data-sud-col="strength"]')).toHaveText(/^\d+\.\d{2}$/);
+  const savs = await worksheet.locator('[data-sud-col="sav"]').allTextContents();
+  expect(savs.reduce((sum, value) => sum + Number(value), 0)).toBe(337);
+  const firstRow = worksheet.locator('[data-sud-table-row="1"]');
+  await expect(firstRow.locator('[data-sud-col="vamsha"]')).toHaveText('…');
+  for (const name of ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']) await worksheet.locator(`[data-sud-good="${name}"]`).fill('3');
+  await expect(firstRow.locator('[data-sud-col="vamsha"]')).toHaveText('50.00');
+
   // 14.10.2026: 79 years completed, so the 80th year runs, and the 8th house (79 mod 12 = 7, plus one) is active in all three.
   await expect(chart.locator('[data-sud="centre-age"]')).toContainText('age 79', { timeout: 30_000 });
   await expect(chart.locator('[data-sud="centre-house"]')).toContainText('house 8');
