@@ -187,6 +187,8 @@ export interface Ashtakoota {
   cancellations: { nadi: DoshaRelief[]; gana: DoshaRelief[]; bhakoot: DoshaRelief[]; bhakootBlockedByNadi: boolean };
   /** What takes the harm out of a Rajju, Vedha, Gaṇa or Rasi dosha of the Southern tradition (Kālaprakāśikā): the same lord of the two signs, or opposite signs. */
   southernRelief: ('same-lord' | 'opposite-signs')[];
+  /** The Gaṇa exception of the Kālaprakāśikā (XIII.26, "strī-rākṣase na doṣaḥ syāc caturdaśa-dinād param"): the bride is a Rākṣasa and her star is beyond the 14th from the groom's. */
+  ganaException: boolean;
 }
 
 const TARA_BAD = new Set([3, 5, 7]);
@@ -281,6 +283,7 @@ export function ashtakoota(boyLongitude: number, girlLongitude: number, options:
       bhakootBlockedByNadi: bhakootDosha && nadiBlocks,
     },
     southernRelief: [...(sameLord ? ['same-lord' as const] : []), ...(signDistance === 7 ? ['opposite-signs' as const] : [])],
+    ganaException: girlGana === 2 && points('gana') < 6 && fromBoy > 14,
   };
 }
 

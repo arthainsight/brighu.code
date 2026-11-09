@@ -34,8 +34,10 @@ The checks are in `ashtakootaMuhurtaChintamani.test.ts`: the lists are typed in 
 *Pīyūṣadhārā* on 6.21 quotes Nārada's ten kūṭas (dina, gaṇa, mahendra, strī-dīrgha, yoni, rāśi, rāśyadhipa, rajju, vaśya, vedha) and Garga's eighteen, and says that the author takes the eight that are well known.
 They are therefore named in the commentary, but **no rule for them is given there**.
 
-The rules are those of the *Kālaprakāśikā* (the English of N. P. Subramania Iyer, 1982, archive.org `kalaprakasika`, chapter XIII "To determine the suitability of a match", the ten considerations); the text
-is an English translation, not the Sanskrit, and `ashtakootaKalaprakasika.test.ts` is typed in from it.
+The rules are those of the *Kālaprakāśikā* (chapter XIII "Vivāhasya daśavidha-ghaṭanāḥ", the ten kinds of agreement of a match). Since v4.29 they are checked against the **Sanskrit** (the Devanagari of the printed edition,
+read from the scan pages, archive.org `kalaprakasika`, the pages of the chapter, 75 verses), and not only against the English of N. P. Subramania Iyer (1982); `ashtakootaKalaprakasika.test.ts` is typed in from the lists.
+Verses: 1–2 the ten kūṭas; 21–26 the gaṇa of the stars and what each pair does, with the exception for a Rākṣasa bride; 27 the exception of one lord, friendly lords and mutual seventh ("rajju-vedha-gaṇair doṣo rāśidoṣo na vidyate");
+28–29 Mahendra; 30 Strī-dīrgha; 48–52 Rajju; 53–55 Vedha; 56–59 the five principal kūṭas and the castes they are for.
 
 | Matching | The text | The app |
 |---|---|---|
@@ -44,11 +46,18 @@ is an English translation, not the Sanskrit, and `ashtakootaKalaprakasika.test.t
 | Rajju | five divisions (Pādha: Ashwini, Ashlesha, Magha, Jyeshtha, Mula, Revati; Ūru: Bharani, Pushya, Purva Phalguni, Anuradha, Purva Ashadha, Uttara Bhadrapada; Nābhi: Krittika, Punarvasu, Uttara Phalguni, Vishakha, Uttara Ashadha, Purva Bhadrapada; Kaṇṭha: Rohini, Ardra, Hasta, Swati, Shravana, Shatabhisha; Śiras: Mrigashira, Chitra, Dhanishta); the same division fails: the foot "travel in foreign countries", the thigh loss of property, the navel loss of offspring, the neck the death of the woman, the head the death of the man | **Same**, and the view says which division and what it does |
 | Vedha | the pairs Ashwini–Jyeshtha, Bharani–Anuradha, Krittika–Vishakha, Rohini–Swati, Ardra–Shravana, Punarvasu–Uttara Ashadha, Pushya–Purva Ashadha, Ashlesha–Mula, Magha–Revati, Purva Phalguni–Uttara Bhadrapada, Uttara Phalguni–Purva Bhadrapada, Hasta–Shatabhisha, and the set Mrigashira, Chitra, Dhanishta | **Corrected**: the app had fourteen pairs; the set of three makes three pairs, so there are fifteen, and Chitra–Dhanishta was missing |
 
-The text adds an exception for Rajju, Vedha, Gaṇa and Rasi: the harm "need not be considered if (1) the lords of the Janma-Rasis are the same, (2) they be friendly planets and (3) their Janma-Rasis be diametrically
+**The Sanskrit adds one rule the English had only as "diminish":** the gaṇa dosha of a Rākṣasa bride does not stand ("strī-rākṣase na doṣaḥ syāc caturdaśa-dinād param") when her star is beyond the 14th from the groom's. The app now
+shows this (`ganaException`) as a line under the extras; the points are not changed.
+
+**Read in the Sanskrit and not applied:** verses 50–51 add that when the Rajju are of the ascending and the descending kind ("rajjv-ārohāvarohe tu") the marriage is auspicious, that the ascending one lengthens
+the man's life and the descending one ends the woman's ("ārohe dīrghabhāgī syād avarohe vadhū-mṛtiḥ"). The verses do not list which of the stars ascend and which descend, so the app keeps the simple rule (a different
+division passes) and does not guess the direction. Verses 31–36 give a Southern yoni that differs from Muhūrta Cintāmaṇi's; it is not used.
+
+The text adds an exception for Rajju, Vedha, Gaṇa and Rasi (verse 27): the harm "need not be considered if (1) the lords of the Janma-Rasis are the same, (2) they be friendly planets and (3) their Janma-Rasis be diametrically
 opposite". The app applies the first and the third and shows them; the second is not applied, because the text has a table of friendships of its own for it (Mars's friends Mercury and Venus, Venus's all but the Sun and the Moon,
 …) that differs from the one of BPHS.
 
-Of the ten the text says "the horoscopes must agree in respect of at least five"; the app does not count them, because the other six (dina, rāśi, rāśyadhipa, vaśya, gaṇa and yoni of the Southern reading) are not the same as the
+Of the ten the text says "the horoscopes must agree in respect of at least five" (the English; the Sanskrit of 56–59 names the five principal ones and "when auspicious in the ten"); the app does not count them, because the other six (dina, rāśi, rāśyadhipa, vaśya, gaṇa and yoni of the Southern reading) are not the same as the
 Ashtakoota's and were not implemented.
 
 ## The cancellations of the doshas (Muhūrta Cintāmaṇi 6.32–6.37)
