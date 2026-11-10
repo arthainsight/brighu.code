@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: 'v4.39',
+    date: '2026-11-10',
+    title: 'ANALYSIS → Varga dignity',
+    changes: [
+      'ANALYSIS → Varga dignity: the dignity of the seven grahas in a divisional chart (the Navāṁśa D9 first, with D1, D7, D10, D12 and D16), on the spectrum of a teacher\'s lesson: exalted, own sign, great friend, friend, neutral, enemy, great enemy, fallen (7 to 0; the four upper read as good). The dignity is recursive: the host of the sign lends the guest part of its own effective dignity, down the chain (the chain of hosts is shown), worked out to a fixed point.',
+      'The average dignity of the division is given as a pulse of the chart, and the grahas are listed in the order of dominance (the grahas and the Lagna under each in the tree of hosts) with ∇ (high dominance, low dignity), Δ (low dominance, good dignity) and a flag where a benefic and a malefic stand next to each other. The lessons give no formula for the scores, the weight of the host, the dominance or the signs: they are choices made here, named on the page and in docs/varga-dignity.md. Conjunctions and aspects are not worked in.',
+      'Updated the application version to v4.39.',
+    ],
+  },
+  {
     version: 'v4.38',
     date: '2026-11-10',
     title: 'ANALYSIS → True signs',
