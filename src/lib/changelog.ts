@@ -1,5 +1,18 @@
 export const CHANGELOG = [
   {
+    version: 'v4.33',
+    date: '2026-11-10',
+    title: 'The Vaiśeṣikāṁśa as Jagannatha Hora counts it',
+    changes: [
+      'ANALYSIS → Bala → Vaiśeṣikāṁśa has a third count: the reading of BPHS 6.52–53 by the program Jagannatha Hora. A varga is good when the graha is in its exaltation or own sign, or in a kendra from the lord of the Āruḍha Lagna in that varga; the kendra is not counted where the graha is debilitated or in an enemy\'s sign in the varga, nor for a graha in a bad Śayanādi state. Rahu and Ketu are counted. The count of the certain half of 6.52 stays the one shown first.',
+      'The settings were found by reproducing the numbers of a video and confirmed in the program one at a time: swarudha "AL lord of rasi chart (take kendra from him in vargas)", Parāśara\'s horā, the conditions "debilitated in division", "satru/adhisatru sthana" and "bad sayanadi avastha". For that chart the app gives the program\'s 3, 4, 5, 2, 2, 3, 3, 2, 3 in the six vargas and 5, 6, 8, 2, 3, 5, 4, 4, 4 in the ten.',
+      'Which Śayanādi states are bad is known for three only (Upaveśana is; Prakāśa and Nṛtyalipsā are not), so the view has the twelve states to mark. The state follows the sunrise: the program\'s sunrise setting changed Venus in the chart.',
+      'TIMING → Sudarśana: the good counts of the worksheet can be counted as Jagannatha Hora does, which gives the worksheet\'s own V-AMSHA column; the BPHS count stays the first, and a typed number still takes the place of either.',
+      'The Śayanādi avasthā now reads the birth moment also as the page types it (15.08.1947 09.15.00) and as the chart keeps it, not only in the ISO form.',
+      'Updated the application version to v4.33.',
+    ],
+  },
+  {
     version: 'v4.32',
     date: '2026-11-10',
     title: 'Sudarśana: the V-AMSHA is counted, and the ten-year daśā',

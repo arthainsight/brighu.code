@@ -71,6 +71,11 @@ assert.equal(sudarshanaTable(chart)[3].vamsha, 50, 'an empty house is 50');
   assert.deepEqual(computed[6].occupants.map(item => item.name), ['Rahu']);
   assert.equal(computed[6].vamsha, 50);
   assert.ok(computed.every(row => row.vamsha !== null));
+
+  // The count of Jagannatha Hora with Jupiter in a bad Śayanādi state gives the worksheet's own good counts, and so its V-AMSHA column.
+  const jhora = computedGoodCounts(real, 'jhora', ['Jupiter']);
+  assert.deepEqual(jhora, good);
+  assert.deepEqual(sudarshanaTable(real, jhora).map(row => Math.round((row.vamsha ?? 0) * 100) / 100), vamsha);
 }
 
 // --- The aspects (Parāśara's): from the grahas outside the sign ---------------------------------------------------------------------

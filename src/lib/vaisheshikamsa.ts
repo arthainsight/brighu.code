@@ -13,8 +13,10 @@
 
 import type { BalaOptions } from './balaOptions';
 import { DEFAULT_BALA_OPTIONS } from './balaOptions';
+import { calculateAvasthas } from './avasthas';
 import { combustionOf } from './combustion';
-import { buildShadbalaRows, getDignity, SCORE_PLANETS, shadbalaWars, type ShadbalaChartLike, type ShadbalaPlanet } from './shadbala';
+import type { ChartData } from '@/types';
+import { buildShadbalaRows, getCompoundRelation, getDignity, SCORE_PLANETS, shadbalaWars, type RasiSigns, type ShadbalaChartLike, type ShadbalaPlanet } from './shadbala';
 import { SIGN_ABBR, SIGN_LORDS } from './signs';
 import { arudhaSign } from './specialSphutas';
 import { getVargaSignIndex } from './varga';
@@ -127,8 +129,10 @@ export interface VaisheshikaCell {
   sign: string;
   /** The graha is in its exaltation sign, or in a sign of its own (its mūlatrikoṇa sign is one of the two). */
   dignity: 'exalted' | 'own' | null;
-  /** The lord of the sign is the lord of a kendra from the Āruḍha Lagna. */
+  /** The lord of the sign is the lord of a kendra from the Āruḍha Lagna; in the Jagannatha Hora count, the graha is in a kendra from the lord of the Āruḍha Lagna in this varga. */
   kendraLord: boolean;
+  /** The Jagannatha Hora count: why the kendra does not count here. */
+  cancelled?: 'debilitated' | 'enemy' | 'avastha';
   /** Counted as a good varga under the reading. */
   good: boolean;
 }
@@ -137,7 +141,8 @@ export interface VaisheshikaCell {
 export type VaisheshikaSpoiler = 'combust' | 'defeated' | 'debilitated' | 'weak';
 
 export interface VaisheshikaRow {
-  planet: ShadbalaPlanet;
+  /** One of the seven grahas; in the Jagannatha Hora count Rahu and Ketu too. */
+  planet: string;
   /** The sixteen vargas, by 'D1' … 'D60'. */
   vargas: Record<string, VaisheshikaCell>;
   counts: Record<SchemeKey, number>;
@@ -217,4 +222,88 @@ export function calculateVaisheshikamsa(chart: ShadbalaChartLike, reading: Vaish
     rows.push({ planet: name, vargas, counts, names, spoilers: spoilers[name] ?? [] });
   }
   return { arudhaSign: pada, kendraLords, rows };
+}
+
+// --- The count of Jagannatha Hora -------------------------------------------------------------------------------------
+// Jagannatha Hora reads the second half of 6.52 in several ways (its "Vaiseshikamsa Calculation Preferences"). The one
+// below was found by reproducing the numbers of a video (3 December 1984, Howrah) and was then confirmed in the program
+// by the user, setting by setting: swarudha is "AL lord of rasi chart (take kendra from him in vargas)", the horā is
+// Parāśara's, and the kendra is not counted when the graha is debilitated in the division, in a śatru or adhiśatru sign
+// there, or in a bad Śayanādi avasthā. It is not Parāśara's text: it is that program's reading of it.
+
+/** The signs Jagannatha Hora's numbers ask for the nodes (0 = Aries): Rahu exalted in Gemini and at home in Aquarius, Ketu exalted in Sagittarius and at home in Scorpio. */
+const NODE_GOOD_SIGNS: Record<string, { exalted: number; own: number }> = { Rahu: { exalted: 2, own: 10 }, Ketu: { exalted: 8, own: 7 } };
+export const JHORA_GRAHAS = [...SCORE_PLANETS, 'Rahu', 'Ketu'] as const;
+
+/** The Śayanādi states that cancel the kendra, as far as they were seen in Jagannatha Hora: Upaveśana does (Jupiter in the video's chart), Prakāśa and Nṛtyalipsā do not. The other nine were not seen. */
+export const JHORA_BAD_AVASTHAS_KNOWN: readonly string[] = ['Upaveśana'];
+
+/** The lord of the Āruḍha Lagna of the rāśi chart; null when the Āruḍha is not known. */
+export function arudhaLagnaLord(chart: ShadbalaChartLike): ShadbalaPlanet | null {
+  const { arudhaSign: pada } = arudhaKendraLords(chart);
+  return pada === null ? null : SIGN_LORDS[pada - 1] as ShadbalaPlanet;
+}
+
+/**
+ * The good vargas as Jagannatha Hora counts them with the settings above: a varga is good when the graha is in its
+ * exaltation or own sign in it, or stands in a kendra from the lord of the Āruḍha Lagna in it; the kendra is not counted
+ * in a varga where the graha is debilitated or in the sign of a śatru or adhiśatru (the compound relation, the temporary
+ * part read in the varga itself), nor in any varga for a graha in a bad Śayanādi avasthā (`weakGrahas`). The nodes have
+ * the signs above and only the avasthā takes their kendra away. The spoilers of 6.53 are left empty.
+ */
+export function calculateJhoraVaisheshikamsa(chart: ShadbalaChartLike, weakGrahas: readonly string[] = []): VaisheshikaResult {
+  const { arudhaSign: pada, kendraLords } = arudhaKendraLords(chart);
+  const lord = pada === null ? null : SIGN_LORDS[pada - 1];
+  const longitudeOf = (name: string) => (chart.planets ?? []).find(planet => planet.name === name)?.longitude;
+  const signsIn = (division: number): RasiSigns => Object.fromEntries(SCORE_PLANETS.flatMap(name => {
+    const longitude = longitudeOf(name);
+    return typeof longitude === 'number' ? [[name, getVargaSignIndex(longitude, division)]] : [];
+  }));
+  const rows: VaisheshikaRow[] = [];
+  for (const name of JHORA_GRAHAS) {
+    const longitude = longitudeOf(name);
+    if (typeof longitude !== 'number') continue;
+    const node = NODE_GOOD_SIGNS[name];
+    const vargas: Record<string, VaisheshikaCell> = {};
+    for (const key of ALL_VARGAS) {
+      const division = Number(key.slice(1));
+      const signs = signsIn(division);
+      const signIndex = getVargaSignIndex(longitude, division);
+      const state = node ? null : getDignity(name, signIndex);
+      const dignity = node
+        ? (signIndex === node.exalted ? 'exalted' : signIndex === node.own ? 'own' : null)
+        : state === 'exalted' ? 'exalted' : state === 'own' || state === 'moolatrikona' ? 'own' : null;
+      const lordSign = lord ? signs[lord as ShadbalaPlanet] : undefined;
+      const kendra = typeof lordSign === 'number' && (signIndex - lordSign + 12) % 3 === 0;
+      let cancelled: VaisheshikaCell['cancelled'];
+      if (kendra && dignity === null) {
+        if (weakGrahas.includes(name)) cancelled = 'avastha';
+        else if (state === 'debilitated') cancelled = 'debilitated';
+        else if (!node) {
+          const relation = getCompoundRelation(name as ShadbalaPlanet, SIGN_LORDS[signIndex] as ShadbalaPlanet, signs);
+          if (relation === 'shatru' || relation === 'adhishatru') cancelled = 'enemy';
+        }
+      }
+      vargas[key] = { signIndex, sign: SIGN_ABBR[signIndex], dignity, kendraLord: kendra, cancelled, good: dignity !== null || (kendra && !cancelled) };
+    }
+    const counts = {} as Record<SchemeKey, number>;
+    const names = {} as Record<SchemeKey, VaisheshikaName | null>;
+    for (const scheme of VAISHESHIKA_SCHEMES) {
+      counts[scheme] = schemeVargas(scheme).filter(key => vargas[key].good).length;
+      names[scheme] = vaisheshikaName(scheme, counts[scheme]);
+    }
+    rows.push({ planet: name, vargas, counts, names, spoilers: [] });
+  }
+  return { arudhaSign: pada, kendraLords, rows };
+}
+
+/** The Śayanādi state of each graha (avasthas.ts); empty when the birth time or the sunrise is not known. */
+export function sayanadiStates(chart: ChartData, birthDatetime: string): Record<string, string> {
+  // The chart keeps the moment it was cast for; it serves when the page gives none.
+  return Object.fromEntries(calculateAvasthas(chart, birthDatetime || chart.debug?.inputDateTime || '').filter(item => item.sayanadi !== '—').map(item => [item.planet, item.sayanadi]));
+}
+
+/** The grahas whose Śayanādi state is one of the bad ones. */
+export function jhoraWeakGrahas(states: Record<string, string>, badStates: readonly string[] = JHORA_BAD_AVASTHAS_KNOWN): string[] {
+  return Object.keys(states).filter(name => badStates.includes(states[name]));
 }

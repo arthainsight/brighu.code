@@ -21,14 +21,13 @@ Capricorn, the Sun is in Scorpio, the Moon in Pisces. `src/lib/sudarshanaTable.t
 
 ## What is not computed
 
-* **Good and Bad** (six per graha; Auspi = Good ÷ 6). The author copies them from the Shadvarga view of Jagannatha Hora (Good, and Bad = 6 − Good); the rule inside that view is not
-  known here. Since v4.32 the page counts its own: the vargas of the Ṣaḍvarga (D1, D2, D3, D9, D12, D30) in which the graha is in its exaltation, mūlatrikoṇa or own sign, the first
-  half of BPHS 6.52 (`vaisheshikamsa-sources.md`). Rahu and Ketu have no such sign and are left out of the mean of a house (a house with the nodes only is 50, as an empty one). A
-  count typed in a box takes the place of the computed one.
-  **The computed counts are not the worksheet's.** For the worksheet's chart they are Sun 1, Moon 1, Mars 1, Mercury 1, Jupiter 2, Venus 1, Saturn 2; the worksheet has 3, 4, 5, 2,
-  2, 3, 3 (and Rahu 2, Ketu 3). Tried again with the real longitudes and not matching all seven: the dignity by the natural and the compound friendships (in the rāśi or in each
-  varga), the nature of the lord of the sign, the house from the varga's own Lagna, and every set of six of the sixteen vargas under those rules; with the lords of the kendras from
-  the Āruḍha (the second half of 6.52) the counts are 2, 2, 2, 3, 3, 3, 3. The nearest was the lord being Jupiter or Venus (five of seven).
+* **Good and Bad** (six per graha; Auspi = Good ÷ 6). The author copies them from Jagannatha Hora (its Vaiseshikamsa (6) bars; Bad = 6 − Good). The page has two counts and a box
+  for each graha to type another:
+  * **BPHS 6.52, the certain half** (shown first): the vargas of the Ṣaḍvarga (D1, D2, D3, D9, D12, D30) in which the graha is in its exaltation, mūlatrikoṇa or own sign. Rahu and
+    Ketu have no such sign and are left out of the mean of a house (a house with the nodes only is 50). For the worksheet's chart: 1, 1, 1, 1, 2, 1, 2.
+  * **As Jagannatha Hora** (v4.33): that program's reading of the second half of the verse and of 6.53, found by reproducing the worksheet's numbers and confirmed in the program
+    (`vaisheshikamsa-sources.md`). It gives the worksheet's 3, 4, 5, 2, 2, 3, 3, 2, 3 and with them its V-AMSHA column in eleven rows of twelve (the 4th differs for the reason above).
+    It depends on which Śayanādi states are bad, of which only Upaveśana is known.
 * **Aspect.** The worksheet has a B in each even house (2 to 12) and Mars (M) in the 6th, "by looking at the chart". The page's full Parāśara aspects give, from Jupiter, Mercury and Venus
   (all three in Sagittarius), exactly the houses 2, 4, 6, 8 and 10 of the worksheet; the 12th is not reached by any benefic. The Moon aspects the 7th, 9th and 11th and Mars most of the houses (2, 4, 5, 6, 7, 8, 9, 10), which
   the worksheet does not show. The page shows its own computation (the Moon counted as a benefic), so the column differs from the worksheet's in the 12th and in the houses of the Moon and Mars.

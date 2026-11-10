@@ -84,6 +84,35 @@ has only the signs of the Sun and the Moon, and the triṁśāṁśa only those 
 vargas of the benefics".) By the first count Jupiter can have the horā through its exaltation, Cancer; the Sun and the Moon can never have
 the triṁśāṁśa.
 
+### The reading of Jagannatha Hora (v4.33)
+
+The program Jagannatha Hora has a dialog for this half-verse ("Parasara mentioned quadrants from *swarudha* as good placements when evaluating vaiseshikamsas. What does
+swarudha mean here?") with eight answers, and a list of conditions that are 6.53. One set of its settings was found by reproducing the bars of a video (3 December 1984, 09:17,
+Howrah) and then confirmed in the program by the user, one setting at a time; it is the third choice of the view, and it is **a reading by that program, not more certain than
+the others**:
+
+| Setting of the program | In the app |
+|---|---|
+| swarudha: "AL lord of rasi chart (take kendra from him in vargas)" | a varga also counts when the graha stands in a kendra (the 1st, 4th, 7th or 10th sign) from the lord of the Āruḍha Lagna of the rāśi chart, both taken in that varga |
+| the horā of Parāśara | as in the app (with another horā the Sun, the Moon, Mercury and Jupiter of the chart each lose one) |
+| "If the planet is debilitated in division" | the kendra is not counted in a varga where the graha is in its debilitation sign |
+| "If the planet is in satru/adhisatru sthana" | nor where the lord of the sign is a śatru or adhiśatru by the compound relation, the temporary part read in the varga itself |
+| "If the planet is in a bad sayanadi avastha" | nor in any varga for a graha in a bad Śayanādi state |
+| sunrise: "The tip of Sun's disk is really in the eastern horizon" | the app's own sunrise gave the same states for this chart |
+
+The exaltation and own signs always count. For the chart the program shows, and the app now gives, Sun 3, Moon 4, Mars 5, Mercury 2, Jupiter 2, Venus 3, Saturn 3, Rahu 2, Ketu 3
+in the Ṣaḍvarga and 5, 6, 8, 2, 3, 5, 4, 4, 4 in the Daśavarga (`vaisheshikamsa.test.ts`). Each step was seen in the program: without the conditions 3, 4, 6, 3, 5, 4, 3, 2, 3;
+with another horā and no conditions 2, 3, 6, 2, 4, 4, 3; with the other sunrise Venus fell to 1.
+
+Not known, and said so in the view:
+
+* **Which Śayanādi states are bad.** Seen in the program: Upaveśana is (Jupiter), Prakāśa and Nṛtyalipsā are not. The other nine can be marked by hand in the view; only Upaveśana
+  is marked at first. BPHS 6.53 says only *śayanādi*.
+* **The nodes.** The program counts Rahu and Ketu; the numbers of this chart ask for Rahu exalted in Gemini and at home in Aquarius, Ketu exalted in Sagittarius and at home in
+  Scorpio. No enemy sign or debilitation is applied to them: this chart has no case that would show it.
+* **The combust graha and the defeated one** of the program's list did not occur in the chart and are not applied in this count.
+* One chart is one chart: another could show a rule this one does not.
+
 ## 4. What destroys the yoga (6.53)
 
 | The verse | In the view |

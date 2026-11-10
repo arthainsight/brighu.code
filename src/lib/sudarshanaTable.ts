@@ -2,7 +2,7 @@ import { buildAshtakavarga } from './ashtakavarga';
 import { DEBILITATION, EXALTATION, MOOLATRIKONA, NATURAL_ENEMIES, NATURAL_FRIENDS, OWN_SIGNS } from './dignity';
 import { signLord } from './signs';
 import { sudarshanaFacts, sudarshanaRings, type SudarshanaRingId } from './sudarshana';
-import { calculateVaisheshikamsa } from './vaisheshikamsa';
+import { calculateJhoraVaisheshikamsa, calculateVaisheshikamsa } from './vaisheshikamsa';
 import type { ChartData, PlanetData } from '@/types';
 
 // The table of the twelve houses of the Sudarśana Chakra, after a worksheet shown in a video on the Sudarśana Chakra paddhati (the channel Revatiraa): for each house number
@@ -74,12 +74,17 @@ export const auspiciousness = (good: number) => (good / 6) * 100;
 /** Good counts in the six charts (0 to 6) by graha name. */
 export type GoodCounts = Partial<Record<string, number>>;
 
+/** How the good counts are counted: by the first half of BPHS 6.52, or as Jagannatha Hora does with the settings of the worksheet's video (vaisheshikamsa.ts). */
+export type GoodCountRule = 'bphs' | 'jhora';
+
 /**
- * The good counts of the seven grahas as the app counts them: the vargas of the Ṣaḍvarga (D1, D2, D3, D9, D12, D30) in which the graha is in its exaltation, mūlatrikoṇa
- * or own sign (BPHS 6.52, vaisheshikamsa.ts). Rahu and Ketu have none: the verse gives them no sign. These are not the numbers of Jagannatha Hora's view.
+ * The good counts of the grahas in the Ṣaḍvarga (D1, D2, D3, D9, D12, D30). 'jhora': the count of Jagannatha Hora, which the worksheet's author copies: the exaltation or own
+ * sign, or a kendra from the lord of the Āruḍha Lagna in the varga, for the nine grahas; `weakGrahas` are those in a bad Śayanādi state. 'bphs': the exaltation, mūlatrikoṇa or own
+ * sign alone, for the seven grahas (the nodes have no count).
  */
-export function computedGoodCounts(chart: Pick<ChartData, 'ascendant' | 'planets'>): GoodCounts {
-  return Object.fromEntries(calculateVaisheshikamsa(chart).rows.map(row => [row.planet, row.counts.shadvarga]));
+export function computedGoodCounts(chart: Pick<ChartData, 'ascendant' | 'planets'>, rule: GoodCountRule = 'bphs', weakGrahas: readonly string[] = []): GoodCounts {
+  const result = rule === 'jhora' ? calculateJhoraVaisheshikamsa(chart, weakGrahas) : calculateVaisheshikamsa(chart);
+  return Object.fromEntries(result.rows.map(row => [row.planet, row.counts.shadvarga]));
 }
 
 export function sudarshanaTable(chart: Pick<ChartData, 'ascendant' | 'planets'>, goodCounts: GoodCounts = {}): TableRow[] {

@@ -7,7 +7,7 @@ import { combustionOf } from './combustion';
 
 const CLASSICAL = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'] as const;
 const PLANET_NUMBER: Record<string, number> = { Sun: 1, Moon: 2, Mars: 3, Mercury: 4, Jupiter: 5, Venus: 6, Saturn: 7, Rahu: 8, Ketu: 9 };
-const SAYANADI = ['Śayana', 'Upaveśana', 'Netrāṇi', 'Prakāśa', 'Gamana', 'Āgamana', 'Sabhā', 'Āgama', 'Bhojana', 'Nṛtyalipsā', 'Kautuka', 'Nidrā'];
+export const SAYANADI = ['Śayana', 'Upaveśana', 'Netrāṇi', 'Prakāśa', 'Gamana', 'Āgamana', 'Sabhā', 'Āgama', 'Bhojana', 'Nṛtyalipsā', 'Kautuka', 'Nidrā'];
 
 export type AvasthaResult = {
   planet: string;
@@ -76,10 +76,13 @@ function calculateLajjitadi(planet: PlanetData, planets: PlanetData[]): { values
   return { values, reason: why.join('; ') || 'no Lajjitādi condition triggered' };
 }
 
+/** The birth moment as it is typed in the page (15.08.1947 09.15.00), as the chart keeps it (1947-08-15 09:15:00) or in the ISO form. */
 function parseBirth(value: string) {
-  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
-  if (!match) return null;
-  return { year: +match[1], month: +match[2], day: +match[3], hours: +match[4] + +match[5] / 60 + +(match[6] ?? 0) / 3600 };
+  const iso = value.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (iso) return { year: +iso[1], month: +iso[2], day: +iso[3], hours: +iso[4] + +iso[5] / 60 + +(iso[6] ?? 0) / 3600 };
+  const typed = value.trim().match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})\s+(\d{1,2})[.:](\d{2})(?:[.:](\d{2}))?/);
+  if (typed) return { year: +typed[3], month: +typed[2], day: +typed[1], hours: +typed[4] + +typed[5] / 60 + +(typed[6] ?? 0) / 3600 };
+  return null;
 }
 
 function previousDate(year: number, month: number, day: number) {

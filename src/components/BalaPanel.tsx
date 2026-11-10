@@ -20,7 +20,7 @@ const TABS: { key: BalaView; label: string }[] = [
 ];
 
 /** The strengths of the grahas and the houses: Ṣaḍbala, Bhāva Bala and Vimśopaka Bala, each with its diagram and table, and the names of the good vargas (Vaiśeṣikāṁśa). */
-export default function BalaPanel({ chart }: { chart: ChartData | null | undefined }) {
+export default function BalaPanel({ chart, birthDatetime = '' }: { chart: ChartData | null | undefined; birthDatetime?: string }) {
   const t = useT();
   const [view, setView] = useState<BalaView>('shadbala');
   const { options, update, reset } = useBalaOptions();
@@ -45,7 +45,7 @@ export default function BalaPanel({ chart }: { chart: ChartData | null | undefin
       {view === 'shadbala' && <ShadbalaPanel chart={chart} options={options} />}
       {view === 'bhava' && <BhavaBalaPanel chart={chart} options={options} />}
       {view === 'vimsopaka' && <VimsopakaPanel chart={chart} options={options} />}
-      {view === 'vaisheshika' && <VaisheshikamsaPanel chart={chart} options={options} />}
+      {view === 'vaisheshika' && <VaisheshikamsaPanel chart={chart} options={options} birthDatetime={birthDatetime} />}
     </div>
   );
 }

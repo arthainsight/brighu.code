@@ -1,7 +1,7 @@
 // The names of the good vargas (BPHS 6.42-53; vaisheshikamsa.ts). The expected counts of the reference chart were worked
 // out by a separate program from the definitions of the sixteen vargas in BPHS 6 and from 6.52, not by the engine.
 import assert from 'node:assert/strict';
-import { BHEDAKADI, KIMSHUKADI, PARIJATADI, VAISHESHIKA_NAMES, VAISHESHIKA_VERSES, arudhaKendraLords, calculateVaisheshikamsa, schemeVargas, vaisheshikaName } from './vaisheshikamsa';
+import { BHEDAKADI, KIMSHUKADI, PARIJATADI, VAISHESHIKA_NAMES, VAISHESHIKA_VERSES, arudhaKendraLords, arudhaLagnaLord, calculateJhoraVaisheshikamsa, calculateVaisheshikamsa, schemeVargas, vaisheshikaName } from './vaisheshikamsa';
 import { REFERENCE_CHART } from './shadbala.fixture';
 import type { ShadbalaChartLike } from './shadbala';
 
@@ -88,6 +88,41 @@ assert.deepEqual(VAISHESHIKA_VERSES.map(verse => verse.verse), [42, 43, 44, 45, 
   assert.equal(fallen.vargas.D1.good, false);
   // Without the lord of the Lagna there is no Āruḍha, and the full reading counts as the first.
   assert.deepEqual(arudhaKendraLords({ ascendant: { sign: 4, longitude: 100 }, planets: [{ name: 'Sun', longitude: 125 }] }), { arudhaSign: null, kendraLords: [] });
+}
+
+// ---------------------------------------------------------------------------
+// The count of Jagannatha Hora: the bars of the video (3 December 1984, 09:17, Howrah; Lahiri, mean node)
+// ---------------------------------------------------------------------------
+{
+  // The expected numbers are read from Jagannatha Hora itself (the Vaiseshikamsa (6) and (10) bars), with the settings named in vaisheshikamsa.ts.
+  const at = (name: string, longitude: number) => ({ name, longitude });
+  const howrah: ShadbalaChartLike = {
+    ascendant: { sign: 10, longitude: 272.3622 },
+    planets: [at('Sun', 227.5194), at('Moon', 348.2311), at('Mars', 289.4851), at('Mercury', 246.9144), at('Jupiter', 261.3543), at('Venus', 269.281), at('Saturn', 208.0106), at('Rahu', 33.0284), at('Ketu', 213.0284)],
+  };
+  // The Lagna lord Saturn is in Libra, the 10th from Capricorn: the Āruḍha is the 10th from Libra, Cancer, and being the 7th from the Lagna gives way to its 10th, Aries. Its lord is Mars.
+  assert.equal(arudhaLagnaLord(howrah), 'Mars');
+  const six = (result: ReturnType<typeof calculateJhoraVaisheshikamsa>) => result.rows.map(row => row.counts.shadvarga);
+  const ten = (result: ReturnType<typeof calculateJhoraVaisheshikamsa>) => result.rows.map(row => row.counts.dasavarga);
+  // Jupiter is in Upaveśana, a bad state: its kendras do not count.
+  const video = calculateJhoraVaisheshikamsa(howrah, ['Jupiter']);
+  assert.deepEqual(video.rows.map(row => row.planet), ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']);
+  assert.deepEqual(six(video), [3, 4, 5, 2, 2, 3, 3, 2, 3]);
+  assert.deepEqual(ten(video), [5, 6, 8, 2, 3, 5, 4, 4, 4]);
+  // With the other sunrise of the program Venus was in a bad state too: only its own triṁśāṁśa is left.
+  assert.deepEqual(six(calculateJhoraVaisheshikamsa(howrah, ['Jupiter', 'Venus'])), [3, 4, 5, 2, 2, 1, 3, 2, 3]);
+  // No bad state at all: Jupiter keeps the dreṣkāṇa and the dvādaśāṁśa in Leo, where Mars is in a kendra.
+  assert.deepEqual(six(calculateJhoraVaisheshikamsa(howrah)), [3, 4, 5, 2, 4, 3, 3, 2, 3]);
+  const cell = (planet: string, key: string) => video.rows.find(row => row.planet === planet)!.vargas[key];
+  // Mars is always in a kendra from itself; in the navāṁśa it is in Gemini with Mercury, an adhiśatru there.
+  assert.equal(cell('Mars', 'D9').cancelled, 'enemy');
+  assert.equal(cell('Mars', 'D2').good, true);
+  // Venus is debilitated in the daśāṁśa (Virgo), opposite Mars in Pisces.
+  assert.equal(cell('Venus', 'D10').cancelled, 'debilitated');
+  assert.equal(cell('Jupiter', 'D3').cancelled, 'avastha');
+  assert.equal(cell('Jupiter', 'D2').dignity, 'exalted');
+  assert.equal(cell('Rahu', 'D12').dignity, 'exalted');
+  assert.equal(cell('Ketu', 'D1').dignity, 'own');
 }
 
 console.log('Vaisheshikamsa tests passed');

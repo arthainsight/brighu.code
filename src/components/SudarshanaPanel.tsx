@@ -216,7 +216,7 @@ export default function SudarshanaPanel({ chart, birthDatetime, targetDate, iana
         </p>
       )}
 
-      <SudarshanaTable chart={chart} />
+      <SudarshanaTable chart={chart} birthDatetime={birthDatetime} />
 
       {shown && yearHouse && (
         <div className={`space-y-3 ${loading ? 'opacity-60' : ''}`}>

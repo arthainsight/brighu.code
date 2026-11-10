@@ -1045,6 +1045,17 @@ test('ANALYSIS Bala has a diagram and a table for the Ṣaḍbala, the Bhāva Ba
   const first = await total();
   await vaisheshika.getByRole('button', { name: 'Also the lords of the kendras from the Āruḍha', exact: true }).click();
   await expect.poll(total).toBeGreaterThan(first);
+  // The count of Jagannatha Hora: nine grahas with the nodes, and the twelve Śayanādi states to mark; marking the state of a graha can only lower its count.
+  await vaisheshika.getByRole('button', { name: 'As Jagannatha Hora: kendras from the lord of the Āruḍha', exact: true }).click();
+  await expect(counts.getByRole('row')).toHaveCount(10);
+  const jhora = vaisheshika.getByTestId('vaisheshikamsa-jhora');
+  await expect(jhora.getByRole('button')).toHaveCount(12);
+  await expect(jhora.getByRole('button', { name: 'Upaveśana', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  const withKnown = await total();
+  for (const name of ['Śayana', 'Netrāṇi', 'Prakāśa', 'Gamana', 'Āgamana', 'Sabhā', 'Āgama', 'Bhojana', 'Nṛtyalipsā', 'Kautuka', 'Nidrā']) await jhora.getByRole('button', { name, exact: true }).click();
+  await expect.poll(total).toBeLessThanOrEqual(withKnown);
+  await expect(counts.getByRole('row').nth(1)).toContainText('(bad)');
+
   // The verses open in Sanskrit.
   await vaisheshika.getByText('The verses: BPHS 6.42–53 in Sanskrit').click();
   await expect(vaisheshika.getByText('स्वोच्चमूलत्रिकोणस्वभवनाधिपतेः शुभाः ।')).toBeVisible();

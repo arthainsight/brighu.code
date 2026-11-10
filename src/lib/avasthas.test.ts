@@ -47,6 +47,10 @@ const withSun = (birth: string): ChartData => ({
   debug: { ...chart.debug!, inputDateTime: birth, sunriseLocalHours: 6, previousSunriseLocalHours: -18 + 0.1 },
 });
 assert.equal(ghatiAtBirth(withSun('2000-01-01T06:00'), '2000-01-01T06:00'), 1, 'sunrise opens the first ghaṭī');
+// The moment is read as the page types it and as the chart keeps it, too.
+assert.equal(ghatiAtBirth(withSun('2000-01-01T06:00'), '01.01.2000 06.00.00'), ghatiAtBirth(withSun('2000-01-01T06:00'), '2000-01-01T06:00'));
+assert.equal(ghatiAtBirth(withSun('2000-01-01T06:00'), '2000-01-01 06:00:00'), ghatiAtBirth(withSun('2000-01-01T06:00'), '2000-01-01T06:00'));
+assert.equal(ghatiAtBirth(withSun('2000-01-01T06:00'), 'not a date'), null);
 assert.equal(ghatiAtBirth(withSun('2000-01-01T06:30'), '2000-01-01T06:30'), 2, 'twenty-four minutes make a ghaṭī');
 assert.equal(ghatiAtBirth(withSun('2000-01-01T12:00'), '2000-01-01T12:00'), 16, 'six hours after sunrise is the 16th');
 assert.equal(ghatiAtBirth(withSun('2000-01-01T05:00'), '2000-01-01T05:00'), 58, 'before sunrise the previous day is still counting');

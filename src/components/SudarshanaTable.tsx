@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import type { ChartData } from '@/types';
-import { NINE_GRAHAS, auspiciousness, computedGoodCounts, sudarshanaTable, type LordState } from '@/lib/sudarshanaTable';
+import { NINE_GRAHAS, auspiciousness, computedGoodCounts, sudarshanaTable, type GoodCountRule, type LordState } from '@/lib/sudarshanaTable';
+import { jhoraWeakGrahas, sayanadiStates } from '@/lib/vaisheshikamsa';
 import { SIGN_ABBR } from '@/lib/signs';
 import { useGrahaNames } from '@/lib/grahaNames';
 import { useT } from '@/lib/i18n';
@@ -19,11 +20,12 @@ const percent = (value: number) => (Math.round(value * 100) / 100).toFixed(2);
  * strength, the grahas that aspect the house, the Sarvāṣṭakavarga. The good counts of the grahas in the six divisional charts are the app's own Vaiśeṣikāṁśa count (BPHS 6.52); a count
  * typed in, as from Jagannatha Hora's Shadvarga view, takes its place.
  */
-export default function SudarshanaTable({ chart }: { chart: ChartData }) {
+export default function SudarshanaTable({ chart, birthDatetime = '' }: { chart: ChartData; birthDatetime?: string }) {
   const t = useT();
   const { code } = useGrahaNames();
   const [typed, setGood] = useState<Record<string, number>>({});
-  const computed = computedGoodCounts(chart);
+  const [rule, setRule] = useState<GoodCountRule>('bphs');
+  const computed = computedGoodCounts(chart, rule, rule === 'jhora' ? jhoraWeakGrahas(sayanadiStates(chart, birthDatetime)) : []);
   const good: Record<string, number | undefined> = { ...computed, ...typed };
   const rows = sudarshanaTable(chart, good);
   if (rows.length === 0) return null;
@@ -41,7 +43,14 @@ export default function SudarshanaTable({ chart }: { chart: ChartData }) {
       </p>
 
       <div className="space-y-1" data-sud="good-counts">
-        <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">{t('Good in the six divisional charts (0 to 6), for the V-AMSHA (Vaiśeṣikāṁśa) column: counted here as the vargas of the Ṣaḍvarga in which the graha is in its exaltation or own sign (BPHS 6.52; ANALYSIS → Bala → Vaiśeṣikāṁśa). The nodes have no such sign and are left out of the average. A number typed in a box, as from the Shadvarga view of Jagannatha Hora, takes the place of the count; an empty box brings it back.')}</div>
+        <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">{t('Good in the six divisional charts (0 to 6), for the V-AMSHA (Vaiśeṣikāṁśa) column. The first count is what BPHS 6.52 says for certain: the vargas in which the graha is in its exaltation or own sign; the nodes have no such sign and are left out of the average. The second is the count of Jagannatha Hora, which the worksheet copies: one reading of the unclear half of the verse, a kendra from the lord of the Āruḍha Lagna in the varga (ANALYSIS → Bala → Vaiśeṣikāṁśa explains it). A number typed in a box takes the place of the count; an empty box brings it back.')}</div>
+        <label className="inline-flex items-center gap-1 text-[10px] font-mono text-zinc-600 dark:text-zinc-300">
+          {t('counted')}
+          <select value={rule} data-sud="good-rule" onChange={event => setRule(event.target.value as GoodCountRule)} className="rounded border border-zinc-300 bg-white px-1 py-0.5 dark:border-zinc-700 dark:bg-zinc-900">
+            <option value="bphs">{t('BPHS 6.52: exaltation or own sign')}</option>
+            <option value="jhora">{t('as Jagannatha Hora (the worksheet)')}</option>
+          </select>
+        </label>
         <div className="flex flex-wrap gap-x-3 gap-y-1">
           {NINE_GRAHAS.map(name => (
             <label key={name} className="inline-flex items-center gap-1 text-[10px] font-mono text-zinc-600 dark:text-zinc-300">

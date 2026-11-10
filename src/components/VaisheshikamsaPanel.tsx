@@ -5,17 +5,22 @@ import type { ChartData } from '@/types';
 import type { BalaOptions } from '@/lib/balaOptions';
 import { VIMSOPAKA_SCHEMES, type SchemeKey } from '@/lib/vargaMatrix';
 import {
-  BHEDAKADI, KIMSHUKADI, PARIJATADI, VAISHESHIKA_SCHEMES, VAISHESHIKA_VERSES, calculateVaisheshikamsa, schemeVargas,
+  BHEDAKADI, JHORA_BAD_AVASTHAS_KNOWN, KIMSHUKADI, PARIJATADI, VAISHESHIKA_SCHEMES, VAISHESHIKA_VERSES, arudhaLagnaLord, calculateJhoraVaisheshikamsa, calculateVaisheshikamsa,
+  jhoraWeakGrahas, sayanadiStates, schemeVargas,
   type VaisheshikaCell, type VaisheshikaName, type VaisheshikaReading, type VaisheshikaSpoiler,
 } from '@/lib/vaisheshikamsa';
+import { SAYANADI } from '@/lib/avasthas';
 import { SIGN_NAMES } from '@/lib/signs';
 import { useT } from '@/lib/i18n';
 import { BODY_CELL, Heading, NAME_CELL, ROW, ScrollTable, VALUE_CELL } from './balaShared';
 
-const READINGS: { key: VaisheshikaReading; label: string }[] = [
+type Reading = VaisheshikaReading | 'jhora';
+const READINGS: { key: Reading; label: string }[] = [
   { key: 'own', label: 'Exaltation, mūlatrikoṇa and own sign' },
   { key: 'full', label: 'Also the lords of the kendras from the Āruḍha' },
+  { key: 'jhora', label: 'As Jagannatha Hora: kendras from the lord of the Āruḍha' },
 ];
+const CANCELLED_TEXT = { debilitated: 'debilitated in the varga', enemy: 'in the sign of an enemy in the varga', avastha: 'a bad Śayanādi state' } as const;
 const SPOILER_TEXT: Record<VaisheshikaSpoiler, string> = { combust: 'combust', defeated: 'defeated in a war', debilitated: 'debilitated', weak: 'Ṣaḍbala under the required' };
 const NAME_TABLES: { command: string; title: string; names: readonly VaisheshikaName[] }[] = [
   { command: 'vaisheshikamsa.names.kimshukadi', title: 'Ṣaḍvarga and Saptavarga (6.43–44); Mukuṭa is of the Saptavarga only.', names: KIMSHUKADI },
@@ -26,18 +31,23 @@ const ALL_VARGAS = schemeVargas('shodasavarga');
 const GOOD_CELL = 'bg-emerald-50 dark:bg-emerald-950/35 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800/70';
 const PLAIN_CELL = 'text-zinc-500 dark:text-zinc-400 border-zinc-100 dark:border-zinc-800';
 
-/** E: the exaltation sign; O: an own sign; K: a sign of a lord of a kendra from the Āruḍha. */
-const cellMark = (cell: VaisheshikaCell) => (cell.dignity === 'exalted' ? 'E' : cell.dignity === 'own' ? 'O' : cell.kendraLord ? 'K' : '');
+/** E: the exaltation sign; O: an own sign; K: a sign of a lord of a kendra from the Āruḍha (in the Jagannatha Hora count: a kendra from the lord of the Āruḍha; × when it is not counted). */
+const cellMark = (cell: VaisheshikaCell) => (cell.dignity === 'exalted' ? 'E' : cell.dignity === 'own' ? 'O' : cell.kendraLord ? (cell.cancelled ? 'K×' : 'K') : '');
 
 /**
  * The names of the good vargas of the grahas (BPHS 6.42-53, the Vaiśeṣikāṁśas): for the chart, how many good vargas each
  * graha has in the four schemes and what the count is called; the vargas one by one; and the tables of the names and the
  * verses in Sanskrit.
  */
-export default function VaisheshikamsaPanel({ chart, options }: { chart: ChartData; options?: BalaOptions }) {
+export default function VaisheshikamsaPanel({ chart, options, birthDatetime = '' }: { chart: ChartData; options?: BalaOptions; birthDatetime?: string }) {
   const t = useT();
-  const [reading, setReading] = useState<VaisheshikaReading>('own');
-  const result = calculateVaisheshikamsa(chart, reading, options);
+  const [reading, setReading] = useState<Reading>('own');
+  const [badStates, setBadStates] = useState<string[]>([...JHORA_BAD_AVASTHAS_KNOWN]);
+  const jhora = reading === 'jhora';
+  const states = jhora ? sayanadiStates(chart, birthDatetime) : {};
+  const result = jhora ? calculateJhoraVaisheshikamsa(chart, jhoraWeakGrahas(states, badStates)) : calculateVaisheshikamsa(chart, reading, options);
+  const alLord = jhora ? arudhaLagnaLord(chart) : null;
+  const toggleState = (name: string) => setBadStates(current => (current.includes(name) ? current.filter(item => item !== name) : [...current, name]));
 
   return (
     <div className="min-w-0 space-y-5" data-testid="vaisheshikamsa">
@@ -59,11 +69,29 @@ export default function VaisheshikamsaPanel({ chart, options }: { chart: ChartDa
           {t('BPHS 6.52 takes as good the vargas of the exaltation, the mūlatrikoṇa and the own sign, and those of the lords of the kendras from the Āruḍha. The first part is the usual count. With the second part nearly every varga counts, so it is a choice and not the count shown first.')}
           {result.arudhaSign !== null && <> {t('Āruḍha Lagna')}: {SIGN_NAMES[result.arudhaSign - 1]}; {t('the lords of its kendras')}: {result.kendraLords.join(', ')}.</>}
         </div>
+        {jhora && (
+          <div className="space-y-1.5 rounded-lg border border-amber-300 bg-amber-50/50 p-2.5 text-[10px] font-mono text-zinc-600 dark:border-amber-800 dark:bg-amber-950/20 dark:text-zinc-300" data-testid="vaisheshikamsa-jhora">
+            <div>
+              {t('One reading of BPHS 6.52–53, that of the program Jagannatha Hora, not the only one: the second half of 6.52 is taken as a kendra from the lord of the Āruḍha Lagna in each varga, and 6.53 as taking that kendra away from a graha debilitated in the varga, in a śatru or adhiśatru sign there, or in a bad Śayanādi avasthā. The verses do not say this much; the program’s settings are “AL lord of rasi chart (take kendra from him in vargas)” and Parāśara’s horā. Rahu and Ketu are counted with the signs the program gives them (Rahu: Gemini and Aquarius, Ketu: Sagittarius and Scorpio), which are not in the verses. Checked against the program for one chart.')}
+              {alLord && <> {t('The lord of the Āruḍha Lagna')}: {alLord}.</>}
+            </div>
+            <div>{t('The bad Śayanādi states: only Upaveśana was seen to be one in the program, Prakāśa and Nṛtyalipsā not; mark the others as the program shows them. The state follows the sunrise, so the program’s sunrise setting can change it.')}</div>
+            <div className="flex flex-wrap gap-1" role="group" aria-label={t('The bad Śayanādi states')}>
+              {SAYANADI.map(name => (
+                <button key={name} type="button" aria-pressed={badStates.includes(name)} onClick={() => toggleState(name)}
+                  className={`rounded border px-1.5 py-0.5 ${badStates.includes(name) ? 'border-red-400 bg-red-50 text-red-700 dark:border-red-700 dark:bg-red-950/40 dark:text-red-300' : 'border-zinc-300 text-zinc-500 dark:border-zinc-700 dark:text-zinc-400'}`}>
+                  {name}
+                </button>
+              ))}
+            </div>
+            {Object.keys(states).length === 0 && <div className="text-amber-700 dark:text-amber-400">{t('The Śayanādi states need the birth time and the sunrise; without them no graha is taken as weak.')}</div>}
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">
         <Heading command="vaisheshikamsa">{t('How many good vargas each graha has in the six, the seven, the ten and the sixteen vargas, and the name of the count by the Sanskrit of BPHS 6.43–51. One good varga, or none, has no name. The last column names what 6.53 says destroys the yoga. Rahu, Ketu and the Lagna are left out.')}</Heading>
-        <ScrollTable minWidth="min-w-[860px]" headers={[t('Planet'), ...VAISHESHIKA_SCHEMES.map(key => VIMSOPAKA_SCHEMES[key].label), t('Spoiled by (6.53)')]}>
+        <ScrollTable minWidth="min-w-[860px]" headers={[t('Planet'), ...VAISHESHIKA_SCHEMES.map(key => VIMSOPAKA_SCHEMES[key].label), jhora ? t('Śayanādi state') : t('Spoiled by (6.53)')]}>
           {result.rows.map(row => (
             <tr key={row.planet} className={ROW}>
               <td className={NAME_CELL}>{row.planet}</td>
@@ -76,9 +104,15 @@ export default function VaisheshikamsaPanel({ chart, options }: { chart: ChartDa
                   </td>
                 );
               })}
-              <td className={`${BODY_CELL} ${row.spoilers.length ? 'text-red-700 dark:text-red-300' : 'text-zinc-400 dark:text-zinc-600'}`}>
-                {row.spoilers.length ? row.spoilers.map(item => t(SPOILER_TEXT[item])).join(', ') : '—'}
-              </td>
+              {jhora ? (
+                <td className={`${BODY_CELL} ${badStates.includes(states[row.planet]) ? 'text-red-700 dark:text-red-300' : 'text-zinc-500 dark:text-zinc-400'}`}>
+                  {states[row.planet] ?? '—'}{badStates.includes(states[row.planet]) && <> ({t('bad')})</>}
+                </td>
+              ) : (
+                <td className={`${BODY_CELL} ${row.spoilers.length ? 'text-red-700 dark:text-red-300' : 'text-zinc-400 dark:text-zinc-600'}`}>
+                  {row.spoilers.length ? row.spoilers.map(item => t(SPOILER_TEXT[item])).join(', ') : '—'}
+                </td>
+              )}
             </tr>
           ))}
         </ScrollTable>
@@ -97,7 +131,7 @@ export default function VaisheshikamsaPanel({ chart, options }: { chart: ChartDa
                 const cell = row.vargas[key];
                 const mark = cellMark(cell);
                 return (
-                  <td key={key} className={`p-2 border whitespace-nowrap ${cell.good ? GOOD_CELL : PLAIN_CELL}`}>
+                  <td key={key} title={cell.cancelled ? t(CANCELLED_TEXT[cell.cancelled]) : undefined} className={`p-2 border whitespace-nowrap ${cell.good ? GOOD_CELL : PLAIN_CELL}`}>
                     <span className={cell.good ? 'font-bold' : ''}>{cell.sign}</span>
                     {mark && <span className="ml-1 text-[9px] opacity-75">{mark}</span>}
                   </td>

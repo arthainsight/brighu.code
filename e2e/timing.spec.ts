@@ -808,6 +808,10 @@ test('TIMING Sudarśana draws the three charts and makes the house of the year a
   await expect(firstRow.locator('[data-sud-col="vamsha"]')).toHaveText(/^\d+\.\d{2}$/);
   await expect(worksheet.locator('[data-sud-good="Sun"]')).toHaveAttribute('placeholder', /^[0-6]$/);
   await expect(worksheet.locator('[data-sud-good="Rahu"]')).toHaveAttribute('placeholder', '–');
+  // Counted as Jagannatha Hora does, the nodes have a count too; the BPHS count is the first.
+  await worksheet.locator('[data-sud="good-rule"]').selectOption('jhora');
+  await expect(worksheet.locator('[data-sud-good="Rahu"]')).toHaveAttribute('placeholder', /^[0-6]$/);
+  await worksheet.locator('[data-sud="good-rule"]').selectOption('bphs');
   for (const name of ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']) await worksheet.locator(`[data-sud-good="${name}"]`).fill('3');
   await expect(firstRow.locator('[data-sud-col="vamsha"]')).toHaveText('50.00');
 

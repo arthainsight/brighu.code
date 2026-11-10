@@ -173,7 +173,7 @@ export default function AnalysisPanel({
         </div>
       )}
 
-      {view === 'bala' && <BalaPanel chart={chart} />}
+      {view === 'bala' && <BalaPanel chart={chart} birthDatetime={birthDatetime} />}
 
       {view === 'degrees' && <SensitiveDegreesPanel chart={chart} nakshatraAdjust={nakshatraAdjust} />}
 
