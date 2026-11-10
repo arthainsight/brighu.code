@@ -47,6 +47,19 @@ test('ANALYSIS Aṣṭakavarga shows the Prastāra, the Śodhana with the Piṇ�
   expect(sav.reduce((sum, value) => sum + value, 0)).toBe(337);
   await expect(visible(page, page.locator('[data-phala-khandas]')).locator('tbody tr')).toHaveCount(3);
 
+  // Money, after a modern lesson: three comparisons of houses, the two sums against 164 and 76 (with the three houses left out they make 337), and the grahas of money.
+  await part('Money').click();
+  const finance = visible(page, page.locator('[data-finance]'));
+  await expect(finance.locator('[data-finance-compare] tbody tr')).toHaveCount(3);
+  await expect(finance.locator('[data-finance-row="income12"]')).toHaveAttribute('data-finance-holds', /true|false/);
+  const sumOf = async (name: string) => Number((await finance.locator(`[data-finance-sum="${name}"] td`).nth(1).textContent())!.split('=')[1]);
+  const [wealth, loss] = [await sumOf('wealth'), await sumOf('loss')];
+  expect(wealth + loss + sav[2] + sav[4] + sav[6]).toBe(337);
+  expect(loss).toBe(sav[5] + sav[7] + sav[11]);
+  await expect(finance.locator('[data-finance-leak]')).toHaveAttribute('data-finance-leak', /^(6|8|12)(,(8|12))*$/);
+  expect(await finance.locator('[data-finance-grahas] tbody tr').count()).toBeGreaterThanOrEqual(3);
+  await expect(finance.locator('[data-finance-graha="Jupiter"]')).toContainText('/ 8');
+
   // The Kakṣyā of the seven grahas.
   await part('Kakṣyā').click();
   await expect(visible(page, page.locator('[data-kakshya]')).locator('tbody tr')).toHaveCount(7);

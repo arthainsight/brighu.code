@@ -114,3 +114,21 @@ Relative houses are counted from the contributing graha/Lagna, as in the Parāś
 The first three differences are in the Moon's BAV as stated in Bṛhajjātaka 9.2; the last is Venus from Mars in Bṛhajjātaka 9.6. The remaining contributor rows match the current Parāśara table. Both systems retain the same BAV totals (48, 49, 39, 54, 56, 52, 39) and SAV total (337), because the changes shift positions without changing the number of bindus in each affected contributor row.
 
 Implementation: `VARAHAMIHIRA_AV` and the `AshtakavargaSystem` parameter in `src/lib/ashtakavarga.ts`; the UI source selector is in `src/components/AshtakavargaPanel.tsx`. The default remains Parāśara, so existing charts retain their prior output unless the user selects Varāhamihira.
+
+## Money: a modern lesson, not BPHS (v4.34)
+
+ANALYSIS → Aṣṭakavarga → Money follows a lesson on the Aṣṭakavarga and finances, known here only from a written summary given by the user; the lesson itself and whatever book
+it rests on **were not read**, and nothing in it was found in BPHS 66–72. The code is `src/lib/ashtakavargaFinance.ts`, the test `ashtakavargaFinance.test.ts`.
+
+| The lesson | In the page |
+|---|---|
+| First rule: the Lagna against the 12th (and the Lagna over 28), the 11th against the 12th, the 2nd against the 11th, by the Sarvāṣṭakavarga | three rows; "more" is strictly more, an equal number does not pass |
+| Second rule: the houses 1, 2, 4, 9, 10, 11 added, over 164: a steady flow of money | the sum and the limit |
+| The houses 6, 8, 12 added, over 76: large expenses | the sum and the limit |
+| The one of 6, 8, 12 with the most bindus shows where the money goes (the 6th lawsuits, debts, sudden illness; the 8th sudden losses, the spouse's family, long illness, disputes; the 12th failed investments, expenses abroad, luxury) | shown always, with a note that the lesson reads it when the expenses are large; equal houses are all named |
+| A graha with many bindus in its own Bhinnāṣṭakavarga gives gain even when debilitated or combust (the example: the Moon with 7 of 8; Venus with 4 "average") | Jupiter, Venus and Mars as the kārakas the lesson names, and the lords of the 2nd and the 11th; **the classes are taken here** (5 or more many, 4 average, 3 or fewer few): the lesson gives only the two examples |
+
+Checked against the lesson's own example (the 1st 32, 2nd 25, 4th 30, 6th 29, 8th 31, 9th 23, 10th 32, 11th 34, 12th 20): 176 and 80, the 8th the leak, the 11th over the 12th and the
+2nd under the 11th, as the lesson says. The chart of the example is not known, so the bindus themselves are not checked against it. The 5th and the 9th, which the lesson names as
+houses of fortune, are in neither rule and are not read.
+

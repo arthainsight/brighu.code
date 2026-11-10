@@ -7,6 +7,7 @@ import type { AshtakavargaPlanet, AshtakavargaSystem } from '@/lib/ashtakavarga'
 import { SIGN_ABBR } from '@/lib/signs';
 import { KakshyaView, PrastaraView, ShodhanaView } from './AshtakavargaReductions';
 import { PhalaView } from './AshtakavargaPhala';
+import { FinanceView } from './AshtakavargaFinance';
 
 import { useT } from '@/lib/i18n';
 const PLANET_ABBR: Record<string, string> = {
@@ -20,7 +21,7 @@ const PLANET_ABBR: Record<string, string> = {
 };
 
 type AvSelection = 'SAV' | AshtakavargaPlanet;
-type AvPart = 'bhinna' | 'prastara' | 'shodhana' | 'phala' | 'kakshya';
+type AvPart = 'bhinna' | 'prastara' | 'shodhana' | 'phala' | 'finance' | 'kakshya';
 
 function numberColor(value: number, isSav: boolean): string {
   const neutral = isSav ? value === 28 : value === 4;
@@ -98,7 +99,7 @@ export default function AshtakavargaPanel({ chart }: { chart: ChartData }) {
       </div>
 
       <div className="mb-3 flex flex-wrap gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800" role="group" aria-label={t('Aṣṭakavarga parts')}>
-        {([['bhinna', 'Bhinna & Sarva'], ['prastara', 'Prastāra'], ['shodhana', 'Śodhana & Piṇḍa'], ['phala', 'Effects'], ['kakshya', 'Kakṣyā']] as const).map(([key, label]) => (
+        {([['bhinna', 'Bhinna & Sarva'], ['prastara', 'Prastāra'], ['shodhana', 'Śodhana & Piṇḍa'], ['phala', 'Effects'], ['finance', 'Money'], ['kakshya', 'Kakṣyā']] as const).map(([key, label]) => (
           <button key={key} type="button" aria-pressed={part === key} onClick={() => setPart(key)} className={`rounded px-2.5 py-1 text-[10px] font-mono ${part === key ? 'bg-white text-emerald-700 shadow-sm dark:bg-zinc-700 dark:text-emerald-400' : 'text-zinc-500'}`}>{t(label)}</button>
         ))}
       </div>
@@ -116,6 +117,7 @@ export default function AshtakavargaPanel({ chart }: { chart: ChartData }) {
       {part === 'prastara' && <PrastaraView chart={chart} system={system} />}
       {part === 'shodhana' && <ShodhanaView chart={chart} system={system} />}
       {part === 'phala' && <PhalaView chart={chart} system={system} />}
+      {part === 'finance' && <FinanceView chart={chart} system={system} />}
       {part === 'kakshya' && <KakshyaView chart={chart} system={system} />}
 
       {part === 'bhinna' && (view === 'north' ? (

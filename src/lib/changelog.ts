@@ -1,5 +1,16 @@
 export const CHANGELOG = [
   {
+    version: 'v4.34',
+    date: '2026-11-10',
+    title: 'Aṣṭakavarga: a simple reading of money',
+    changes: [
+      'ANALYSIS → Aṣṭakavarga → Money: two rules on the Sarvāṣṭakavarga of the houses, after a modern lesson on the Aṣṭakavarga and finances. First, houses compared: the Lagna against the 12th (the self against the losses, the Lagna also over 28), the 11th against the 12th (income against expenses) and the 2nd against the 11th (saving against earning). Second, sums: the houses 1, 2, 4, 9, 10 and 11 over 164 promise a steady flow of money; the houses 6, 8 and 12 over 76 warn of large expenses, and the one of the three with the most bindus shows where the money goes.',
+      'With them, the grahas of money (Jupiter, Venus and Mars as kārakas, and the lords of the 2nd and the 11th) by the bindus of the sign they stand in, in their own Bhinnāṣṭakavarga: with many bindus a debilitated or combust graha is marked as outweighed by them.',
+      'This is a teacher\'s method and not a rule of BPHS; the page says so. The limits are the lesson\'s; the classes of the bindus (5 or more many, 4 average, 3 or fewer few) are taken here. Checked against the lesson\'s own example: 176 and 80, the 8th house the leak.',
+      'Updated the application version to v4.34.',
+    ],
+  },
+  {
     version: 'v4.33',
     date: '2026-11-10',
     title: 'The Vaiśeṣikāṁśa as Jagannatha Hora counts it',
