@@ -40,6 +40,7 @@ This is not meant to replace traditional study — it's meant to **accelerate it
 * BCP (Bhṛgu Chakra Paddhati) year/month highlighting
 * Special lagnas and chara karakas
 * Ashtakavarga: SAV and per-planet BAV, the Prastāra, the Trikoṇa and Ekādhipatya Śodhana with the Rāśi, Graha and Śodhya Piṇḍas (from the Sanskrit of BPHS 67–69, checked against PyJHora), the effects of BPHS 70 and 72 (the point of Saturn for each graha, the signs for auspicious acts, the Sarvāṣṭakavarga by house) and the Kakṣyā; and a simple reading of money from a modern lesson (houses compared, the sums against 164 and 76, where the money goes)
+* True signs (ANALYSIS): the signs the grahas take in D1, D9, D7, D12, D10 and D16 with weights, overall and for each graha
 * Wealth assessment (ANALYSIS): the Moon from the Sun, the horā as a table of Leo against Cancer, the houses of money and the pattern of the dhana yogas with their spoilers, and the confirmation from the Moon and the vargas
 * Mixed charts (the D1 chart inside, any varga outside, in the same houses)
 * Selectable ayanamsa, including a signed custom offset from Lahiri

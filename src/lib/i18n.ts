@@ -14,6 +14,13 @@ export const LANGUAGES: { value: Language; label: string }[] = [
 ];
 
 export const FI: Record<string, string> = {
+  "True signs": "Todelliset merkit",
+  "The signs the grahas take in six divisions, D1, D9, D7, D12, D10 and D16, counted together with the weights {weights} (out of {total}). After a video lesson on a modern True Signs report: the weights were not given in the lesson but found from a chart it shows (docs/true-signs.md), and this is not a rule of a classic. The divisions are the Parāśara ones, from the longitudes of the chart as it is cast.": "Merkit, joihin grahat asettuvat kuudessa jaossa, D1, D9, D7, D12, D10 ja D16, laskettuna yhteen painoilla {weights} (yhteensä {total}). Videooppitunnin mukaan nykyaikaisesta True Signs -raportista: painoja ei annettu oppitunnilla vaan ne päätettiin sen näyttämästä kartasta (docs/true-signs.md), eikä tämä ole klassisen tekstin sääntö. Jaot ovat Parāśaran, kartan laskentapituuksista sellaisinaan.",
+  "Grahas counted": "Mukaan lasketut grahat",
+  "Overall balance of signs": "Merkkien kokonaisjakauma",
+  "Balance of signs of one graha": "Yhden grahan merkkijakauma",
+  "Division": "Jako",
+  "Weight": "Paino",
   "Saturn is here now": "Saturnus on tässä nyt",
   "Saturn is in the trine now": "Saturnus on trigonissa nyt",
   "Transiting Saturn": "Transiittisaturnus",

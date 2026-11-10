@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: 'v4.38',
+    date: '2026-11-10',
+    title: 'ANALYSIS → True signs',
+    changes: [
+      'ANALYSIS → True signs: the signs the grahas take in six divisions, D1, D9, D7, D12, D10 and D16, counted together with the weights 4, 3, 2, 2, 1 and 1 (out of 13): the overall balance of signs in per cent (the seven grahas, with the Lagna, Rāhu and Ketu to add) and the balance of each graha with the sign it takes in each division. After a video lesson on a modern True Signs report; it is not a rule of a classic and the page says so.',
+      'The lesson gives the D9 as three quarters of the D1 and the other weights only roughly; the weights were found from the Venus of the chart it shows, whose six numbers (30.8, 23.1, 15.4, 15.4, 7.7 and 7.7 %) these weights give exactly with the Parāśara divisions. Not built: the sign rulers against the Lagna lord, the positive and negative spectrum and the dignity of the divisions. In docs/true-signs.md.',
+      'Updated the application version to v4.38.',
+    ],
+  },
+  {
     version: 'v4.37',
     date: '2026-11-10',
     title: 'TIMING → Sign changes: nakṣatra changes',
