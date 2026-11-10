@@ -134,7 +134,7 @@ export default function WealthAssessmentPanel({ chart }: { chart: ChartData }) {
       <div>
         <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600">{t('Wealth assessment')}</div>
         <p className={`mt-1 ${NOTE}`}>
-          {t('A reading of self-earned wealth in three steps and a confirmation, after a modern teacher’s article. It is a method and not a rule of one text: what rests on a verse says which (the Bṛhajjātaka and the Phaladīpikā for steps 1 and 2, BPHS 7 for the horā); the rest is the teacher’s reading. “Strong” is the Ṣaḍbala of the graha at or over what it needs; aspects are by whole signs. The sources and what could be checked are in docs/wealth-assessment-sources.md.')}
+          {t('A reading of self-earned wealth in three steps and a confirmation, after a modern teacher’s article. It is a method and not a rule of one text: what rests on a verse says which (the Bṛhajjātaka and the Phaladīpikā for steps 1 and 2, BPHS 6 for the horā); the rest is the teacher’s reading. “Strong” is the Ṣaḍbala of the graha at or over what it needs; aspects are by whole signs. The sources and what could be checked are in docs/wealth-assessment-sources.md.')}
         </p>
       </div>
 
@@ -167,7 +167,7 @@ export default function WealthAssessmentPanel({ chart }: { chart: ChartData }) {
 
       <section className="space-y-2" data-wealth-step="2">
         <h4 className={H4}>{t('Step 2: the horā')}</h4>
-        <p className={NOTE}>{t('A horā is half a sign of 15° and is the Sun’s (Leo) or the Moon’s (Cancer) and no other sign: in odd signs the first half is the Sun’s, in even signs the Moon’s (BPHS 7.5–6). So there is no horā chart of twelve houses, only this table of the grahas in Leo or in Cancer.')}</p>
+        <p className={NOTE}>{t('A horā is half a sign of 15° and is the Sun’s (Leo) or the Moon’s (Cancer) and no other sign: in odd signs the first half is the Sun’s, in even signs the Moon’s (BPHS 6.5–6). So there is no horā chart of twelve houses, only this table of the grahas in Leo or in Cancer.')}</p>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] border-collapse text-center font-mono text-xs" data-wealth-hora>
             <thead>
@@ -209,7 +209,7 @@ export default function WealthAssessmentPanel({ chart }: { chart: ChartData }) {
         <p className={NOTE}>{t('A house is strong when its lord is strong and it has an aspect from its lord or from Jupiter (the kāraka of the 2nd and the 11th). The 2nd and the 11th are the money; the 9th (favour of those who hold the resources) and the 5th (merit and enjoyment) support them.')}</p>
         <p className={`font-mono text-xs text-zinc-700 dark:text-zinc-200`} data-wealth-earning={result.earning}>{t(EARNING[result.earning])}</p>
         {yogaTable(yogas, 'lagna')}
-        <p className={NOTE}>{t('The pattern of Bhāvārtharatnākara’s dhana yoga: a relationship (an exchange of signs, a conjunction or a mutual aspect) between the lords of 2 and 5, or 2 and 11; or the 5th and the 9th lords each in or aspecting their own house; or the 2nd and the 11th. The lords of 6, 8 and 12 joining or aspecting the grahas of a relationship spoil it; Jupiter, the kāraka, only lowers it. Joining is read here as a conjunction with, or an aspect on, either graha.')}</p>
+        <p className={NOTE}>{t('The pattern of the dhana yoga of Bhāvārtharatnākara 2.1–2: a relationship (an exchange of signs, a conjunction or a mutual aspect) between the lords of 2 and 5, or 2 and 11; or the 5th and the 9th lords each in or aspecting their own house; or the 2nd and the 11th. The lords of 6, 8 and 12 joining or aspecting the grahas of a relationship spoil it; Jupiter, the kāraka, only lowers it. Joining is read here as a conjunction with, or an aspect on, either graha.')}</p>
         {result.singleMoneyLord && (
           <div className="font-mono text-xs text-zinc-700 dark:text-zinc-200" data-wealth-single>
             {fill(t('{graha} rules both the 2nd and the 11th: it must be strong, its dispositor strong, and it must join the lord of the 5th or the 9th.'), { graha: graha(result.singleMoneyLord.graha) })}{' '}

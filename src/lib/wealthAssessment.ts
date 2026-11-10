@@ -1,6 +1,6 @@
 // A reading of self-earned wealth in three steps and a confirmation, after a modern teacher's article on the Horā chart and wealth (given by the
 // user; docs/wealth-assessment-sources.md has the verses it names and what could be checked). The article is a method, not a rule of one text:
-// the parts that rest on a verse say which (Bṛhajjātaka 13.1 and the Phaladīpikā's horā verse, BPHS 7 for the horā itself); the rest are the teacher's
+// the parts that rest on a verse say which (Bṛhajjātaka 13.1 and the Phaladīpikā's horā verse, BPHS 6 for the horā itself); the rest are the teacher's
 // readings, and the view says so. "Strong" is the Ṣaḍbala of the graha at or over what it needs (as in the topic yogas); aspects are by whole signs.
 //
 //  1. The structure of the Sun and the Moon: the Moon's house counted from the Sun (kendra, paṇapara, āpoklima).
@@ -70,7 +70,7 @@ export interface HoraRow {
   strong: boolean | null;
 }
 
-/** The horā of a longitude in a sign: BPHS 7.5–6. Odd signs: the first 15° the Sun's; even signs: the first 15° the Moon's. */
+/** The horā of a longitude in a sign: BPHS 6.5–6. Odd signs: the first 15° the Sun's; even signs: the first 15° the Moon's. */
 export function horaOf(sign: number, degree: number): { owner: HoraOwner; horaSign: 5 | 4 } {
   const first = degree < 15;
   const sun = isOdd(sign) ? first : !first;

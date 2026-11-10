@@ -1,4 +1,4 @@
-// The wealth assessment (wealthAssessment.ts): the horā by its definition (BPHS 7.5–6), the Moon from the Sun (Bṛhajjātaka 13.1), the relationships and spoilers of the dhana yoga pattern.
+// The wealth assessment (wealthAssessment.ts): the horā by its definition (BPHS 6.5–6), the Moon from the Sun (Bṛhajjātaka 13.1), the relationships and spoilers of the dhana yoga pattern.
 import assert from 'node:assert/strict';
 import { assessWealth, dhanaYogas, horaOf, horaTable, relationship, sunMoonStructure, type TopicContext } from './wealthAssessment';
 import { calcD2 } from './varga';
