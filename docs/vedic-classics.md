@@ -12,7 +12,7 @@ Dates and authors are the traditional ones; most are disputed. "Found" is an edi
 
 | Text | Traditional author and date | Found on archive.org | In the app |
 |---|---|---|---|
-| Bṛhat Parāśara Horā Śāstra | Parāśara; the present text medieval | the Sanskrit with IAST of enjoylearningsanskrit.com (97 chapters); `BrihatParasharHoraShastra` (san) | read in the Sanskrit: Shadbala, the daśās, Kālachakra (`dasha-vs-sources.md`) |
+| Bṛhat Parāśara Horā Śāstra | Parāśara; the present text medieval | the Sanskrit with IAST of enjoylearningsanskrit.com (97 chapters); `BrihatParasharHoraShastra` (san) | read in the Sanskrit: Shadbala, the daśās, Kālachakra (`dasha-vs-sources.md`), the names of the good vargas 6.42–53 (`vaisheshikamsa-sources.md`, also in the printed edition of Devacandra Jhā, `bmmv_brihat-parashar-hora-shastra-of-parashar-muni-with-sudha-commentary-by-pt.-dev-c`) |
 | Bṛhat Jātaka | Varāhamihira, c. 500 | `jyotisha` (san, Devanagari) | downloaded |
 | Laghu Jātaka | Varāhamihira | not searched separately | no |
 | Sārāvalī | Kalyāṇavarman, c. 800 | `saravali00kalyuoft` (san) | downloaded |

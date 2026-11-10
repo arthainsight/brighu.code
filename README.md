@@ -89,6 +89,7 @@ Overlap and Systems), among them:
 * Sarvatobhadra chakra: the 9 × 9 chart of the nakṣatras (with Abhijit), vowels, consonants, signs, tithi groups and weekdays, with the grahas in their squares and their vedha (across the chart and on the two diagonals), the squares the lines cross, the syllable of a name and the birth points a graha pierces
 * Kota Chakra: the 28 nakṣatras (with Abhijit) in the four squares of the fort (Bāhya, Prākāra, Durgāntara, Stambha), counted from the Moon's nakṣatra, with the grahas in their squares, natal and transiting, and the Kota Swāmī and Kota Pāla
 * Yoga detection with the reason each yoga holds or not, and a strength: the Pañcha Mahāpuruṣa, Raja, Dhana, Solar and Lunar yogas, the 32 Nabhasa yogas of BPHS 35 (Ashraya, Dala, Akriti and Sankhya), Gajakesari, Lakshmi, Maha Raja, Dharma-Karmadhipati, the Maha, Khala and Dainya Parivartanas, Harsha, Sarala and Vimala (Viparita Raja), Neecha Bhanga, Khadga, Kusuma and Matsya, and from BPHS 36 and 37 the Lagna yogas, Vasumati, Kemadruma and its cancellation, Varishta, Sama and Adhama, Parvata, Kahala, Chamara, Shankha, Bheri, Mridanga, Srinatha, Sharada, Kurma, Kalanidhi, Kalpadruma, Hari, Hara, Brahma and Lagnaadhi (and Parijata, from Raman and JHora)
+* Vaiśeṣikāṁśa (ANALYSIS → Bala): the names of the good vargas of the grahas from the Sanskrit of BPHS 6.42–53 (Kiṁśuka … Mukuṭa, Pārijāta … Śrīdhāma, Bhedaka … Śrīvallabha), with the tables of the names in Devanagari and the verses (`docs/vaisheshikamsa-sources.md`)
 * Avasthās, sahams, panchanga
 
 ### Research tools

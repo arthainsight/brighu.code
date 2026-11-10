@@ -1,5 +1,17 @@
 export const CHANGELOG = [
   {
+    version: 'v4.31',
+    date: '2026-11-10',
+    title: 'The Vaiśeṣikāṁśa tables, from the Sanskrit of BPHS',
+    changes: [
+      'ANALYSIS → Bala → Vaiśeṣikāṁśa: the names of the good vargas of a graha, read in the Sanskrit of BPHS 6.42–53. For each of the seven grahas the view counts the vargas in which it stands in its exaltation, mūlatrikoṇa or own sign, in the six, the seven, the ten and the sixteen vargas, and gives the name of the count in IAST and Devanagari: Kiṁśuka, Vyañjana, Cāmara, Chatra, Kuṇḍala and Mukuṭa (Ṣaḍvarga and Saptavarga); Pārijāta, Uttama, Gopura, Siṁhāsana, Pārāvata, Devaloka, Brahmaloka, Śakravāhana and Śrīdhāma (Daśavarga); Bhedaka to Śrīvallabha (Ṣoḍaśavarga).',
+      'A second table shows the sign of every graha in the sixteen vargas with the ones that count, and three tables give all the names with the word of the verse for the number (śara 5, vasu 8, dig 10, rudra 11, sūrya 12, viśva 13, śakra 14, tithi 15, bhūpa 16). The twelve verses can be opened in Devanagari and IAST.',
+      'The second half of 6.52 (the vargas of the lords of the kendras from the Āruḍha) is a choice in the view: with it nearly every varga counts, and the half-verse is not clear. 6.53 is shown as a column: combust, defeated in a war, debilitated, or a Ṣaḍbala under the required; the Śayana states are not judged.',
+      'The text was read in two online digitizations and in the printed edition of Devacandra Jhā (Chaukhamba); the misprints of the online text (kumuma for kusuma, srīvallabha for śrīvallabha) are corrected from the print. docs/vaisheshikamsa-sources.md has the comparison.',
+      'Updated the application version to v4.31.',
+    ],
+  },
+  {
     version: 'v4.30',
     date: '2026-11-09',
     title: 'The worksheet of the twelve houses in the Sudarśana Chakra',

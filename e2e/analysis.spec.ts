@@ -1028,6 +1028,27 @@ test('ANALYSIS Bala has a diagram and a table for the Ṣaḍbala, the Bhāva Ba
   await expect(vimsopakaOptions.getByLabel('The temporary friendship in the divisional charts', { exact: true })).toBeVisible();
   await expect(vimsopakaOptions.getByLabel('Dig Bala: the points', { exact: true })).toHaveCount(0);
 
+  // Vaiśeṣikāṁśa: the good vargas of the seven grahas in the four schemes, the sixteen vargas, and the names of BPHS 6.43-51 in Devanagari.
+  await visible(page, page.getByRole('button', { name: 'Vaiśeṣikāṁśa', exact: true })).click();
+  const vaisheshika = visible(page, page.getByTestId('vaisheshikamsa'));
+  await expect(vaisheshika.getByText('> vaisheshikamsa', { exact: true })).toBeVisible();
+  const counts = vaisheshika.getByRole('table').first();
+  await expect(counts.getByRole('row')).toHaveCount(8);
+  await expect(counts.getByRole('row').nth(1)).toContainText(/\d \/ 6.*\d \/ 7.*\d+ \/ 10.*\d+ \/ 16/);
+  await expect(vaisheshika.getByRole('table').nth(1).locator('th')).toHaveCount(17);
+  await expect(vaisheshika.getByRole('cell', { name: 'पारिजात', exact: true })).toBeVisible();
+  await expect(vaisheshika.getByRole('cell', { name: 'श्रीवल्लभ', exact: true })).toBeVisible();
+  await expect(vaisheshika.getByRole('cell', { name: 'Śrīdhāma', exact: true })).toBeVisible();
+  // The calculation choices of the other views are not shown; the one choice is the second half of 6.52, which never lowers a count.
+  await expect(visible(page, page.getByTestId('bala-options'))).toHaveCount(0);
+  const total = async () => (await counts.getByRole('row').allInnerTexts()).slice(1).reduce((sum, row) => sum + Number(row.match(/(\d+) \/ 16/)?.[1]), 0);
+  const first = await total();
+  await vaisheshika.getByRole('button', { name: 'Also the lords of the kendras from the Āruḍha', exact: true }).click();
+  await expect.poll(total).toBeGreaterThan(first);
+  // The verses open in Sanskrit.
+  await vaisheshika.getByText('The verses: BPHS 6.42–53 in Sanskrit').click();
+  await expect(vaisheshika.getByText('स्वोच्चमूलत्रिकोणस्वभवनाधिपतेः शुभाः ।')).toBeVisible();
+
   expect(errors).toEqual([]);
 });
 

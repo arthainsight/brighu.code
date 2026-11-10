@@ -6,18 +6,20 @@ import { useT } from '@/lib/i18n';
 import { useBalaOptions } from '@/hooks/useBalaOptions';
 import BalaOptionsPanel from './BalaOptionsPanel';
 import VimsopakaPanel from './VimsopakaPanel';
+import VaisheshikamsaPanel from './VaisheshikamsaPanel';
 import ShadbalaPanel from './ShadbalaPanel';
 import BhavaBalaPanel from './BhavaBalaPanel';
 
-type BalaView = 'shadbala' | 'bhava' | 'vimsopaka';
+type BalaView = 'shadbala' | 'bhava' | 'vimsopaka' | 'vaisheshika';
 
 const TABS: { key: BalaView; label: string }[] = [
   { key: 'shadbala', label: 'Ṣaḍbala' },
   { key: 'bhava', label: 'Bhāva Bala' },
   { key: 'vimsopaka', label: 'Vimśopaka' },
+  { key: 'vaisheshika', label: 'Vaiśeṣikāṁśa' },
 ];
 
-/** The strengths of the grahas and the houses: Ṣaḍbala, Bhāva Bala and Vimśopaka Bala, each with its diagram and table. */
+/** The strengths of the grahas and the houses: Ṣaḍbala, Bhāva Bala and Vimśopaka Bala, each with its diagram and table, and the names of the good vargas (Vaiśeṣikāṁśa). */
 export default function BalaPanel({ chart }: { chart: ChartData | null | undefined }) {
   const t = useT();
   const [view, setView] = useState<BalaView>('shadbala');
@@ -26,7 +28,7 @@ export default function BalaPanel({ chart }: { chart: ChartData | null | undefin
 
   return (
     <div className="min-w-0 space-y-4">
-      <div className="inline-flex gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800/50">
+      <div className="inline-flex flex-wrap gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800/50">
         {TABS.map(tab => (
           <button
             key={tab.key}
@@ -38,10 +40,12 @@ export default function BalaPanel({ chart }: { chart: ChartData | null | undefin
           </button>
         ))}
       </div>
-      <BalaOptionsPanel view={view} options={options} onChange={update} onReset={reset} />
+      {/* The Vaiśeṣikāṁśa has its one choice in its own view; the Ṣaḍbala choices reach it only through the weak graha of 6.53. */}
+      {view !== 'vaisheshika' && <BalaOptionsPanel view={view} options={options} onChange={update} onReset={reset} />}
       {view === 'shadbala' && <ShadbalaPanel chart={chart} options={options} />}
       {view === 'bhava' && <BhavaBalaPanel chart={chart} options={options} />}
       {view === 'vimsopaka' && <VimsopakaPanel chart={chart} options={options} />}
+      {view === 'vaisheshika' && <VaisheshikamsaPanel chart={chart} options={options} />}
     </div>
   );
 }
