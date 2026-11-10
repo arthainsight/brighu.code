@@ -6,13 +6,16 @@ import { COMBUST_ORBS, collectTimingEvents, type TimingEvent } from '@/lib/signC
 import type { LongitudeSeries } from '@/lib/transitHits';
 import { useT } from '@/lib/i18n';
 import { useGrahaNames } from '@/lib/grahaNames';
-import { SIGN_NAMES } from '@/lib/signs';
+import { SIGN_ABBR, SIGN_NAMES } from '@/lib/signs';
+import { NAKSHATRA_NAMES } from '@/lib/nakshatras';
 import { pad2 } from '@/lib/dateFormat';
 import { signChangesUrl } from '@/lib/apiParams';
 import { useDebouncedJson } from '@/hooks/useDebouncedJson';
 
 type Props = {
   chart: ChartData;
+  /** The chart's nakṣatra offset in degrees. */
+  nakshatraAdjust?: number;
   targetDate: string;
   calculationSettings?: CalculationSettings;
   /** Moves the transit overlay to a moment (DD.MM.YYYY HH.MM.SS). */
@@ -41,12 +44,13 @@ function formatMoment(time: number): string {
  * When a graha moves into the next sign, from the target date onwards, with
  * the house the new sign is from the natal ascendant. Loaded only when opened.
  */
-export default function SignChangesPanel({ chart, targetDate, calculationSettings, onSetTransit }: Props) {
+export default function SignChangesPanel({ chart, targetDate, calculationSettings, onSetTransit, nakshatraAdjust = 0 }: Props) {
   const t = useT();
   const { code } = useGrahaNames();
   const [selected, setSelected] = useState<string[]>([...DEFAULT_BODIES]);
   const [days, setDays] = useState(92);
   const [stations, setStations] = useState(true);
+  const [nakshatras, setNakshatras] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const bodies = BODIES.filter(body => selected.includes(body));
   // Combustion compares Mercury and Venus with the Sun, so the Sun is fetched along.
@@ -60,9 +64,9 @@ export default function SignChangesPanel({ chart, targetDate, calculationSetting
     for (const [body, s] of Object.entries(data.series)) {
       series[body] = { start: data.start, step: s.step, longitudes: s.longitudes };
     }
-    return collectTimingEvents(series, bodies, stations);
+    return collectTimingEvents(series, bodies, stations, nakshatras ? { adjust: nakshatraAdjust } : false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, stations]);
+  }, [data, stations, nakshatras, nakshatraAdjust]);
 
   const rows = showAll ? events : events.slice(0, FIRST_ROWS);
   const house = (sign: number) => ((sign - chart.ascendant.sign + 12) % 12) + 1;
@@ -95,6 +99,9 @@ export default function SignChangesPanel({ chart, targetDate, calculationSetting
         <button type="button" aria-pressed={stations} onClick={() => { setStations(v => !v); setShowAll(false); }} className={chip(stations)}>
           {t('stations & combustion')}
         </button>
+        <button type="button" aria-pressed={nakshatras} onClick={() => { setNakshatras(v => !v); setShowAll(false); }} className={chip(nakshatras)} data-nakshatra-changes-toggle>
+          {t('nakshatra changes')}
+        </button>
         <span className="mx-1 self-stretch border-l border-zinc-200 dark:border-zinc-700" />
         {RANGES.map(range => (
           <button key={range.days} type="button" aria-pressed={days === range.days} onClick={() => { setDays(range.days); setShowAll(false); }} className={chip(days === range.days)}>
@@ -120,6 +127,13 @@ export default function SignChangesPanel({ chart, targetDate, calculationSetting
                     {` → `}
                     <span className="whitespace-nowrap"><span className="font-bold">{SIGN_NAMES[event.to - 1]}</span><span className="text-zinc-400 dark:text-zinc-500"> H{house(event.to)}</span></span>
                   </>
+                )}
+                {event.kind === 'nakshatra' && (
+                  <span data-nakshatra-change={event.to}>
+                    <span className="font-bold text-sky-600 dark:text-sky-400">{code(event.body)}{event.retrograde ? '℞' : ''}</span>
+                    {` → `}
+                    <span className="whitespace-nowrap"><span className="font-bold">{NAKSHATRA_NAMES[event.to]}</span><span className="text-zinc-400 dark:text-zinc-500"> {SIGN_ABBR[event.sign - 1]} H{house(event.sign)}</span></span>
+                  </span>
                 )}
                 {event.kind === 'station' && (
                   <>

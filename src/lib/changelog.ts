@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: 'v4.37',
+    date: '2026-11-10',
+    title: 'TIMING → Sign changes: nakṣatra changes',
+    changes: [
+      'TIMING → Sign changes has a new button, nakshatra changes: when a graha moves into the next nakṣatra, from the target date, with the sign it is in and the house of it from the natal Lagna (℞ for a move backwards). It is off by default, as the Moon alone changes nakṣatra about once a day; the grahas chosen above and the period apply to it as to the sign changes. The chart\'s nakṣatra offset (the nakṣatra zodiac setting) moves the boundaries as in the other nakṣatra views.',
+      'Updated the application version to v4.37.',
+    ],
+  },
+  {
     version: 'v4.36',
     date: '2026-11-10',
     title: 'Aṣṭakavarga Effects: where the transiting Saturn stands on the points of Saturn',

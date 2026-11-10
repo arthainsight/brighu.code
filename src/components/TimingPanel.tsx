@@ -217,6 +217,7 @@ export default function TimingPanel({
       {view === 'signs' && (
         <SignChangesPanel
           chart={chart}
+          nakshatraAdjust={nakshatraAdjust}
           targetDate={targetDate ?? ''}
           calculationSettings={calculationSettings}
           onSetTransit={onSetTransitDatetime}

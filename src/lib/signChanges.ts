@@ -9,6 +9,7 @@
 import type { LongitudeSeries } from './transitHits';
 import { normalizeDegrees } from './angles';
 import { COMBUSTION_ORBS } from './combustion';
+import { NAKSHATRA_SIZE } from './nakshatras';
 
 export interface SignChange {
   body: string;
@@ -55,6 +56,48 @@ export function findAllSignChanges(series: Record<string, LongitudeSeries>): Sig
   return Object.entries(series)
     .flatMap(([body, s]) => findSignChanges(body, s))
     .sort((a, b) => a.time - b.time);
+}
+
+export interface NakshatraChange {
+  body: string;
+  time: number;
+  /** Nakṣatra left and entered, 0 = Aśvinī … 26 = Revatī. */
+  from: number;
+  to: number;
+  /** The sign (1 = Aries) the entered nakṣatra's boundary lies in; the graha is in this sign when it crosses. */
+  sign: number;
+  retrograde: boolean;
+}
+
+const nakshatraOf = (longitude: number, adjust: number) => Math.min(26, Math.floor(normalizeDegrees(longitude + adjust) / NAKSHATRA_SIZE));
+
+/**
+ * Nakṣatra changes of one series, in time order, found the way the sign changes are. `adjust` is the chart's nakṣatra offset in degrees (added to the
+ * longitude). A retrograde graha can leave a nakṣatra backwards and cross the same boundary again.
+ */
+export function findNakshatraChanges(body: string, series: LongitudeSeries, adjust = 0): NakshatraChange[] {
+  const changes: NakshatraChange[] = [];
+  const { longitudes, start, step } = series;
+  for (let i = 0; i + 1 < longitudes.length; i++) {
+    const a = longitudes[i];
+    const b = longitudes[i + 1];
+    const from = nakshatraOf(a, adjust);
+    const to = nakshatraOf(b, adjust);
+    if (from === to) continue;
+    const forward = (to - from + 27) % 27 === 1;
+    const backward = (from - to + 27) % 27 === 1;
+    if (!forward && !backward) continue;
+    // The boundary in the offset longitude, and back in the graha's own.
+    const boundaryOffset = (forward ? to : from) * NAKSHATRA_SIZE;
+    const boundary = normalizeDegrees(boundaryOffset - adjust);
+    const d0 = signedDistance(a, boundary);
+    const d1 = signedDistance(b, boundary);
+    const fraction = d1 === d0 ? 0 : Math.min(1, Math.max(0, -d0 / (d1 - d0)));
+    // The sign the graha is in at the crossing: the boundary's, or the one before it when the boundary is exactly on a sign line.
+    const sign = Math.floor(normalizeDegrees(forward ? boundary + 1e-9 : boundary - 1e-9) / 30) + 1;
+    changes.push({ body, time: start + (i + fraction) * step, from, to, sign, retrograde: backward });
+  }
+  return changes;
 }
 
 export interface Station {
@@ -136,6 +179,7 @@ export const STATION_BODIES = ['Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
 
 export type TimingEvent =
   | ({ kind: 'sign' } & SignChange)
+  | ({ kind: 'nakshatra' } & NakshatraChange)
   | ({ kind: 'station' } & Station)
   | ({ kind: 'combust' } & CombustChange);
 
@@ -147,11 +191,14 @@ export function collectTimingEvents(
   series: Record<string, LongitudeSeries>,
   bodies: readonly string[],
   stations: boolean,
+  /** Also the nakṣatra changes, with the chart's nakṣatra offset in degrees. */
+  nakshatras: { adjust: number } | false = false,
 ): TimingEvent[] {
   const all: TimingEvent[] = [];
   for (const body of bodies) {
     if (!series[body]) continue;
     all.push(...findSignChanges(body, series[body]).map(c => ({ kind: 'sign' as const, ...c })));
+    if (nakshatras) all.push(...findNakshatraChanges(body, series[body], nakshatras.adjust).map(c => ({ kind: 'nakshatra' as const, ...c })));
     if (!stations) continue;
     if (STATION_BODIES.includes(body)) all.push(...findStations(body, series[body]).map(c => ({ kind: 'station' as const, ...c })));
     if (body in COMBUST_ORBS && series.Sun) all.push(...findCombustion(body, series[body], series.Sun).map(c => ({ kind: 'combust' as const, ...c })));

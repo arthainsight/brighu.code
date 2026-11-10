@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { collectTimingEvents, findAllSignChanges, findCombustion, findSignChanges, findStations } from './signChanges';
+import { collectTimingEvents, findAllSignChanges, findCombustion, findNakshatraChanges, findSignChanges, findStations } from './signChanges';
 
 const DAY = 86_400_000;
 const series = (longitudes: number[]) => ({ start: 0, step: DAY, longitudes });
@@ -61,3 +61,31 @@ assert.deepEqual(collectTimingEvents({ Sun: sun, Mercury: mercury }, ['Mercury']
 assert.deepEqual(collectTimingEvents({ Mars: series([29, 31]) }, ['Mars', 'Venus'], false).map(e => e.kind), ['sign'], 'a body without a series is skipped');
 
 console.log('Sign change tests passed');
+
+// --- Nakṣatra changes: 13°20′ each, found like the sign changes ----------------------------------------------------------
+{
+  const size = 360 / 27;
+  // Aśvinī to Bharaṇī at 13°20′, interpolated within the day.
+  const forward = findNakshatraChanges('Moon', series([size - 1, size - 0.5, size + 0.5, size + 1]));
+  assert.equal(forward.length, 1);
+  assert.deepEqual([forward[0].from, forward[0].to, forward[0].sign, forward[0].retrograde], [0, 1, 1, false]);
+  assert.equal(forward[0].time, DAY * 1.5);
+  // Revatī to Aśvinī wraps at 0°.
+  const wrapped = findNakshatraChanges('Sun', series([359, 359.5, 0.5, 1]));
+  assert.deepEqual([wrapped[0].from, wrapped[0].to, wrapped[0].sign], [26, 0, 1]);
+  // A retrograde pass leaves the nakṣatra backwards and comes back.
+  const loop = findNakshatraChanges('Saturn', series([size - 1, size + 0.5, size + 0.2, size - 0.5, size - 0.2, size + 0.4]));
+  assert.deepEqual(loop.map(c => [c.from, c.to, c.retrograde]), [[0, 1, false], [1, 0, true], [0, 1, false]]);
+  // The sign a nakṣatra begins in: Kṛttikā (index 2) begins at 26°40′ Aries; Rohiṇī (3) at 40° is in Taurus (sign 2).
+  assert.equal(findNakshatraChanges('Moon', series([39, 41]))[0].sign, 2);
+  assert.equal(findNakshatraChanges('Moon', series([26, 27.5]))[0].sign, 1);
+  // The chart's offset moves the boundary: with +1° the graha crosses at size − 1.
+  assert.equal(findNakshatraChanges('Moon', series([size - 1.5, size - 0.5]), 1)[0].to, 1);
+  assert.equal(findNakshatraChanges('Moon', series([size - 1.5, size - 0.5]), 0).length, 0);
+  // A gap in the data is not a change.
+  assert.equal(findNakshatraChanges('Moon', series([1, 100])).length, 0);
+  // Collected with the others, in time order, only when asked for.
+  const kinds = (flag: { adjust: number } | false) => collectTimingEvents({ Mars: series([29, 31, 33]), Moon: series([size - 1, size + 1]) }, ['Mars', 'Moon'], false, flag).map(e => e.kind);
+  assert.deepEqual(kinds(false), ['sign']);
+  assert.deepEqual(kinds({ adjust: 0 }).sort(), ['nakshatra', 'sign']);
+}

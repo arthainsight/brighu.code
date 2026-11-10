@@ -497,6 +497,9 @@ test('TIMING exposes Dasha, Summary, Transit Hits, Sign changes, Tithi, Nakṣat
   // Stations and combustion are listed too (a year is certain to hold Mercury's turns).
   await visible(page, page.getByRole('button', { name: '12 mo', exact: true })).click();
   await expect(visible(page, page.getByText(/turns retrograde/).first())).toBeVisible({ timeout: 15_000 });
+  // Nakṣatra changes are an option of their own: the Moon changes nakṣatra about once a day, so with it on the list holds nakṣatra rows.
+  await visible(page, page.getByRole('button', { name: 'nakshatra changes', exact: true })).click();
+  await expect(visible(page, page.locator('[data-nakshatra-change]').first())).toBeVisible({ timeout: 15_000 });
 
   expect(errors).toEqual([]);
 });

@@ -1285,6 +1285,7 @@ export const FI: Record<string, string> = {
   'hide chart': 'piilota kartta',
   'show chart': 'näytä kartta',
   'more': 'lisää',
+  'nakshatra changes': 'nakṣatra-vaihdot',
   'sign changes': 'merkinvaihdot',
   'When a graha moves into the next sign, from the target date. H is the house from the natal ascendant. ℞ marks a move backwards. Stations are the turns to retrograde or direct; combustion is Mercury or Venus coming within the orb of the Sun.': 'Milloin graha siirtyy seuraavaan merkkiin tavoitepäivästä alkaen. H on talo natal-lagnasta laskien. ℞ tarkoittaa siirtymää taaksepäin. Asemat ovat käännöt retrogradiksi tai suoraliikkeiseksi; combustion on Merkuriuksen tai Venuksen tulo Auringon säteeseen.',
   'turns retrograde': 'kääntyy retrogradiksi',
