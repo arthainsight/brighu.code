@@ -1,5 +1,17 @@
 export const CHANGELOG = [
   {
+    version: 'v4.32',
+    date: '2026-11-10',
+    title: 'Sudarśana: the V-AMSHA is counted, and the ten-year daśā',
+    changes: [
+      'TIMING → Sudarśana, the worksheet: the V-AMSHA (Vaiśeṣikāṁśa) column is now counted and no longer waits for nine numbers to be typed. The good count of a graha is the number of vargas of the Ṣaḍvarga (D1, D2, D3, D9, D12, D30) in which it is in its exaltation or own sign, by BPHS 6.52, the same count as in ANALYSIS → Bala → Vaiśeṣikāṁśa. The boxes show the counts; a number typed in a box takes the place of the count. Rahu and Ketu have no such sign and are left out of the average.',
+      'These counts are not those of Jagannatha Hora\'s Shadvarga view, which the worksheet\'s author copies: for the worksheet\'s chart the page counts 1, 1, 1, 1, 2, 1, 2 for the Sun to Saturn and the worksheet has 3, 4, 5, 2, 2, 3, 3. The rule of that view was looked for again and not found; docs/sudarshana-table-sources.md lists what was tried.',
+      'New: the ten-year daśā of the Sudarśana Chakra, beside the yearly one. Each house rules ten years of age (the 1st from birth to 10, the 2nd from 10 to 20, through 120 years), with twelve antardaśās of ten months that begin from the house of the daśā. The page shows the house and its dates, the antardaśās with the ones running in the year shown, and the house read as a Lagna in the three charts: benefics in a kendra, a trikoṇa or the 8th from it, malefics in the 3rd, 6th, 10th or 11th, and Rahu in a kendra, a trikoṇa or the 8th from the house or its lord.',
+      'The ten-year daśā is from a summary of a video on the Sudarśana Chakra paddhati, not from BPHS 74; the books the video names were not read. Not built: the Ṣaḍbala of the three lords, the bhāva-kāraka and the lord of the month.',
+      'Updated the application version to v4.32.',
+    ],
+  },
+  {
     version: 'v4.31',
     date: '2026-11-10',
     title: 'The Vaiśeṣikāṁśa tables, from the Sanskrit of BPHS',

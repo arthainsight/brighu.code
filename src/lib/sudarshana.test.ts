@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import type { PlanetData } from '@/types';
-import { SUDARSHANA_DRAWING, SUDARSHANA_RINGS, jdToLocalParts, signOfHouse, sudarshanaApplies, sudarshanaFacts, sudarshanaHouse, sudarshanaRings, sudarshanaSubPeriods, sudarshanaVerdict } from './sudarshana';
+import { SUDARSHANA_DRAWING, SUDARSHANA_RINGS, jdToLocalParts, signOfHouse, sudarshanaApplies, sudarshanaDashaIndications, sudarshanaDecadeHouse, sudarshanaDecadeStartAge, sudarshanaFacts, sudarshanaHouse, sudarshanaRings, sudarshanaSubPeriods, sudarshanaVerdict } from './sudarshana';
 
 // --- The signs of a house ----------------------------------------------------------------------------------------------
 assert.equal(signOfHouse(1, 1), 1);
@@ -111,5 +111,40 @@ const ring = sudarshanaRings(1, 2, 3, second)[0];
 // Libra holds Saturn, exalted there; Ketu in Gemini aspects Libra by its 5th aspect.
 assert.deepEqual(sudarshanaVerdict(sudarshanaRings(7, 2, 3, second)[0], 1, second), { basis: 'aspects', nature: 'malefic', benefics: [], malefics: ['Ketu'] });
 assert.equal(ring.houses[0].sign, 1);
+
+
+// --- The ten-year daśā: a house for every ten years of age, twelve antardaśās of ten months ------------------------------
+assert.equal(sudarshanaDecadeHouse(0), 1, 'from birth to 10: the 1st house');
+assert.equal(sudarshanaDecadeHouse(9), 1);
+assert.equal(sudarshanaDecadeHouse(10), 2);
+assert.equal(sudarshanaDecadeHouse(25), 3, 'the example of the video: the 3rd house from 20 to 30');
+assert.equal(sudarshanaDecadeHouse(79), 8);
+assert.equal(sudarshanaDecadeHouse(119), 12);
+assert.equal(sudarshanaDecadeHouse(120), 1, 'the 120 years begin again');
+assert.equal(sudarshanaDecadeStartAge(79), 70);
+assert.equal(sudarshanaDecadeStartAge(10), 10);
+{
+  // Ten years of 3652.5 days in twelve parts: ten months each, the first the house of the daśā.
+  const parts = sudarshanaSubPeriods(2400000, 2403652.5, 3);
+  assert.deepEqual(parts.map(item => item.house), [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2]);
+  assert.ok(Math.abs((parts[0].endJd - parts[0].startJd) - 3652.5 / 12) < 1e-6);
+  assert.equal(parts[11].endJd, 2403652.5);
+}
+{
+  // The rings of the test above: the Lagna is Aries. Its 3rd house is Gemini, where Rahu stands; the lord Mercury is in Libra.
+  const signs = sudarshanaDashaIndications(rings[0], 3, grahas);
+  // From Gemini: the Moon and Jupiter (Cancer) are in the 2nd, Mercury (Libra) in the 5th, Venus (Scorpio) in the 6th.
+  assert.deepEqual(signs.beneficsGood, [{ name: 'Mercury', house: 5 }]);
+  // The Sun (Libra) is in the 5th, Mars (Capricorn) in the 8th, Saturn (Aries) in the 11th, Rahu in the 1st, Ketu in the 7th.
+  assert.deepEqual(signs.maleficsGood, [{ name: 'Saturn', house: 11 }]);
+  assert.equal(signs.rahuFromHouse, 1);
+  assert.equal(signs.rahuFromLord, 9, 'Gemini is the 9th from Libra');
+  // The 4th house, Cancer: Rahu is in its 12th; its lord the Moon is in Cancer too.
+  const fourth = sudarshanaDashaIndications(rings[0], 4, grahas);
+  assert.equal(fourth.rahuFromHouse, null);
+  assert.equal(fourth.rahuFromLord, null);
+  assert.deepEqual(fourth.beneficsGood.map(item => item.name), ['Moon', 'Mercury', 'Jupiter', 'Venus'], 'the 1st, the 4th, the 1st and the 5th');
+  assert.deepEqual(fourth.maleficsGood.map(item => `${item.name} ${item.house}`), ['Saturn 10', 'Ketu 6']);
+}
 
 console.log('sudarshana tests passed');

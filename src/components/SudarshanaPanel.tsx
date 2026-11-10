@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import type { CalculationSettings, ChartData } from '@/types';
 import {
-  SUDARSHANA_DRAWING, SUDARSHANA_RINGS, jdToLocalParts, sudarshanaApplies, sudarshanaFacts, sudarshanaHouse, sudarshanaRings, sudarshanaSubPeriods, sudarshanaVerdict,
+  SUDARSHANA_DRAWING, SUDARSHANA_RINGS, jdToLocalParts, sudarshanaApplies, sudarshanaDashaIndications, sudarshanaDecadeHouse, sudarshanaFacts, sudarshanaHouse, sudarshanaRings, sudarshanaSubPeriods, sudarshanaVerdict,
   type SudarshanaRing, type SudarshanaRingId,
 } from '@/lib/sudarshana';
 import { SIGN_ABBR } from '@/lib/signs';
@@ -27,6 +27,8 @@ type YearResponse = {
   tzOffset: number;
   completedAge: number;
   next: { year: number; jd: number; local: LocalParts; tzOffset: number };
+  /** The ten years of the ten-year daśā the year belongs to. */
+  decade?: { startAge: number; jd: number; endJd: number };
 };
 
 const GRAHAS = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
@@ -87,6 +89,10 @@ export default function SudarshanaPanel({ chart, birthDatetime, targetDate, iana
     ? sudarshanaSubPeriods(selectedPratyantara.startJd, selectedPratyantara.endJd, selectedPratyantara.house)
     : [];
   const selectedVidasha = vidasha !== null && vidasas[vidasha] ? vidasas[vidasha] : null;
+  // The ten-year daśā: the house of the ten years and its twelve antardaśās of ten months.
+  const decade = shown?.decade ?? null;
+  const decadeHouse = decade ? sudarshanaDecadeHouse(decade.startAge) : null;
+  const antardashas = decade && decadeHouse ? sudarshanaSubPeriods(decade.jd, decade.endJd, decadeHouse) : [];
   const local = (jd: number): LocalParts => {
     if (ianaTimezone) {
       try {
@@ -395,6 +401,96 @@ export default function SudarshanaPanel({ chart, birthDatetime, targetDate, iana
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {shown && decade && decadeHouse && (
+        <div className={`space-y-3 border-t border-zinc-200 pt-3 dark:border-zinc-800 ${loading ? 'opacity-60' : ''}`} data-sud="decade">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600">{t('The ten-year daśā')}</div>
+          <p className="text-[10px] font-mono text-zinc-400 dark:text-zinc-600">
+            {t('A second daśā of the same chakra, from the video the worksheet is from and not from BPHS 74: each house rules ten years of age, the 1st from birth to 10, the 2nd from 10 to 20, through 120 years. The ten years have twelve antardaśās of ten months, the first of them the house of the daśā itself. It gives the frame of the ten years; the yearly daśā above, with its months, is the finer one.')}
+          </p>
+          <div className="space-y-2" data-sud-decade-dates>
+            <Row label={t('daśā')} value={fill(t('house {house} · age {from} to {to}'), { house: decadeHouse, from: decade.startAge, to: decade.startAge + 10 })} />
+            <Row label={t('begins')} value={fmtLocal(local(decade.jd))} />
+            <Row label={t('ends')} value={fmtLocal(local(decade.endJd))} />
+            <Row label={t('with the year')} value={fill(t('ten years: house {decade} · year: house {year}'), { decade: decadeHouse, year: yearHouse ?? '—' })} />
+          </div>
+
+          <div data-sud="decade-house">
+            <div className="mb-1 text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600">{fill(t('House {house} as the Lagna of the daśā, in the three charts'), { house: decadeHouse })}</div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-[11px] font-mono">
+                <thead>
+                  <tr className="text-left text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600">
+                    <th className="py-1 pr-3 font-normal">{t('chart')}</th>
+                    <th className="py-1 pr-3 font-normal">{t('sign')}</th>
+                    <th className="py-1 pr-3 font-normal">{t('lord')}</th>
+                    <th className="py-1 pr-3 font-normal">{t('benefics in 1, 4, 5, 7, 8, 9, 10')}</th>
+                    <th className="py-1 pr-3 font-normal">{t('malefics in 3, 6, 10, 11')}</th>
+                    <th className="py-1 font-normal">{t('Rahu')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {SUDARSHANA_RINGS.map(id => {
+                    const ring = rings.find(item => item.id === id)!;
+                    const entry = ring.houses[decadeHouse - 1];
+                    const signs = sudarshanaDashaIndications(ring, decadeHouse, chart.planets);
+                    const rahu = [
+                      signs.rahuFromHouse !== null ? fill(t('{n} from the house'), { n: signs.rahuFromHouse }) : null,
+                      signs.rahuFromLord !== null ? fill(t('{n} from the lord'), { n: signs.rahuFromLord }) : null,
+                    ].filter(Boolean);
+                    return (
+                      <tr key={id} data-sud-decade-row={id} className="border-t border-zinc-100 align-top dark:border-zinc-800">
+                        <td className="py-1 pr-3 text-zinc-500">{t(RING_LABEL[id])}</td>
+                        <td className="py-1 pr-3 font-bold">{SIGN_ABBR[entry.sign - 1]}</td>
+                        <td className="py-1 pr-3">{grahaFullName(entry.lord)}</td>
+                        <td className="py-1 pr-3 text-emerald-700 dark:text-green-400">{signs.beneficsGood.length ? signs.beneficsGood.map(item => `${code(item.name)} ${item.house}`).join(', ') : '—'}</td>
+                        <td className="py-1 pr-3 text-emerald-700 dark:text-green-400">{signs.maleficsGood.length ? signs.maleficsGood.map(item => `${code(item.name)} ${item.house}`).join(', ') : '—'}</td>
+                        <td className={`py-1 ${rahu.length ? 'text-red-600 dark:text-red-400' : 'text-zinc-400'}`}>{rahu.length ? rahu.join(', ') : '—'}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-1 text-[9px] font-mono text-zinc-400 dark:text-zinc-600">
+              {t('Counted from the sign of the daśā house in each chart, by the rules of the video: benefics (Moon, Mercury, Jupiter, Venus) in a kendra, a trikoṇa or the 8th are favourable, and so are malefics in the 3rd, 6th, 10th or 11th; Rahu in a kendra, a trikoṇa or the 8th from the house or from its lord makes the time hard. The number after a graha is its house from the daśā house. The strength of the three lords and the Sarvashtakavarga of the house are in the worksheet above.')}
+            </p>
+          </div>
+
+          <div data-sud="antardashas">
+            <div className="mb-1 text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600">{t('The twelve antardaśās of ten months')}</div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-[11px] font-mono">
+                <thead>
+                  <tr className="text-left text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600">
+                    <th className="py-1 pr-3 font-normal">#</th>
+                    <th className="py-1 pr-3 font-normal">{t('from')}</th>
+                    <th className="py-1 pr-3 font-normal">{t('to')}</th>
+                    <th className="py-1 pr-3 font-normal">{t('house')}</th>
+                    <th className="py-1 font-normal">{t('signs')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {antardashas.map((item, index) => {
+                    // The antardaśās that run during the year shown.
+                    const current = item.startJd < shown.next.jd && item.endJd > shown.jd;
+                    return (
+                      <tr key={index} data-sud-antardasha-row={index + 1} data-sud-antardasha-current={current || undefined} className={`border-t border-zinc-100 dark:border-zinc-800 ${current ? 'bg-amber-50 dark:bg-amber-950/30' : ''}`}>
+                        <td className="py-1 pr-3 text-zinc-500">{index + 1}</td>
+                        <td className="py-1 pr-3 tabular-nums">{fmtDate(local(item.startJd))}</td>
+                        <td className="py-1 pr-3 tabular-nums">{fmtDate(local(item.endJd))}</td>
+                        <td className="py-1 pr-3 font-bold">{item.house}</td>
+                        <td className="py-1">{signsForHouse(item.house)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-1 text-[9px] font-mono text-zinc-400 dark:text-zinc-600">{t('The marked antardaśās run during the year shown. The ten years run from one solar return to the tenth after it, in twelve equal parts.')}</p>
+          </div>
         </div>
       )}
 

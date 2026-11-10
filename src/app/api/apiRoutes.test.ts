@@ -184,6 +184,13 @@ async function main() {
       assert.equal(result.status, 400, `${name} ${bad}`);
     }
   }
+  // The Sudarśana year comes with its ten-year daśā: from a multiple of ten completed years, ten sidereal years long, with the year inside it.
+  {
+    const body = (await call(sudarshana, annual)).body as { jd: number; completedAge: number; decade: { startAge: number; jd: number; endJd: number } };
+    assert.equal(body.decade.startAge, Math.floor(body.completedAge / 10) * 10);
+    assert.ok(Math.abs(body.decade.endJd - body.decade.jd - 3652.56) < 0.5, `ten years: ${body.decade.endJd - body.decade.jd} days`);
+    assert.ok(body.decade.jd <= body.jd && body.jd < body.decade.endJd);
+  }
   assert.equal((await call(pravesha, `${annual}&kind=other`)).status, 400, 'pravesha needs a kind');
   assert.equal((await call(varshaphala, `${BIRTH}&tpYear=2024`)).status, 200, 'a year instead of a target date');
 }

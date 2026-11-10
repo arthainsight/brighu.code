@@ -804,7 +804,10 @@ test('TIMING Sudarśana draws the three charts and makes the house of the year a
   const savs = await worksheet.locator('[data-sud-col="sav"]').allTextContents();
   expect(savs.reduce((sum, value) => sum + Number(value), 0)).toBe(337);
   const firstRow = worksheet.locator('[data-sud-table-row="1"]');
-  await expect(firstRow.locator('[data-sud-col="vamsha"]')).toHaveText('…');
+  // The V-AMSHA is counted from the app's own Vaiśeṣikāṁśa (the boxes show the counts as placeholders); a typed count takes its place.
+  await expect(firstRow.locator('[data-sud-col="vamsha"]')).toHaveText(/^\d+\.\d{2}$/);
+  await expect(worksheet.locator('[data-sud-good="Sun"]')).toHaveAttribute('placeholder', /^[0-6]$/);
+  await expect(worksheet.locator('[data-sud-good="Rahu"]')).toHaveAttribute('placeholder', '–');
   for (const name of ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu']) await worksheet.locator(`[data-sud-good="${name}"]`).fill('3');
   await expect(firstRow.locator('[data-sud-col="vamsha"]')).toHaveText('50.00');
 
@@ -827,6 +830,20 @@ test('TIMING Sudarśana draws the three charts and makes the house of the year a
   // From Cancer the 8th house is Aquarius, from the Moon and from the Sun alike.
   await expect(panel.locator('[data-sud-row="moon"]')).toContainText('Aq');
   await expect(panel.locator('[data-sud-row="sun"]')).toContainText('Aq');
+
+  // The ten-year daśā: 79 years completed is in the ten years from 70 to 80, the 8th house; twelve antardaśās of ten months from August 2017 to August 2027.
+  const decade = visible(page, page.locator('[data-sud="decade"]'));
+  await expect(decade.locator('[data-sud-decade-dates]')).toContainText('house 8 · age 70 to 80');
+  await expect(decade.locator('[data-sud-decade-dates]')).toContainText(/begins\s*\d{2}\.08\.2017/);
+  await expect(decade.locator('[data-sud-decade-dates]')).toContainText(/ends\s*\d{2}\.08\.2027/);
+  await expect(decade.locator('[data-sud-decade-row]')).toHaveCount(3);
+  await expect(decade.locator('[data-sud-decade-row="lagna"]')).toContainText('Ar');
+  const antardashas = decade.locator('[data-sud-antardasha-row]');
+  await expect(antardashas).toHaveCount(12);
+  expect(await antardashas.evaluateAll((rows) => rows.map((row) => Number(row.querySelectorAll('td')[3].textContent)))).toEqual([8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7]);
+  // The year from August 2026 runs in the last two antardaśās (the eleventh ends in October 2026).
+  await expect(decade.locator('[data-sud-antardasha-current]')).toHaveCount(2);
+  await expect(antardashas.nth(11)).toHaveAttribute('data-sud-antardasha-current', 'true');
 
   // The year runs between two solar returns in August; the twelve months follow from the house of the year.
   const dates = visible(page, page.locator('[data-sud-year-dates]'));

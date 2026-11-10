@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import type { PlanetData } from '@/types';
-import { LORD_POINTS, auspiciousness, stateInSign, sudarshanaTable } from './sudarshanaTable';
+import { LORD_POINTS, auspiciousness, computedGoodCounts, stateInSign, sudarshanaTable } from './sudarshanaTable';
 
 // The worksheet of the video "Sudarshana Chakra Paddhati" (Revatiraa), for the chart of 3 December 1984, 09:17, Howrah (Lahiri, mean node): the signs of the grahas and the Lagna are those
 // of the chart; the expected columns are typed in from the picture of the worksheet. Where the worksheet disagrees with its own letters, the test says so.
@@ -51,6 +51,27 @@ const vamsha = withGood.map(row => Math.round((row.vamsha ?? 0) * 100) / 100);
 assert.deepEqual(vamsha, [62.5, 38.89, 61.11, 50 /* the worksheet: 66.67 */, 50, 50, 33.33, 50, 50, 41.67, 61.11, 41.67]);
 assert.equal(sudarshanaTable(chart, { Sun: 3 })[0].vamsha, null, 'a graha whose count is missing leaves the mean open');
 assert.equal(sudarshanaTable(chart)[3].vamsha, 50, 'an empty house is 50');
+
+// --- The counts the page computes: the Vaiśeṣikāṁśa of the Ṣaḍvarga (BPHS 6.52), not Jagannatha Hora's ------------------------------
+{
+  // The longitudes of the chart (Lahiri, mean node). The counts were worked out by a separate program from the varga definitions: the Sun only its horā (Leo),
+  // the Moon its dreṣkāṇa (Cancer), Mars the rāśi (Capricorn, exalted), Mercury the navāṁśa (Gemini), Jupiter the rāśi and the horā (Cancer, exalted),
+  // Venus the triṁśāṁśa (Libra), Saturn the rāśi and the triṁśāṁśa (Libra, exalted).
+  const exact = (name: string, longitude: number): PlanetData => ({ name, longitude, sign: Math.floor(longitude / 30) + 1, degree: longitude % 30 }) as PlanetData;
+  const real = {
+    ascendant: { sign: 10, degree: 2.3622, longitude: 272.3622 },
+    planets: [exact('Sun', 227.5194), exact('Moon', 348.2311), exact('Mars', 289.4851), exact('Mercury', 246.9144), exact('Jupiter', 261.3543), exact('Venus', 269.281), exact('Saturn', 208.0106), exact('Rahu', 33.0284), exact('Ketu', 213.0284)],
+  } as Parameters<typeof sudarshanaTable>[0];
+  const counts = computedGoodCounts(real);
+  assert.deepEqual(counts, { Sun: 1, Moon: 1, Mars: 1, Mercury: 1, Jupiter: 2, Venus: 1, Saturn: 2 }, 'not the worksheet\'s 3, 4, 5, 2, 2, 3, 3: the rule of Jagannatha Hora is another');
+  const computed = sudarshanaTable(real, counts);
+  // The 1st house holds Mars, the Moon, the Sun and Ketu: the node has no count and is left out; three grahas with one good varga each.
+  assert.equal(Math.round(computed[0].vamsha! * 100) / 100, 16.67);
+  // The 7th holds Rahu alone (from the Sun): no count at all, as an empty house.
+  assert.deepEqual(computed[6].occupants.map(item => item.name), ['Rahu']);
+  assert.equal(computed[6].vamsha, 50);
+  assert.ok(computed.every(row => row.vamsha !== null));
+}
 
 // --- The aspects (Parāśara's): from the grahas outside the sign ---------------------------------------------------------------------
 const sixth = table[5].aspects;

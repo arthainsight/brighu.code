@@ -89,6 +89,60 @@ export function sudarshanaSubPeriods(startJd: number, endJd: number, house: numb
   }));
 }
 
+// --- The ten-year daśā -------------------------------------------------------------------------------------------------
+// A second way of running the same chakra, taught beside the yearly one in the Sudarśana Chakra paddhati of the video the
+// worksheet is from (not in BPHS 74, which has the year for a house): each house rules ten years of age, the 1st from birth
+// to 10, the 2nd from 10 to 20, and so on through 120 years; the ten years are cut in twelve antardaśās of ten months, the
+// first of them the house of the daśā itself. The house of the daśā is then read as a Lagna.
+
+/** The house of the ten-year daśā at an age in completed years: the 1st to the age of 10, the 2nd to 20 … the 1st again from 120. */
+export function sudarshanaDecadeHouse(age: number): number {
+  return (((Math.floor(age / 10) % 12) + 12) % 12) + 1;
+}
+
+/** The age at which the ten-year daśā running at `age` began. */
+export const sudarshanaDecadeStartAge = (age: number) => Math.floor(age / 10) * 10;
+
+/** The grahas the indications call benefic (Mercury among them); the others, the nodes too, are malefic. The same as in the worksheet. */
+const INDICATION_BENEFICS = ['Moon', 'Mercury', 'Jupiter', 'Venus'];
+const KENDRA_TRIKONA_8 = [1, 4, 5, 7, 8, 9, 10];
+const UPACHAYA = [3, 6, 10, 11];
+
+export interface SudarshanaDashaIndications {
+  /** Benefics in a kendra, a trikoṇa or the 8th from the daśā house: favourable. */
+  beneficsGood: { name: string; house: number }[];
+  /** Malefics in the 3rd, 6th, 10th or 11th from the daśā house: favourable. */
+  maleficsGood: { name: string; house: number }[];
+  /** Rahu in a kendra, a trikoṇa or the 8th from the daśā house; null when it is not. */
+  rahuFromHouse: number | null;
+  /** Rahu in a kendra, a trikoṇa or the 8th from the lord of the daśā house; null when it is not, or the lord is not in the chart. */
+  rahuFromLord: number | null;
+}
+
+/**
+ * The house of a daśā read as a Lagna, by the rules of the video: where the benefics, the malefics and Rahu stand counted
+ * from the sign of the house in one ring. The video does not say what Rahu in the 10th (a kendra and an upachaya) is: it is
+ * given in both lists.
+ */
+export function sudarshanaDashaIndications(ring: SudarshanaRing, house: number, planets: readonly { name: string; sign: number }[]): SudarshanaDashaIndications {
+  const entry = ring.houses[house - 1];
+  const grahas = planets.filter(planet => NINE.includes(planet.name));
+  const placed = grahas.map(planet => ({ name: planet.name, house: houseFrom(entry.sign, planet.sign) }));
+  const rahu = grahas.find(planet => planet.name === 'Rahu');
+  const lord = grahas.find(planet => planet.name === entry.lord);
+  const hard = (from: number | undefined) => {
+    if (!rahu || from === undefined) return null;
+    const place = houseFrom(from, rahu.sign);
+    return KENDRA_TRIKONA_8.includes(place) ? place : null;
+  };
+  return {
+    beneficsGood: placed.filter(item => INDICATION_BENEFICS.includes(item.name) && KENDRA_TRIKONA_8.includes(item.house)),
+    maleficsGood: placed.filter(item => !INDICATION_BENEFICS.includes(item.name) && UPACHAYA.includes(item.house)),
+    rahuFromHouse: hard(entry.sign),
+    rahuFromLord: hard(lord?.sign),
+  };
+}
+
 // --- Local time of a Julian day, for the periods ---------------------------------------------------------------------
 
 export interface LocalParts { year: number; month: number; day: number; hour: number; minute: number; second: number }

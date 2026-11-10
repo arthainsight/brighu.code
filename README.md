@@ -47,7 +47,7 @@ This is not meant to replace traditional study — it's meant to **accelerate it
 * Nakṣatra Praveśa and Yoga Praveśa annual charts (the Moon's return to its natal longitude, and the return of the Sun-and-Moon sum), with two rules for the year's start and a Vimśottarī daśā of the year
 * Year at a glance: the four annual charts on one time axis
 * Tājika Varṣaphala: Muntha, year lord, Pañcavargīya, Dvādaśavargīya and Harṣa Bala (after Balabhadra's Hāyanaratna, docs/tajika-bala-sources.md) and Mudda daśā
-* Sudarśana Chakra: the chart counted from the Lagna, the Moon and the Sun in three rings, and the Sudarśana daśā: the house each year of age makes active in all three, with the twelve months and twelve days of the year
+* Sudarśana Chakra: the chart counted from the Lagna, the Moon and the Sun in three rings, and the Sudarśana daśā: the house each year of age makes active in all three, with the twelve months and twelve days of the year; the ten-year daśā of the same chakra (a house for every ten years of age, twelve antardaśās of ten months); and a worksheet of the twelve houses whose V-AMSHA column is counted from the Vaiśeṣikāṁśa
 
 ### Daśā
 

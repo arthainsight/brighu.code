@@ -8,7 +8,7 @@ Capricorn, the Sun is in Scorpio, the Moon in Pisces. `src/lib/sudarshanaTable.t
 |---|---|---|
 | In the signs (Placement) | the grahas standing in the sign of the house in each of the three charts (Lagna, Moon, Sun); B: Moon, Mercury, Jupiter, Venus; M: the others, the nodes too | all houses but the 4th; the order inside a cell differs |
 | Lords of the three signs, Strength | the lord of each of the three signs by its state in its own sign: exalted 1, moolatrikona 0.75 (the whole sign, as BPHS 3), own sign 0.5, friendly 0.25, neutral 0.125, enemy or debilitated 0; the sum over three, over 3 | 11 of 12 rows |
-| V-AMSHA | the mean of the Auspi of the grahas in the house (Auspi = good count over six), 50 for an empty house | 11 of 12 rows |
+| V-AMSHA (Vaiśeṣikāṁśa) | the mean of the Auspi of the grahas in the house (Auspi = good count over six), 50 for an empty house; the good counts are the page's own (below) unless typed in | 11 of 12 rows with the worksheet's counts typed in |
 | SAV | the Sarvāṣṭakavarga (Parāśara's) of the sign of the house counted from the Lagna | all eleven shown (the 7th is hidden in the picture; the page gives 23) |
 | Aspects | the grahas outside the sign that aspect it (Parāśara's: the 7th, and the special aspects of Mars, Jupiter, Saturn and the nodes) in any of the three charts, B or M | **not matched** (see below) |
 
@@ -21,12 +21,33 @@ Capricorn, the Sun is in Scorpio, the Moon in Pisces. `src/lib/sudarshanaTable.t
 
 ## What is not computed
 
-* **Good and Bad** (six per graha; Auspi = Good ÷ 6). The author copies them from the Shadvarga view of Jagannatha Hora (Good, and Bad = 6 − Good). The page asks for the nine good counts and
-  does not compute them: the rule inside Jagannatha Hora's view is not known here. Tried and not matching: the dignity in D1, D2, D3, D9, D12, D30 by the natural and the compound friendships
-  (Sun is friend or better in all six but the worksheet has 3), the nature of the lord of each divisional sign, and over a hundred other combinations of divisional charts; the best match
-  was no better than chance. So the page does not guess them.
+* **Good and Bad** (six per graha; Auspi = Good ÷ 6). The author copies them from the Shadvarga view of Jagannatha Hora (Good, and Bad = 6 − Good); the rule inside that view is not
+  known here. Since v4.32 the page counts its own: the vargas of the Ṣaḍvarga (D1, D2, D3, D9, D12, D30) in which the graha is in its exaltation, mūlatrikoṇa or own sign, the first
+  half of BPHS 6.52 (`vaisheshikamsa-sources.md`). Rahu and Ketu have no such sign and are left out of the mean of a house (a house with the nodes only is 50, as an empty one). A
+  count typed in a box takes the place of the computed one.
+  **The computed counts are not the worksheet's.** For the worksheet's chart they are Sun 1, Moon 1, Mars 1, Mercury 1, Jupiter 2, Venus 1, Saturn 2; the worksheet has 3, 4, 5, 2,
+  2, 3, 3 (and Rahu 2, Ketu 3). Tried again with the real longitudes and not matching all seven: the dignity by the natural and the compound friendships (in the rāśi or in each
+  varga), the nature of the lord of the sign, the house from the varga's own Lagna, and every set of six of the sixteen vargas under those rules; with the lords of the kendras from
+  the Āruḍha (the second half of 6.52) the counts are 2, 2, 2, 3, 3, 3, 3. The nearest was the lord being Jupiter or Venus (five of seven).
 * **Aspect.** The worksheet has a B in each even house (2 to 12) and Mars (M) in the 6th, "by looking at the chart". The page's full Parāśara aspects give, from Jupiter, Mercury and Venus
   (all three in Sagittarius), exactly the houses 2, 4, 6, 8 and 10 of the worksheet; the 12th is not reached by any benefic. The Moon aspects the 7th, 9th and 11th and Mars most of the houses (2, 4, 5, 6, 7, 8, 9, 10), which
   the worksheet does not show. The page shows its own computation (the Moon counted as a benefic), so the column differs from the worksheet's in the 12th and in the houses of the Moon and Mars.
 * **Remarks** (good, average, below average, bad) are the author's judgment. A score of the strength, the SAV and the benefic aspect orders the twelve rows as the worksheet does but ties
   in one place (the 5th and the 9th), so no rule is made of it.
+
+## The ten-year daśā (v4.32)
+
+The second part of the same video series (the Phalita part) runs the chakra in two ways. The yearly daśā with its months is BPHS 74 and was already in the page. The other is added
+from a written summary of the video given by the user; the video itself and the books it names (Bimal Kanti Roy in Bengali, the Phalita Mārtaṇḍa, Gopesh Kumar Ojha on the
+Aṣṭakavarga) **were not read**, so nothing here is checked against a text.
+
+| Part | Rule | In the page |
+|---|---|---|
+| The daśā | each house rules ten years of age: the 1st from birth to 10, the 2nd from 10 to 20 … twelve houses, 120 years | `sudarshanaDecadeHouse`; after 120 the 1st again |
+| The antardaśā | ten months each, twelve of them, the first the house of the daśā | the ten years in twelve equal parts |
+| The years | not said | a year is a sidereal solar return, as in the yearly daśā; the ten years run from the return that completes 10 × n years (birth for the first) to the tenth after it |
+| The daśā house as a Lagna | benefics in a kendra, a trikoṇa or the 8th from it are favourable; malefics in the 3rd, 6th, 10th or 11th are favourable; Rahu in a kendra, a trikoṇa or the 8th from the house or from its lord makes the time hard | a table for the three charts, the houses counted from the sign of the daśā house; benefics are the Moon, Mercury, Jupiter and Venus, as in the worksheet |
+
+Not built: the Ṣaḍbala percent of the three lords and which of them leads (the summary's example: Saturn and Venus 50 %, Jupiter 33.3 %, Saturn leading because exalted; the worksheet's
+strength column is another measure), the bhāva-kāraka, the month lord (*māsādhipati*) of the yearly daśā as the one that gives the event, and the joining with the Viṁśottarī, the
+natural ages and the transits. Rahu in the 10th is both a kendra and an upachaya; the summary does not say which wins, and the page shows both.

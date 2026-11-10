@@ -2,6 +2,7 @@ import { buildAshtakavarga } from './ashtakavarga';
 import { DEBILITATION, EXALTATION, MOOLATRIKONA, NATURAL_ENEMIES, NATURAL_FRIENDS, OWN_SIGNS } from './dignity';
 import { signLord } from './signs';
 import { sudarshanaFacts, sudarshanaRings, type SudarshanaRingId } from './sudarshana';
+import { calculateVaisheshikamsa } from './vaisheshikamsa';
 import type { ChartData, PlanetData } from '@/types';
 
 // The table of the twelve houses of the Sudarśana Chakra, after a worksheet shown in a video on the Sudarśana Chakra paddhati (the channel Revatiraa): for each house number
@@ -63,7 +64,7 @@ export interface TableRow {
   aspects: { benefic: string[]; malefic: string[] };
   /** The Sarvāṣṭakavarga of the sign of the house counted from the Lagna (Parāśara's), the same for the three charts. */
   sav: number;
-  /** The mean auspiciousness of the occupants (the worksheet's V-AMSHA), 50 for a house with none; null when an occupant's Good count was not given. */
+  /** The mean auspiciousness of the occupants (the worksheet's V-AMSHA, the Vaiśeṣikāṁśa), 50 for a house with none; a node without a count is left out; null when one of the seven grahas has no count. */
   vamsha: number | null;
 }
 
@@ -72,6 +73,14 @@ export const auspiciousness = (good: number) => (good / 6) * 100;
 
 /** Good counts in the six charts (0 to 6) by graha name. */
 export type GoodCounts = Partial<Record<string, number>>;
+
+/**
+ * The good counts of the seven grahas as the app counts them: the vargas of the Ṣaḍvarga (D1, D2, D3, D9, D12, D30) in which the graha is in its exaltation, mūlatrikoṇa
+ * or own sign (BPHS 6.52, vaisheshikamsa.ts). Rahu and Ketu have none: the verse gives them no sign. These are not the numbers of Jagannatha Hora's view.
+ */
+export function computedGoodCounts(chart: Pick<ChartData, 'ascendant' | 'planets'>): GoodCounts {
+  return Object.fromEntries(calculateVaisheshikamsa(chart).rows.map(row => [row.planet, row.counts.shadvarga]));
+}
 
 export function sudarshanaTable(chart: Pick<ChartData, 'ascendant' | 'planets'>, goodCounts: GoodCounts = {}): TableRow[] {
   const grahas = chart.planets.filter(planet => (NINE_GRAHAS as readonly string[]).includes(planet.name));
@@ -97,8 +106,10 @@ export function sudarshanaTable(chart: Pick<ChartData, 'ascendant' | 'planets'>,
       for (const name of sudarshanaFacts(ring, house, grahas as PlanetData[]).aspecting) (TABLE_BENEFICS.includes(name) ? benefic : malefic).add(name);
     }
     const lordPoints = dispositors.reduce((sum, item) => sum + item.points, 0);
-    const known = occupants.every(item => typeof goodCounts[item.name] === 'number');
-    const vamsha = occupants.length === 0 ? 50 : known ? occupants.reduce((sum, item) => sum + auspiciousness(goodCounts[item.name]!), 0) / occupants.length : null;
+    // A node without a count is left out of the mean (the computed counts have none for the nodes); one of the seven grahas without a count leaves the mean open.
+    const counted = occupants.filter(item => typeof goodCounts[item.name] === 'number');
+    const open = occupants.some(item => typeof goodCounts[item.name] !== 'number' && item.name !== 'Rahu' && item.name !== 'Ketu');
+    const vamsha = open ? null : counted.length === 0 ? 50 : counted.reduce((sum, item) => sum + auspiciousness(goodCounts[item.name]!), 0) / counted.length;
     return {
       house,
       occupants,

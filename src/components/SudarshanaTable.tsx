@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { ChartData } from '@/types';
-import { NINE_GRAHAS, auspiciousness, sudarshanaTable, type LordState } from '@/lib/sudarshanaTable';
+import { NINE_GRAHAS, auspiciousness, computedGoodCounts, sudarshanaTable, type LordState } from '@/lib/sudarshanaTable';
 import { SIGN_ABBR } from '@/lib/signs';
 import { useGrahaNames } from '@/lib/grahaNames';
 import { useT } from '@/lib/i18n';
@@ -16,12 +16,15 @@ const percent = (value: number) => (Math.round(value * 100) / 100).toFixed(2);
 
 /**
  * The worksheet of the Sudarśana Chakra, one row per house number: the grahas in the three signs of the house, the average auspiciousness of them (V-AMSHA), the three lords and their
- * strength, the grahas that aspect the house, the Sarvāṣṭakavarga. The good counts of the grahas in the six divisional charts are typed in from Jagannatha Hora's Shadvarga view.
+ * strength, the grahas that aspect the house, the Sarvāṣṭakavarga. The good counts of the grahas in the six divisional charts are the app's own Vaiśeṣikāṁśa count (BPHS 6.52); a count
+ * typed in, as from Jagannatha Hora's Shadvarga view, takes its place.
  */
 export default function SudarshanaTable({ chart }: { chart: ChartData }) {
   const t = useT();
   const { code } = useGrahaNames();
-  const [good, setGood] = useState<Record<string, number>>({});
+  const [typed, setGood] = useState<Record<string, number>>({});
+  const computed = computedGoodCounts(chart);
+  const good: Record<string, number | undefined> = { ...computed, ...typed };
   const rows = sudarshanaTable(chart, good);
   if (rows.length === 0) return null;
   const setCount = (name: string, raw: string) => setGood(current => {
@@ -38,18 +41,18 @@ export default function SudarshanaTable({ chart }: { chart: ChartData }) {
       </p>
 
       <div className="space-y-1" data-sud="good-counts">
-        <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">{t('Good in the six divisional charts (0 to 6): type the count of each graha from the Shadvarga view of Jagannatha Hora. It gives the average V-AMSHA of the houses; the rest does not need it.')}</div>
+        <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">{t('Good in the six divisional charts (0 to 6), for the V-AMSHA (Vaiśeṣikāṁśa) column: counted here as the vargas of the Ṣaḍvarga in which the graha is in its exaltation or own sign (BPHS 6.52; ANALYSIS → Bala → Vaiśeṣikāṁśa). The nodes have no such sign and are left out of the average. A number typed in a box, as from the Shadvarga view of Jagannatha Hora, takes the place of the count; an empty box brings it back.')}</div>
         <div className="flex flex-wrap gap-x-3 gap-y-1">
           {NINE_GRAHAS.map(name => (
             <label key={name} className="inline-flex items-center gap-1 text-[10px] font-mono text-zinc-600 dark:text-zinc-300">
               {code(name)}
               <input
-                type="number" min={0} max={6} step={1} inputMode="numeric" value={good[name] ?? ''} data-sud-good={name}
+                type="number" min={0} max={6} step={1} inputMode="numeric" value={typed[name] ?? ''} placeholder={typeof computed[name] === 'number' ? String(computed[name]) : '–'} data-sud-good={name}
                 aria-label={`${name}: ${t('good in the six divisional charts')}`}
                 onChange={event => setCount(name, event.target.value === '' ? '' : String(Math.min(6, Math.max(0, Math.round(Number(event.target.value))))))}
                 className="w-10 rounded border border-zinc-300 bg-white px-1 py-0.5 text-center dark:border-zinc-700 dark:bg-zinc-900"
               />
-              {typeof good[name] === 'number' && <span className="text-zinc-400 dark:text-zinc-500">{percent(auspiciousness(good[name]))}%</span>}
+              {typeof good[name] === 'number' && <span className="text-zinc-400 dark:text-zinc-500">{percent(auspiciousness(good[name]!))}%</span>}
             </label>
           ))}
         </div>
@@ -100,7 +103,7 @@ export default function SudarshanaTable({ chart }: { chart: ChartData }) {
         </table>
       </div>
       <p className="text-[9px] font-mono text-zinc-400 dark:text-zinc-600">
-        {t('Strength: the lord of each of the three signs of the house by its own state (E exalted 1, M moolatrikona 0.75, O own sign 0.5, F friendly sign 0.25, N neutral 0.125, D enemy or debilitated 0), the sum over three. The friends are the natural ones. V-AMSHA: the average of the graha’s good counts over six. B and M: Moon, Mercury, Jupiter and Venus are benefic, the others malefic. The aspects are Parashara’s. SAV is the Sarvashtakavarga of the sign counted from the Lagna. The worksheet’s Remarks (good, average, bad) are the author’s own judgment and are not computed.')}
+        {t('Strength: the lord of each of the three signs of the house by its own state (E exalted 1, M moolatrikona 0.75, O own sign 0.5, F friendly sign 0.25, N neutral 0.125, D enemy or debilitated 0), the sum over three. The friends are the natural ones. V-AMSHA: the average of the good counts, over six, of the grahas in the house; 50 for a house with none. B and M: Moon, Mercury, Jupiter and Venus are benefic, the others malefic. The aspects are Parashara’s. SAV is the Sarvashtakavarga of the sign counted from the Lagna. The worksheet’s Remarks (good, average, bad) are the author’s own judgment and are not computed.')}
       </p>
     </div>
   );
