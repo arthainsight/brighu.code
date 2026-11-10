@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { ChartData } from '@/types';
+import type { ChartData, PlanetData } from '@/types';
 import { buildAshtakavarga, mapAshtakavargaHousesToSigns } from '@/lib/ashtakavarga';
 import type { AshtakavargaPlanet, AshtakavargaSystem } from '@/lib/ashtakavarga';
 import { SIGN_ABBR } from '@/lib/signs';
@@ -74,7 +74,7 @@ function NorthIndianAvChart({ houses, ascendantSign, label, isSav }: { houses: n
   );
 }
 
-export default function AshtakavargaPanel({ chart }: { chart: ChartData }) {
+export default function AshtakavargaPanel({ chart, transitPlanets = [] }: { chart: ChartData; transitPlanets?: PlanetData[] }) {
   const t = useT();
   const ascendantSign = chart.ascendant.sign;
   const [view, setView] = useState<'table' | 'north'>('table');
@@ -116,7 +116,7 @@ export default function AshtakavargaPanel({ chart }: { chart: ChartData }) {
 
       {part === 'prastara' && <PrastaraView chart={chart} system={system} />}
       {part === 'shodhana' && <ShodhanaView chart={chart} system={system} />}
-      {part === 'phala' && <PhalaView chart={chart} system={system} />}
+      {part === 'phala' && <PhalaView chart={chart} system={system} transitPlanets={transitPlanets} />}
       {part === 'finance' && <FinanceView chart={chart} system={system} />}
       {part === 'kakshya' && <KakshyaView chart={chart} system={system} />}
 

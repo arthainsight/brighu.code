@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: 'v4.36',
+    date: '2026-11-10',
+    title: 'Aṣṭakavarga Effects: where the transiting Saturn stands on the points of Saturn',
+    changes: [
+      'ANALYSIS → Aṣṭakavarga → Effects: the table of the point of Saturn (BPHS 70) now marks the nakṣatra and the sign cells that the transiting Saturn is on: in the very nakṣatra or sign of the point, or in the trine of it (the verse: "when Saturn goes through that nakṣatra or sign, or the trine of it"). A line above the table gives Saturn\'s sign and nakṣatra at the transit moment of the page (the target date) and says whether it is on any of the points.',
+      'Updated the application version to v4.36.',
+    ],
+  },
+  {
     version: 'v4.35',
     date: '2026-11-10',
     title: 'Wealth assessment: the Moon from the Sun, the horā, the pattern of the dhana yogas',

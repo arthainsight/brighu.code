@@ -14,6 +14,12 @@ export const LANGUAGES: { value: Language; label: string }[] = [
 ];
 
 export const FI: Record<string, string> = {
+  "Saturn is here now": "Saturnus on tässä nyt",
+  "Saturn is in the trine now": "Saturnus on trigonissa nyt",
+  "Transiting Saturn": "Transiittisaturnus",
+  "It is on a point below (marked).": "Se on jollakin alla olevalla pisteellä (merkitty).",
+  "It is on none of the points below.": "Se ei ole millään alla olevista pisteistä.",
+  "Set a transit moment to see where Saturn stands against these points.": "Aseta transiittihetki nähdäksesi, missä Saturnus on näihin pisteisiin nähden.",
   // Wealth assessment (wealthAssessment.ts)
   "the {n}th": "{n}.",
   "neither helps nor hinders": "ei auta eikä haittaa",

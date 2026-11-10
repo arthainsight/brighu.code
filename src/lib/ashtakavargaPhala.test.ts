@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { KEY_HOUSE, SIGNIFICATIONS, buildPhala, classifySav, nakshatraName, remainderFrom1 } from './ashtakavargaPhala';
+import { KEY_HOUSE, SIGNIFICATIONS, buildPhala, saturnTransitMarks, type SaturnPoint, classifySav, nakshatraName, remainderFrom1 } from './ashtakavargaPhala';
 import { bhinnaBySign, buildShodhana } from './ashtakavargaShodhana';
 import { buildAshtakavarga, type AshtakavargaChartLike } from './ashtakavarga';
 
@@ -85,3 +85,30 @@ assert.equal(phala.khandas.reduce((sum, item) => sum + item.bindus, 0), 337, 'th
 assert.equal(buildPhala(chart, 'Varahamihira').saturn.length, 7);
 
 console.log('Aṣṭakavarga Phala tests passed');
+
+// Saturn's transit on a point (BPHS 70.5–10): the nakṣatra or sign of the point, or the trine of it.
+{
+  const point = (planet: SaturnPoint['planet'], nakshatra: number | null, sign: number | null): SaturnPoint => ({
+    planet, signification: '', troubles: '', verse: '', houseSign: 0, bindus: 0, sodhyaPinda: 0, product: 0,
+    nakshatra, nakshatraTrine: nakshatra === null ? [] : [nakshatra, (nakshatra + 9) % 27, (nakshatra + 18) % 27],
+    sign, signTrine: sign === null ? [] : [sign, (sign + 4) % 12, (sign + 8) % 12],
+  });
+  const points = [point('Sun', 4, 1), point('Moon', 0, 11), point('Mars', null, null)];
+  // Saturn at 40° (Taurus 10°), in Rohiṇī? 40 / 13.333 = nakṣatra 3 (Rohiṇī); sign 1 (Taurus).
+  const mark = saturnTransitMarks(points, 40);
+  assert.equal(mark.sign, 1);
+  assert.equal(mark.nakshatra, 3);
+  assert.deepEqual(mark.points.Sun, { nakshatra: null, sign: 'exact' });
+  // The Moon's sign is Pisces (11); Taurus (1) is not in its trine (11, 3, 7). Its nakṣatra 0 has the trine 0, 9, 18.
+  assert.deepEqual(mark.points.Moon, { nakshatra: null, sign: null });
+  // No point (no bindu) is never marked.
+  assert.deepEqual(mark.points.Mars, { nakshatra: null, sign: null });
+  // The trine: Saturn in Virgo (5) is in the trine of Taurus (1, 5, 9); the nakṣatra nine on from Mṛgaśīrṣā (4) is Maghā (13).
+  const trine = saturnTransitMarks(points, 5 * 30 + 3 + 0.2);
+  assert.equal(trine.points.Sun.sign, 'trine');
+  assert.equal(saturnTransitMarks(points, 13 * (360 / 27) + 1).points.Sun.nakshatra, 'trine');
+  assert.equal(saturnTransitMarks(points, 4 * (360 / 27) + 1).points.Sun.nakshatra, 'exact');
+  // A longitude below 0 or over 360 wraps.
+  assert.equal(saturnTransitMarks(points, 400).sign, 1);
+  assert.equal(saturnTransitMarks(points, -320).sign, 1);
+}

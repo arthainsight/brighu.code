@@ -46,6 +46,11 @@ test('ANALYSIS Aṣṭakavarga shows the Prastāra, the Śodhana with the Piṇ�
   expect(sav).toHaveLength(12);
   expect(sav.reduce((sum, value) => sum + value, 0)).toBe(337);
   await expect(visible(page, page.locator('[data-phala-khandas]')).locator('tbody tr')).toHaveCount(3);
+  // The transiting Saturn against the points of Saturn: every row has its nakṣatra and sign cells marked or not, and the line above says where Saturn is.
+  const saturnRows = visible(page, page.locator('[data-phala-saturn]')).locator('[data-phala-saturn-row]');
+  await expect(saturnRows).toHaveCount(7);
+  await expect(saturnRows.first().locator('[data-phala-saturn-nakshatra]')).toHaveAttribute('data-phala-saturn-nakshatra', /^(none|exact|trine)$/);
+  await expect(saturnRows.first().locator('[data-phala-saturn-sign]')).toHaveAttribute('data-phala-saturn-sign', /^(none|exact|trine)$/);
 
   // Money, after a modern lesson: three comparisons of houses, the two sums against 164 and 76 (with the three houses left out they make 337), and the grahas of money.
   await part('Money').click();

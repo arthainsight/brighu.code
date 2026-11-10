@@ -1,8 +1,8 @@
 'use client';
 
-import type { ChartData } from '@/types';
+import type { ChartData, PlanetData } from '@/types';
 import type { AshtakavargaSystem } from '@/lib/ashtakavarga';
-import { KEY_HOUSE, buildPhala, nakshatraName, type SignClass } from '@/lib/ashtakavargaPhala';
+import { KEY_HOUSE, buildPhala, nakshatraName, saturnTransitMarks, type SaturnHit, type SignClass } from '@/lib/ashtakavargaPhala';
 import { SIGN_ABBR } from '@/lib/signs';
 import { useT } from '@/lib/i18n';
 
@@ -18,9 +18,15 @@ const KIND_CLASS: Record<SignClass['kind'], string> = {
 
 const signs = (list: number[]) => (list.length > 0 ? list.map(sign => SIGN_ABBR[sign]).join(', ') : '—');
 
-export function PhalaView({ chart, system }: { chart: ChartData; system: AshtakavargaSystem }) {
+const HIT_CLASS = 'bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200';
+
+export function PhalaView({ chart, system, transitPlanets = [] }: { chart: ChartData; system: AshtakavargaSystem; transitPlanets?: PlanetData[] }) {
   const t = useT();
   const phala = buildPhala(chart, system);
+  // Saturn at the transit moment (the target date of the page): marked where it stands on a point of Saturn, or in the trine of it.
+  const saturnNow = transitPlanets.find(planet => planet.name === 'Saturn');
+  const marks = saturnNow ? saturnTransitMarks(phala.saturn, saturnNow.longitude) : null;
+  const hitText = (hit: SaturnHit) => (hit === 'exact' ? t('Saturn is here now') : t('Saturn is in the trine now'));
   const kindLabel = (kind: SignClass['kind']) => (kind === 'good' ? t('good') : kind === 'middle' ? t('middle') : t('poor'));
   return (
     <div className="space-y-5">
@@ -29,6 +35,14 @@ export function PhalaView({ chart, system }: { chart: ChartData; system: Ashtaka
         <p className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500">
           {t('The Śodhya Piṇḍa of a graha times the bindus of its own Bhinnāṣṭakavarga in the house the verse names, divided by 27 (the nakṣatra) and by 12 (the sign), counting a remainder of nought as the divisor. When Saturn goes through that nakṣatra or sign, or the trine of it, the thing the graha stands for is troubled. BPHS 70.5–10 and 70.22–42.')}
         </p>
+        {marks && saturnNow ? (
+          <p className="text-[11px] font-mono text-zinc-600 dark:text-zinc-300" data-phala-saturn-now={`${marks.sign}-${marks.nakshatra}`}>
+            {t('Transiting Saturn')}: {SIGN_ABBR[marks.sign]} · {nakshatraName(marks.nakshatra)}.{' '}
+            {phala.saturn.some(point => marks.points[point.planet].nakshatra || marks.points[point.planet].sign)
+              ? <span className="font-semibold text-amber-700 dark:text-amber-400">{t('It is on a point below (marked).')}</span>
+              : t('It is on none of the points below.')}
+          </p>
+        ) : <p className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500">{t('Set a transit moment to see where Saturn stands against these points.')}</p>}
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] border-collapse text-center font-mono text-xs" data-phala-saturn>
             <thead>
@@ -45,17 +59,19 @@ export function PhalaView({ chart, system }: { chart: ChartData; system: Ashtaka
             </thead>
             <tbody>
               {phala.saturn.map(point => (
-                <tr key={point.planet} className="text-zinc-700 dark:text-zinc-200">
+                <tr key={point.planet} className="text-zinc-700 dark:text-zinc-200" data-phala-saturn-row={point.planet}>
                   <th scope="row" className={`text-left font-semibold ${CELL}`} title={point.verse}>{point.planet}</th>
                   <td className={`text-left ${CELL}`}>{t(point.signification)}</td>
                   <td className={`${CELL} tabular-nums`}>{KEY_HOUSE[point.planet].house}th · {SIGN_ABBR[point.houseSign]}</td>
                   <td className={`${CELL} tabular-nums`}>{point.bindus}</td>
                   <td className={`${CELL} tabular-nums`}>{point.sodhyaPinda}</td>
                   <td className={`${CELL} tabular-nums`}>{point.product}</td>
-                  <td className={`text-left ${CELL}`}>
+                  <td className={`text-left ${CELL} ${marks?.points[point.planet].nakshatra ? HIT_CLASS : ''}`} data-phala-saturn-nakshatra={marks?.points[point.planet].nakshatra ?? 'none'}>
+                    {marks?.points[point.planet].nakshatra && <span className="mr-1 font-bold" title={hitText(marks.points[point.planet].nakshatra)}>♄ {hitText(marks.points[point.planet].nakshatra)} ·</span>}
                     {point.nakshatra === null ? '—' : <><span className="font-semibold">{nakshatraName(point.nakshatra)}</span> <span className="text-zinc-400">· {point.nakshatraTrine.slice(1).map(nakshatraName).join(', ')}</span></>}
                   </td>
-                  <td className={`text-left ${CELL}`}>
+                  <td className={`text-left ${CELL} ${marks?.points[point.planet].sign ? HIT_CLASS : ''}`} data-phala-saturn-sign={marks?.points[point.planet].sign ?? 'none'}>
+                    {marks?.points[point.planet].sign && <span className="mr-1 font-bold" title={hitText(marks.points[point.planet].sign)}>♄ {hitText(marks.points[point.planet].sign)} ·</span>}
                     {point.sign === null ? '—' : <><span className="font-semibold">{SIGN_ABBR[point.sign]}</span> <span className="text-zinc-400">· {point.signTrine.slice(1).map(sign => SIGN_ABBR[sign]).join(', ')}</span></>}
                   </td>
                 </tr>

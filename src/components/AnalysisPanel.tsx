@@ -183,7 +183,7 @@ export default function AnalysisPanel({
       )}
 
       {view === 'ashtakavarga' && (
-        <div className="min-w-0 overflow-x-auto"><AshtakavargaPanel chart={chart} /></div>
+        <div className="min-w-0 overflow-x-auto"><AshtakavargaPanel chart={chart} transitPlanets={transitPlanets} /></div>
       )}
 
       {view === 'prashna' && <PrashnaPanel chart={chart} />}

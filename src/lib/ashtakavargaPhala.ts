@@ -25,7 +25,7 @@
 
 import { buildShodhana, AV_PLANETS, bhinnaBySign, SHODHANA_RULES, type ShodhanaRules } from './ashtakavargaShodhana';
 import type { AshtakavargaChartLike, AshtakavargaPlanet, AshtakavargaSystem } from './ashtakavarga';
-import { NAKSHATRA_NAMES } from './nakshatras';
+import { NAKSHATRA_NAMES, NAKSHATRA_SIZE } from './nakshatras';
 
 /** What each graha's Aṣṭakavarga is read for (BPHS 70.1–4). */
 export const SIGNIFICATIONS: Record<AshtakavargaPlanet, string> = {
@@ -155,6 +155,33 @@ export function buildPhala(chart: AshtakavargaChartLike, system: AshtakavargaSys
     saturn, sunEmpty: emptyOf('Sun'), moonEmpty: emptyOf('Moon'), sunRichest: richestOf('Sun'), moonRichest: richestOf('Moon'),
     houses, lagna: { ...lagnaClass, enjoyment: lagnaClass.kind === 'good' }, khandas,
   };
+}
+
+export type SaturnHit = 'exact' | 'trine' | null;
+export interface SaturnTransitMark {
+  /** Where the transiting Saturn stands: the sign (0 = Aries) and the nakṣatra (0 = Aśvinī). */
+  sign: number;
+  nakshatra: number;
+  /** For each graha: Saturn is in the very nakṣatra / sign of its point ('exact'), in the trine of it ('trine') or neither (null). */
+  points: Record<AshtakavargaPlanet, { nakshatra: SaturnHit; sign: SaturnHit }>;
+}
+
+const hitOf = (value: number, exact: number | null, trine: number[]): SaturnHit => (exact === null ? null : value === exact ? 'exact' : trine.includes(value) ? 'trine' : null);
+
+/**
+ * Marks the points of Saturn (BPHS 70) that the transiting Saturn is on: its nakṣatra or sign is the one of the point, or one of the trine of it
+ * (70.5–10: "when Saturn goes through that nakṣatra or sign, or the trine of it"). The nakṣatra is the plain division of the sidereal longitude
+ * into 27 parts, the same count as the nakṣatras of the points.
+ */
+export function saturnTransitMarks(points: SaturnPoint[], saturnLongitude: number): SaturnTransitMark {
+  const longitude = ((saturnLongitude % 360) + 360) % 360;
+  const sign = Math.floor(longitude / 30);
+  const nakshatra = Math.min(26, Math.floor(longitude / NAKSHATRA_SIZE));
+  const result = {} as SaturnTransitMark['points'];
+  for (const point of points) {
+    result[point.planet] = { nakshatra: hitOf(nakshatra, point.nakshatra, point.nakshatraTrine), sign: hitOf(sign, point.sign, point.signTrine) };
+  }
+  return { sign, nakshatra, points: result };
 }
 
 /** The name of the nakṣatra (0 = Aśvinī). */
