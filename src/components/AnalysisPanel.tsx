@@ -20,6 +20,7 @@ import GocharaPanel from './GocharaPanel';
 import PrashnaPanel from './PrashnaPanel';
 import BhavaLordPanel from './BhavaLordPanel';
 import TopicYogaPanel from './TopicYogaPanel';
+import WealthAssessmentPanel from './WealthAssessmentPanel';
 import UpagrahaResultsPanel from './UpagrahaResultsPanel';
 import DvigrahaPanel from './DvigrahaPanel';
 import GrahaBhavaPanel from './GrahaBhavaPanel';
@@ -32,7 +33,7 @@ import PlanetaryDataPanel from './PlanetaryDataPanel';
 import FullWidthToggle from './FullWidthToggle';
 import { useT } from '@/lib/i18n';
 
-export type AnalysisView = 'grahas' | 'varga' | 'bala' | 'degrees' | 'nadi' | 'ashtakavarga' | 'gochara' | 'drishti' | 'argala' | 'chalit' | 'kp' | 'planetdata' | 'tara' | 'dik' | 'sphutas' | 'sarvatobhadra' | 'kota' | 'prashna' | 'bhavesha' | 'topicyogas' | 'upagrahas' | 'dvigraha' | 'grahabhava' | 'lagnaphala' | 'financial';
+export type AnalysisView = 'grahas' | 'varga' | 'bala' | 'degrees' | 'nadi' | 'ashtakavarga' | 'gochara' | 'drishti' | 'argala' | 'chalit' | 'kp' | 'planetdata' | 'tara' | 'dik' | 'sphutas' | 'sarvatobhadra' | 'kota' | 'prashna' | 'bhavesha' | 'topicyogas' | 'upagrahas' | 'dvigraha' | 'grahabhava' | 'lagnaphala' | 'financial' | 'wealth';
 
 const VIEW_GROUPS: { label: string; views: { key: AnalysisView; label: string }[] }[] = [
   { label: 'Chart & strength', views: [
@@ -47,7 +48,7 @@ const VIEW_GROUPS: { label: string; views: { key: AnalysisView; label: string }[
     { key: 'gochara', label: 'Gochara' }, { key: 'tara', label: 'Nava-Tara' }, { key: 'dik', label: 'Directions' },
   ] },
   { label: 'Classical systems', views: [
-    { key: 'ashtakavarga', label: 'Aṣṭakavarga' }, { key: 'sarvatobhadra', label: 'Sarvatobhadra' }, { key: 'kota', label: 'Kota Chakra' }, { key: 'prashna', label: 'Praśna' }, { key: 'bhavesha', label: 'Bhāveśa' }, { key: 'financial', label: 'Financial research' }, { key: 'topicyogas', label: 'Topic yogas' }, { key: 'upagrahas', label: 'Upagrahas' }, { key: 'dvigraha', label: 'Conjunctions' }, { key: 'grahabhava', label: 'Grahas in houses' }, { key: 'lagnaphala', label: 'Lagna and dignities' },
+    { key: 'ashtakavarga', label: 'Aṣṭakavarga' }, { key: 'sarvatobhadra', label: 'Sarvatobhadra' }, { key: 'kota', label: 'Kota Chakra' }, { key: 'prashna', label: 'Praśna' }, { key: 'bhavesha', label: 'Bhāveśa' }, { key: 'financial', label: 'Financial research' }, { key: 'wealth', label: 'Wealth assessment' }, { key: 'topicyogas', label: 'Topic yogas' }, { key: 'upagrahas', label: 'Upagrahas' }, { key: 'dvigraha', label: 'Conjunctions' }, { key: 'grahabhava', label: 'Grahas in houses' }, { key: 'lagnaphala', label: 'Lagna and dignities' },
   ] },
 ];
 
@@ -188,6 +189,7 @@ export default function AnalysisPanel({
       {view === 'prashna' && <PrashnaPanel chart={chart} />}
       {view === 'bhavesha' && <BhavaLordPanel chart={chart} />}
       {view === 'topicyogas' && <TopicYogaPanel chart={chart} />}
+      {view === 'wealth' && <WealthAssessmentPanel chart={chart} />}
       {view === 'upagrahas' && <UpagrahaResultsPanel chart={chart} />}
       {view === 'dvigraha' && <DvigrahaPanel chart={chart} />}
       {view === 'grahabhava' && <GrahaBhavaPanel chart={chart} />}
