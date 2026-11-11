@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: 'v4.40',
+    date: '2026-11-11',
+    title: 'True signs: the weights of the bodies in the overall balance',
+    changes: [
+      'ANALYSIS → True signs: the overall balance is now the mean of the bodies with a weight for each, the Lagna 1, the Moon 0.75, the Sun 0.6 and Mars, Mercury, Jupiter, Venus, Saturn, Rāhu and Ketu 0.5 each (before, every graha weighed the same). The Lagna, Rāhu and Ketu are counted from the start. With these the overall balances of two charts shown in the videos, Donald Trump\'s and Jim Morrison\'s, come out to the tenth of a per cent in all twelve signs (docs/true-signs.md, the test).',
+      'The checks show that the report counts tropical longitudes and the true node: set the ayanāṁśa to none and the node setting to true to match it. The page says so.',
+      'Updated the application version to v4.40.',
+    ],
+  },
+  {
     version: 'v4.39',
     date: '2026-11-10',
     title: 'ANALYSIS → Varga dignity',

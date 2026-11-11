@@ -37,7 +37,7 @@ function Bars({ share, marker }: { share: number[]; marker: string }) {
 export default function TrueSignsPanel({ chart }: { chart: ChartData }) {
   const t = useT();
   const { name: graha } = useGrahaNames();
-  const [included, setIncluded] = useState<string[]>([...GRAHAS]);
+  const [included, setIncluded] = useState<string[]>([...GRAHAS, ...EXTRA]);
   const [detail, setDetail] = useState<string>('Venus');
   const bodies = useMemo<Record<string, TrueSignBody>>(() => {
     const all: Record<string, TrueSignBody> = { Lagna: { name: 'Lagna', longitude: chart.ascendant.longitude } };
@@ -55,7 +55,7 @@ export default function TrueSignsPanel({ chart }: { chart: ChartData }) {
       <div>
         <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600">{t('True signs')}</div>
         <p className="mt-1 text-[10px] font-mono text-zinc-400 dark:text-zinc-500">
-          {fill(t('The signs the grahas take in six divisions, D1, D9, D7, D12, D10 and D16, counted together with the weights {weights} (out of {total}). After a video lesson on a modern True Signs report: the weights were not given in the lesson but found from a chart it shows (docs/true-signs.md), and this is not a rule of a classic. The divisions are the Parāśara ones, from the longitudes of the chart as it is cast.'), { weights: TRUE_SIGN_DIVISIONS.map(division => `D${division} ${TRUE_SIGN_WEIGHTS[division]}`).join(', '), total: TRUE_SIGN_TOTAL })}
+          {fill(t('The signs the bodies take in six divisions, D1, D9, D7, D12, D10 and D16, counted together with the weights {weights} (out of {total}). The overall balance is the mean of the bodies with a weight for each: the Lagna 1, the Moon 0.75, the Sun 0.6 and the other grahas, Rāhu and Ketu 0.5. After a modern True Signs report: the weights were found from the figures of charts shown in videos and given by the user (docs/true-signs.md), and this is not a rule of a classic. The divisions are the Parāśara ones. The report’s own longitudes are tropical (set the ayanāṁśa to none) and with the true node (the node setting).'), { weights: TRUE_SIGN_DIVISIONS.map(division => `D${division} ${TRUE_SIGN_WEIGHTS[division]}`).join(', '), total: TRUE_SIGN_TOTAL })}
         </p>
       </div>
 

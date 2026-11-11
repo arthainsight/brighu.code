@@ -12,6 +12,10 @@ export type TrueSignDivision = keyof typeof TRUE_SIGN_WEIGHTS;
 export const TRUE_SIGN_DIVISIONS = [1, 9, 7, 12, 10, 16] as const satisfies readonly TrueSignDivision[];
 export const TRUE_SIGN_TOTAL = TRUE_SIGN_DIVISIONS.reduce((sum, division) => sum + TRUE_SIGN_WEIGHTS[division], 0);
 
+/** The weight of each body in the overall balance. */
+export const TRUE_SIGN_BODY_WEIGHTS: Record<string, number> = { Lagna: 1, Moon: 0.75, Sun: 0.6, Mars: 0.5, Mercury: 0.5, Jupiter: 0.5, Venus: 0.5, Saturn: 0.5, Rahu: 0.5, Ketu: 0.5 };
+export const bodyWeight = (name: string) => TRUE_SIGN_BODY_WEIGHTS[name] ?? 0.5;
+
 export interface TrueSignBody { name: string; longitude: number }
 
 export interface TrueSignPlacement {
@@ -35,13 +39,14 @@ export function trueSignPlacement(body: TrueSignBody): TrueSignPlacement {
 
 export interface TrueSigns {
   placements: TrueSignPlacement[];
-  /** The share of each sign (index 0 = Aries) out of 1 over all the grahas given; they sum to 1. */
+  /** The share of each sign (index 0 = Aries) out of 1 over the bodies given, each by its weight; they sum to 1. */
   overall: number[];
 }
 
 export function trueSigns(bodies: TrueSignBody[]): TrueSigns {
   const placements = bodies.map(trueSignPlacement);
   const overall = Array<number>(12).fill(0);
-  for (const placement of placements) placement.share.forEach((value, sign) => { overall[sign] += value / Math.max(1, placements.length); });
+  const total = placements.reduce((sum, placement) => sum + bodyWeight(placement.name), 0);
+  for (const placement of placements) placement.share.forEach((value, sign) => { overall[sign] += (value * bodyWeight(placement.name)) / (total || 1); });
   return { placements, overall };
 }
