@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: 'v4.42',
+    date: '2026-11-17',
+    title: 'Surya HL on the charts, degrees on the marks',
+    changes: [
+      'The special lagnas of the charts and the graha table now include SHL (the Surya Hora Lagna, from the Sun) and LHL (the Lagna Hora Lagna, from the Lagna), beside the standard HL. Charts saved before this version have them after a new calculation.',
+      'The marks on the charts (the special lagnas, the upagrahas Gulika, Maandi, Dhuma, Vyatipata, Parivesha, Indrachapa and Upaketu, the Āruḍha padas) show their degree in the sign when the chart is set to show degrees (Settings → chart: degree precision). In the divisional charts the degree is the one in the division.',
+      'Updated the application version to v4.42.',
+    ],
+  },
+  {
     version: 'v4.41',
     date: '2026-11-17',
     title: 'ANALYSIS → Surya Hora Lagna',

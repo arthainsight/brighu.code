@@ -19,7 +19,7 @@ export async function selectWorkspace(page: Page, label: string) {
  * Switches chart layers on before the page loads: a chart starts with every layer off, and some tests look at one. The choice is only
  * stored when the browser has none yet, so a reload keeps what the page itself has stored.
  */
-export async function withChartLayers(page: Page, layers: Record<string, boolean>) {
+export async function withChartLayers(page: Page, layers: Record<string, boolean | string>) {
   await page.addInitScript((stored) => {
     try {
       if (!localStorage.getItem('chartDisplaySettings')) localStorage.setItem('chartDisplaySettings', JSON.stringify(stored));

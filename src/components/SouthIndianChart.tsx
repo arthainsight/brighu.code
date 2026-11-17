@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useHydrated } from '@/lib/useHydrated';
 import { useTheme } from 'next-themes';
 import { PlanetData, SpecialLagna } from '@/types';
-import { type DegreePrecision, formatDegree } from '@/lib/formatDegree';
+import { type DegreePrecision, formatDegree, markLabel } from '@/lib/formatDegree';
 import type { NadiParayaHouseActivation, ParayaBody } from '@/lib/bnn/nadiParaya';
 import { normalizeDegrees } from '@/lib/angles';
 import { FILL_MAX_WIDTH, useChartFill } from './chartFill';
@@ -307,7 +307,7 @@ export default function SouthIndianChart({
             text: getPlanetLabel(p, p.isTransit, degreePrecision, showNakshatra, showCharaKaraka, karakaByPlanet, nakshatraAdjust, p.isTransit ? '' : dashaMark(p.name, dashaLords) + yogiMarkOf(grahaRoles, p.name), grahaCode),
             title: p.isTransit ? undefined : planetHover(p),
           }));
-          specialHere.forEach((sl, index) => tokens.push({ key: `sl-${sl.name}-${index}`, group: 'special', text: sl.name }));
+          specialHere.forEach((sl, index) => tokens.push({ key: `sl-${sl.name}-${index}`, group: 'special', text: markLabel(sl, degreePrecision) }));
           const hasBnnLabel = (bnnMajorHouse > 0 && house === bnnMajorHouse) || (bnnMinorHouse > 0 && house === bnnMinorHouse);
           const cellHeight = contentHeight - (hasBnnLabel ? 10 * k : 0);
           const layout = layoutHouseLabels(

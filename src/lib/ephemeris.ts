@@ -10,6 +10,7 @@ import { calculateSunTimes } from './sunTimes';
 import { normalizeDegrees } from './angles';
 import { lunarMonthAt } from './lunisolar';
 import { SATURN_PORTION_MOMENTS, saturnPortion, saturnPortionHour } from './upagrahas';
+import { horaLagnas } from './horaLagna';
 import { calculateSpecialSphutas, equationOfTimeMinutes, ishtaGhatis, type SunriseMode } from './specialSphutas';
 import { pad2 } from './dateFormat';
 import { orderGrahas } from './grahaOrder';
@@ -231,6 +232,11 @@ export async function calculateChart(
     const sphuta = sphutas.find((item) => item.key === key)!;
     return { name: key, longitude: sphuta.longitude, sign: sphuta.sign, degree: sphuta.degree };
   });
+  // The Hora Lagna from the Sun (SHL, the material wealth) and from the Lagna (LHL, the intellectual wealth), after the lesson of horaLagna.ts.
+  const horaLagna = horaLagnas(sun.longitude, ascLon, ishta / 2.5);
+  for (const [name, found] of [['SHL', horaLagna.surya], ['LHL', horaLagna.lagna]] as const) {
+    specialLagnas.push({ name, longitude: found.longitude, sign: found.sign, degree: found.degree });
+  }
 
   // Gulika and Māndi: the Lagna rising in Saturn's part of the day or night.
   const portion = saturnPortion({

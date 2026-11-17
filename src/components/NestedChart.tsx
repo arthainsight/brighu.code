@@ -6,7 +6,7 @@ import type { PlanetData } from '@/types';
 import { useHydrated } from '@/lib/useHydrated';
 import { useChartFontScale } from '@/lib/chartFont';
 import { useGrahaNames } from '@/lib/grahaNames';
-import { formatDegree } from '@/lib/formatDegree';
+import { formatDegree, markLabel } from '@/lib/formatDegree';
 import { normalizeDegrees } from '@/lib/angles';
 import { layoutHouseLabels, type ExclusionBox, type LabelToken, type Point } from '@/lib/chartLabelLayout';
 import { INNER_SQUARE, SOUTH_CENTRE, centroidOf, northRegions, southRegions, type NestedRegion } from '@/lib/nestedChart';
@@ -88,7 +88,7 @@ export default function NestedChart({ shape, outer, inner, outerTitle, innerTitl
       visible.filter(planet => planet.sign === sign).forEach(planet => tokens.push({ key: `na-${planet.name}`, group: 'natal', text: planetLabel(layer, planet), title: planetHover(planet) }));
     }
     if (layer.showSpecialLagnas) {
-      (layer.specialLagnas ?? []).filter(special => special.sign === sign).forEach((special, index) => tokens.push({ key: `sl-${special.name}-${index}`, group: 'special', text: special.name }));
+      (layer.specialLagnas ?? []).filter(special => special.sign === sign).forEach((special, index) => tokens.push({ key: `sl-${special.name}-${index}`, group: 'special', text: markLabel(special, layer.degreePrecision ?? 'off') }));
     }
     return tokens;
   };

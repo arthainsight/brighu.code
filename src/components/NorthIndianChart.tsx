@@ -4,7 +4,7 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import { useHydrated } from '@/lib/useHydrated';
 import { useTheme } from 'next-themes';
 import { PlanetData, SpecialLagna } from '@/types';
-import { type DegreePrecision, formatDegree } from '@/lib/formatDegree';
+import { type DegreePrecision, formatDegree, markLabel } from '@/lib/formatDegree';
 import type { NadiParayaHouseActivation, ParayaBody } from '@/lib/bnn/nadiParaya';
 import { normalizeDegrees } from '@/lib/angles';
 import { FILL_MAX_WIDTH, useChartFill } from './chartFill';
@@ -359,7 +359,7 @@ export default function NorthIndianChart({
           parayaHere.forEach(activation => tokens.push({ key: `paraya-${activation.body}`, group: 'paraya', text: `${PARAYA_CODES[activation.body]} ${activation.degree.toFixed(1)}°` }));
           natalInHouse.forEach(planet => tokens.push({ key: `na-${planet.name}`, group: 'natal', text: natalLabel(planet), title: planetHover(planet) }));
           transitInHouse.forEach(planet => tokens.push({ key: `tr-${planet.name}`, group: 'transit', text: transitLabel(planet) }));
-          specialInHouse.forEach((sl, index) => tokens.push({ key: `sl-${sl.name}-${index}`, group: 'special', text: sl.name }));
+          specialInHouse.forEach((sl, index) => tokens.push({ key: `sl-${sl.name}-${index}`, group: 'special', text: markLabel(sl, degreePrecision) }));
 
           // Keep labels clear of the sign and house number; BNN finds free
           // space around them afterwards (existing labels have priority).

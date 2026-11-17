@@ -1,3 +1,4 @@
+import { directionOfSign } from './horaLagna';
 import assert from 'node:assert/strict';
 import { calculateChart } from './ephemeris';
 import { formatClock, parseClock } from './specialSphutas';
@@ -24,11 +25,19 @@ async function main() {
   // The special lagnas the charts mark are the same numbers as the sphuṭas of the table, whatever the sunrise.
   const sameNumbers = (c: typeof chart) => {
     for (const lagna of c.specialLagnas ?? []) {
+      // SHL and LHL (the Hora Lagna from the Sun and from the Lagna) are not among the twelve sphuṭas of the table.
+      if (lagna.name === 'SHL' || lagna.name === 'LHL') continue;
       const sphuta = c.specialSphutas!.find(item => item.key === lagna.name)!;
       assert.equal(lagna.longitude, sphuta.longitude, `${lagna.name} is one value in the charts and in the table`);
     }
   };
   sameNumbers(chart);
+  const marked = (c: typeof chart, name: string) => c.specialLagnas!.find(item => item.name === name);
+  assert.ok(marked(chart, 'SHL') && marked(chart, 'LHL'), 'the charts mark the Surya and the Lagna Hora Lagna');
+  // The Surya HL is the standard HL for a Sun in a savya sign (Gemini here, in mid July) and runs backwards from it in an apasavya sign.
+  const sunSign = Math.floor(chart.planets.find(planet => planet.name === 'Sun')!.longitude / 30) + 1;
+  assert.equal(directionOfSign(sunSign), 'savya');
+  assert.equal(marked(chart, 'SHL')!.longitude, marked(chart, 'HL')!.longitude);
 
   // A sunrise typed in changes both together, and is reported as the source.
   const typed = parseClock('05:00:00')!;
