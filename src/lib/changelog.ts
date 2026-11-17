@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: 'v4.41',
+    date: '2026-11-17',
+    title: 'ANALYSIS → Surya Hora Lagna',
+    changes: [
+      'ANALYSIS → Surya Hora Lagna: the Hora Lagna counted from two starting points, each moved by the time from sunrise to birth at 30° an hour: the Surya HL from the Sun (the material wealth, Kubera) and the Lagna HL from the Lagna (the intellectual wealth, Ganesha and Shiva). The direction follows the sign of the starting point: in a savya sign (Aries, Taurus, Gemini, Libra, Scorpio, Sagittarius) the arc is added, in an apasavya sign (Cancer, Leo, Virgo, Capricorn, Aquarius, Pisces) it is taken away. Each is shown with its sign, degree, house, nakṣatra and lord, beside the standard Parāśara Hora Lagna (which equals the Surya HL for a Sun in a savya sign).',
+      'The protector of the birth hour: the 24 avatāras of the Garuḍa Purāṇa, two to a sign of two hours from 06:00 (or from the sunrise, by choice), the first named of a pair having the first hour. After a lesson, not a rule of BPHS; the choices (the order inside a pair, the day from 06:00, the Parasurama hour taken from the table) are in docs/hora-lagna.md.',
+      'Updated the application version to v4.41.',
+    ],
+  },
+  {
     version: 'v4.40',
     date: '2026-11-11',
     title: 'True signs: the weights of the bodies in the overall balance',

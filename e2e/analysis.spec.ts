@@ -360,6 +360,9 @@ test('ANALYSIS Upagrahas gives the verse of BPHS 25 for each body in the house i
   const house = Number(await first.getAttribute('data-upagraha-house'));
   expect(house).toBeGreaterThanOrEqual(1);
   expect(house).toBeLessThanOrEqual(12);
+  // Every body shows its degree in the sign too.
+  await expect(bodies.nth(0)).toContainText(/\d+° \d+' \d+\.\d{2}"/);
+  await expect(bodies.last()).toContainText(/\d+° \d+' \d+\.\d{2}"/);
   await first.locator('details summary').click();
   await expect(first.locator('[lang="sa"]').first()).toContainText(/[\u0900-\u097F]/);
 

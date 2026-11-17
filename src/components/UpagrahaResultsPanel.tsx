@@ -5,6 +5,7 @@ import type { ChartData } from '@/types';
 import { upagrahaPoints } from '@/lib/chartPoints';
 import { UPAGRAHA_CLOSE, upagrahaReadings } from '@/lib/upagrahaResults';
 import { SIGN_NAMES } from '@/lib/signs';
+import { formatDms } from '@/lib/specialSphutas';
 import { fill, useLanguage, useT } from '@/lib/i18n';
 import { ordinal } from '@/lib/ordinal';
 import { useChartPoints } from '@/hooks/useChartPoints';
@@ -35,9 +36,9 @@ export default function UpagrahaResultsPanel({ chart }: { chart: ChartData }) {
       {readings.length === 0 && <p className="text-xs font-mono text-zinc-400">{t('The points are not calculated for this chart.')}</p>}
       <div className="space-y-2">
         {readings.map(reading => (
-          <div key={reading.body} className="rounded-lg border border-zinc-200 p-2 font-mono text-xs dark:border-zinc-700" data-upagraha-body={reading.body} data-upagraha-house={reading.house}>
+          <div key={reading.body} className="rounded-lg border border-zinc-200 p-2 font-mono text-xs dark:border-zinc-700" data-upagraha-body={reading.body} data-upagraha-house={reading.house} data-upagraha-degree={reading.degree.toFixed(4)}>
             <div className="font-semibold text-zinc-700 dark:text-zinc-200">
-              {fill(t('{body} in the {house} house ({sign})'), { body: reading.name, house: ordinal(reading.house, language), sign: SIGN_NAMES[reading.sign - 1] })}
+              {fill(t('{body} in the {house} house ({sign} {degree})'), { body: reading.name, house: ordinal(reading.house, language), sign: SIGN_NAMES[reading.sign - 1], degree: formatDms(reading.degree) })}
             </div>
             <p className="mt-1 text-zinc-700 dark:text-zinc-200">{reading.verse.gloss}</p>
             <details className="mt-1 rounded border border-zinc-200 px-2 py-1 dark:border-zinc-700">
