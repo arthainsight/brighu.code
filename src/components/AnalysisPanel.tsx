@@ -73,6 +73,8 @@ interface Props {
   transitPlanets?: PlanetData[];
   /** The sunrise choice for the special sphutas. */
   calculationSettings?: CalculationSettings;
+  /** The target date (YYYY-MM-DD), where the periods of the Sarvatobhadra start. */
+  targetDate?: string;
   /** The analysis takes the whole width of a wide screen, with the chart hidden. */
   wide?: boolean;
   onToggleWide?: () => void;
@@ -93,6 +95,7 @@ export default function AnalysisPanel({
   dashaLords,
   transitPlanets = [],
   calculationSettings,
+  targetDate,
   wide = false,
   onToggleWide,
   request,
@@ -235,7 +238,7 @@ export default function AnalysisPanel({
       )}
 
       {view === 'sarvatobhadra' && (
-        <SarvatobhadraPanel chart={chart} transitPlanets={transitPlanets} nakshatraAdjust={nakshatraAdjust} />
+        <SarvatobhadraPanel chart={chart} transitPlanets={transitPlanets} nakshatraAdjust={nakshatraAdjust} targetDate={targetDate} calculationSettings={calculationSettings} />
       )}
 
       {view === 'kota' && (

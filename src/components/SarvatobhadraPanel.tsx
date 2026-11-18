@@ -1,12 +1,16 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { ChartData, PlanetData } from '@/types';
+import type { CalculationSettings, ChartData, PlanetData } from '@/types';
 import {
-  SBC_GRID, SBC_SIGN_CELLS, SBC_TITHI_CELLS,
-  sbcCellOf, sbcLetterSquares, sbcMarkLayout, sbcNakshatra, sbcPierces, sbcVedha, tithiOf, vedicWeekday, weekdayGroup, type SbcCell, type SbcKind, type SbcPoint, type SbcPointId, type SbcPosition,
+  SBC_GRID, SBC_NAKSHATRA_CELLS, SBC_POINT_LABELS, SBC_SIGN_CELLS, SBC_TITHI_CELLS,
+  sbcCellOf, sbcLetterSquares, sbcMarkLayout, sbcNakshatra, sbcPierces, sbcVedha, tithiOf, vedicWeekday, weekdayGroup, type SbcCell, type SbcKind, type SbcPoint, type SbcPosition,
 } from '@/lib/sarvatobhadra';
 import { SIGN_ABBR } from '@/lib/signs';
+import { NAKSHATRA_NAMES } from '@/lib/nakshatras';
+import { lattaNakshatra, LATTA_RESULT, type TransitGraha } from '@/lib/phaladipikaGochara';
+import { janmaNakshatra } from '@/lib/sarvatobhadraPeriods';
+import SarvatobhadraPeriods from './SarvatobhadraPeriods';
 import { formatDms } from '@/lib/specialSphutas';
 import { useGrahaNames } from '@/lib/grahaNames';
 import { useLanguage, useT } from '@/lib/i18n';
@@ -15,6 +19,9 @@ type Props = {
   chart: ChartData;
   transitPlanets?: PlanetData[];
   nakshatraAdjust?: number;
+  /** The start of the periods (YYYY-MM-DD): the target date. */
+  targetDate?: string;
+  calculationSettings?: CalculationSettings;
 };
 
 const GRAHAS = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
@@ -55,19 +62,11 @@ const ROLE_EDGE: Record<Role, string> = {
   name: 'stroke-teal-500',
 };
 
-const POINT_LABELS: Record<SbcPointId, string> = {
-  janma: 'Janma nakshatra',
-  moonSign: 'Moon sign',
-  lagnaSign: 'Lagna sign',
-  tithi: 'Birth tithi',
-  vara: 'Birth day',
-  name: 'Name syllable',
-};
 
 interface Mark { name: string; label: string; retrograde: boolean; transit: boolean }
 
 /** A graha (or the Lagna) in its square, natal or transiting. */
-interface Entry extends Mark { id: string; position: SbcPosition }
+interface Entry extends Mark { id: string; position: SbcPosition; longitude: number }
 
 const keyOf = (position: SbcPosition) => `${position[0]}-${position[1]}`;
 const centre = (position: SbcPosition) => ({ x: position[1] * 100 + 50, y: position[0] * 100 + 50 });
@@ -77,11 +76,13 @@ const centre = (position: SbcPosition) => ({ x: position[1] * 100 + 50, y: posit
  * tithi groups with the weekdays in the middle, each graha in the square of its nakṣatra. The Moon's nakṣatra and
  * the squares of the Moon's sign, the Lagna's sign and the birth tithi and weekday are marked.
  */
-export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshatraAdjust = 0 }: Props) {
+export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshatraAdjust = 0, targetDate, calculationSettings }: Props) {
   const t = useT();
   const language = useLanguage();
   const { code, name: grahaFullName } = useGrahaNames();
   const [showTransit, setShowTransit] = useState(false);
+  // The lattā, the kick of each graha, marked on the nakṣatra it falls on.
+  const [showLatta, setShowLatta] = useState(false);
   // The graha whose vedha is drawn: the id of an entry ('n:Sun' natal, 't:Sun' transiting).
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // The first letter or syllable of the name, as the chart writes it ('ch', 'kh', 'a' …): its squares are marked.
@@ -94,7 +95,7 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
     // The grahas in their squares.
     const entries: Entry[] = [];
     const add = (name: string, longitude: number, retrograde: boolean, transit: boolean) => {
-      entries.push({ id: `${transit ? 't' : 'n'}:${name}`, name, label: code(name), retrograde, transit, position: sbcCellOf(longitude, nakshatraAdjust) });
+      entries.push({ id: `${transit ? 't' : 'n'}:${name}`, name, label: code(name), retrograde, transit, longitude, position: sbcCellOf(longitude, nakshatraAdjust) });
     };
     add('Asc', chart.ascendant.longitude, false, false);
     const isRetro = (planet: PlanetData) => Boolean(planet.isRetrograde) && planet.name !== 'Rahu' && planet.name !== 'Ketu';
@@ -153,7 +154,20 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
       .map(entry => ({ entry, hits: sbcPierces(vedha.get(entry.id)?.lines ?? [], points) }))
       .filter(item => item.hits.length > 0);
 
-    return { entries, marks, vedha, roles, janma, tithi, weekday, vara, nameSquares, pierced };
+    // The lattā: the nakṣatra each graha kicks (Phaladīpikā 26.42–47), and whether it is the birth nakṣatra or has a graha in it.
+    const janmaIndex = moon ? janmaNakshatra(moon.longitude, nakshatraAdjust) : null;
+    const latta = entries.flatMap(entry => {
+      if (entry.name === 'Asc' || entry.name === 'Ketu') return [];
+      const kicked = lattaNakshatra(entry.name as TransitGraha, entry.longitude + nakshatraAdjust);
+      if (kicked === null) return [];
+      const nakshatra = NAKSHATRA_NAMES[kicked];
+      const position = SBC_NAKSHATRA_CELLS[nakshatra];
+      return [{ entry, nakshatra, position, onJanma: janmaIndex === kicked, occupants: entries.filter(other => other.id !== entry.id && keyOf(other.position) === keyOf(position)) }];
+    });
+    const kickedBy = new Map<string, typeof latta>();
+    for (const item of latta) kickedBy.set(keyOf(item.position), [...(kickedBy.get(keyOf(item.position)) ?? []), item]);
+
+    return { entries, marks, vedha, roles, janma, janmaIndex, tithi, weekday, vara, nameSquares, pierced, points, latta, kickedBy };
   }, [chart, transitPlanets, showTransit, nakshatraAdjust, moon, sun, code, nameText]);
 
   const selected = selectedId ? model.vedha.get(selectedId) ?? null : null;
@@ -186,6 +200,12 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
         {roles.length > 0 && <rect data-sbc-roles={roles.join(' ')} x={x + 4} y={y + 4} width={92} height={92} fill="none" className={ROLE_EDGE[roles[roles.length - 1]]} strokeWidth={4} />}
         {targetKeys.has(key) && <rect data-sbc-vedha="target" x={x + 9} y={y + 9} width={82} height={82} fill="none" className="stroke-rose-600 dark:stroke-rose-400" strokeWidth={5} />}
         {selectedEntry && keyOf(selectedEntry.position) === key && <rect data-sbc-vedha="source" x={x + 2} y={y + 2} width={96} height={96} fill="none" className="stroke-zinc-900 dark:stroke-zinc-100" strokeWidth={3} />}
+        {showLatta && model.kickedBy.has(key) && <rect data-sbc-latta-square={key} x={x + 6} y={y + 6} width={88} height={88} fill="none" strokeDasharray="8 6" className="stroke-amber-600 dark:stroke-amber-400" strokeWidth={3} pointerEvents="none" />}
+        {showLatta && model.kickedBy.has(key) && (
+          <text x={x + 50} y={y + 93} textAnchor="middle" fontSize={15} fontWeight={700} className="fill-amber-700 dark:fill-amber-400" pointerEvents="none">
+            ↯{model.kickedBy.get(key)!.map(item => `${item.entry.label}${item.entry.transit ? '↗' : ''}`).join(' ')}
+          </text>
+        )}
         {cell.kind === 'nakshatra' ? (
           <text x={x + 50} y={y + 26} textAnchor="middle" fontSize={20} fontWeight={600} className={KIND_TEXT.nakshatra}>{cell.label}</text>
         ) : cell.kind === 'tithi' ? (
@@ -234,6 +254,9 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
       <div className="flex flex-wrap items-center gap-1">
         <button type="button" aria-pressed={showTransit} disabled={transitPlanets.length === 0} onClick={() => setShowTransit(value => !value)} className={`${chip(showTransit)} disabled:opacity-40`}>
           {t('Transit')}
+        </button>
+        <button type="button" aria-pressed={showLatta} onClick={() => setShowLatta(value => !value)} className={chip(showLatta)} data-sbc="latta-toggle">
+          {t('Latta')}
         </button>
       </div>
 
@@ -338,7 +361,7 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
                 {hits.map((hit, index) => (
                   <span key={`${hit.point.id}-${hit.point.position.join('-')}`} data-sbc-pierced-point={hit.point.id} data-sbc-pierced-at={hit.at}>
                     {index > 0 && ' · '}
-                    {t(POINT_LABELS[hit.point.id])} <span className="text-zinc-400 dark:text-zinc-500">({t(hit.at === 'end' ? 'line end' : 'crossed')})</span>
+                    {t(SBC_POINT_LABELS[hit.point.id])} <span className="text-zinc-400 dark:text-zinc-500">({t(hit.at === 'end' ? 'line end' : 'crossed')})</span>
                   </span>
                 ))}
               </li>
@@ -346,6 +369,26 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
           </ul>
         )}
       </div>
+
+      <div data-sbc="latta">
+        <div className="mb-1 text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600">{t('Latta')}</div>
+        <p className="mb-1 text-[9px] font-mono text-zinc-400 dark:text-zinc-600">
+          {t('The lattā is the kick of a graha: it falls on the nakshatra 12 on from the Sun, 3 from Mars, 6 from Jupiter and 8 from Saturn, and 5 before Venus, 7 before Mercury, 9 before Rahu and 22 before the Moon, counting its own as 1 (Phaladipika 26.42–47). Ketu has none. Press Latta above to mark the squares; ↯ is the kicker, ↗ a transiting graha. A kick on the birth nakshatra is the one the text warns of; a graha standing in the square kicked is struck with it.')}
+        </p>
+        <ul className="space-y-0.5 text-[10px] font-mono text-zinc-600 dark:text-zinc-300">
+          {model.latta.map(({ entry, nakshatra, onJanma, occupants }) => (
+            <li key={entry.id} data-sbc-latta-from={entry.id} data-sbc-latta-on={nakshatra} data-sbc-latta-janma={onJanma ? 'true' : undefined} className={entry.transit ? 'text-violet-700 dark:text-violet-300' : ''}>
+              <span className="font-bold">{entry.label}{entry.transit ? '↗' : ''}</span> ↯ <span className="font-bold">{nakshatra}</span>
+              {onJanma && <span className="text-rose-600 dark:text-rose-400"> ✗ {t('on the birth nakṣatra')}{LATTA_RESULT[entry.name as TransitGraha] ? `: ${t(LATTA_RESULT[entry.name as TransitGraha]!)}` : ''}</span>}
+              {occupants.length > 0 && <span className="text-red-700 dark:text-red-400"> [{occupants.map(other => `${other.label}${other.transit ? '↗' : ''}`).join(' ')}]</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {targetDate && (
+        <SarvatobhadraPeriods points={model.points} janma={model.janmaIndex} nakshatraAdjust={nakshatraAdjust} targetDate={targetDate} calculationSettings={calculationSettings} />
+      )}
 
       <p className="text-[9px] font-mono text-zinc-400 dark:text-zinc-600">
         {t('Abhijit is the stretch from 6°40′ to 10°53′20″ of Capricorn; the nakshatras follow the nakshatra zodiac of Settings. The weekday counts from sunrise.')}

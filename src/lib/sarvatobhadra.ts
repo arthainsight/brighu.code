@@ -180,6 +180,11 @@ export function sbcLetterSquares(text: string): SbcPosition[] {
 /** The points of a birth that the chakra is read for. */
 export type SbcPointId = 'janma' | 'moonSign' | 'lagnaSign' | 'tithi' | 'vara' | 'name';
 
+/** The names of the points of a birth, as the page writes them. */
+export const SBC_POINT_LABELS: Record<SbcPointId, string> = {
+  janma: 'Janma nakshatra', moonSign: 'Moon sign', lagnaSign: 'Lagna sign', tithi: 'Birth tithi', vara: 'Birth day', name: 'Name syllable',
+};
+
 export interface SbcPoint {
   id: SbcPointId;
   position: SbcPosition;

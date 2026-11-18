@@ -699,7 +699,7 @@ export default function Home() {
   // The workspace panels of the wide layouts: the one-at-a-time desktop layout and the split view.
   const analysisPanel = (fullControl?: { wide: boolean; onToggleWide: () => void }) => (
     chartData
-      ? <AnalysisPanel chart={chartData} karakaByPlanet={karakaByPlanet} chartDisplaySettings={chartDisplaySettings} nakshatraAdjust={nakshatraAdjust} birthDatetime={birthDatetime} dashaLords={chartDashaLords} transitPlanets={transitPlanets} calculationSettings={calculationSettings} request={analysisRequest} {...fullControl} />
+      ? <AnalysisPanel chart={chartData} karakaByPlanet={karakaByPlanet} chartDisplaySettings={chartDisplaySettings} nakshatraAdjust={nakshatraAdjust} birthDatetime={birthDatetime} dashaLords={chartDashaLords} transitPlanets={transitPlanets} calculationSettings={calculationSettings} targetDate={targetDate} request={analysisRequest} {...fullControl} />
       : <EmptyState message="Calculate a chart to see graha positions" />
   );
   const timingPanel = (wideControl?: { wide: boolean; onToggleWide: () => void }) => (

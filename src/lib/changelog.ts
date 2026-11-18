@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: 'v4.43',
+    date: '2026-11-18',
+    title: 'ANALYSIS → Sarvatobhadra: Lattā and the good and difficult periods',
+    changes: [
+      'ANALYSIS → Sarvatobhadra: the lattā, the kick of each graha (Phaladīpikā 26.42–47: the Sun 12 on, Mars 3, Jupiter 6, Saturn 8, and Venus 5, Mercury 7, Rāhu 9 and the Moon 22 back), is marked on the chakra when Latta is pressed (natal and, with Transit on, transiting) and listed, with the result of the text and the grahas in the square when the kick falls on the birth nakṣatra.',
+      'The good and difficult periods: from the target date on (3 months, 12 months or 3 years), the time in which a transiting graha\'s vedha reaches a point of the birth (the Moon\'s nakṣatra and sign, the Lagna\'s sign, the tithi, the weekday, the name syllable) is listed by graha and run together into windows of days: good when a benefic reaches it, difficult when a malefic does or the lattā falls on the birth nakṣatra. The weights and the windows are choices made here, named on the page and in docs/sarvatobhadra-periods.md.',
+      'Updated the application version to v4.43.',
+    ],
+  },
+  {
     version: 'v4.42',
     date: '2026-11-17',
     title: 'Surya HL on the charts, degrees on the marks',
