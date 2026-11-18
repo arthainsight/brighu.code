@@ -9,7 +9,8 @@ import {
 import { SIGN_ABBR } from '@/lib/signs';
 import { NAKSHATRA_NAMES, NAKSHATRA_SIZE } from '@/lib/nakshatras';
 import { LATTA, lattaNakshatra, LATTA_RESULT, type TransitGraha } from '@/lib/phaladipikaGochara';
-import { janmaNakshatra } from '@/lib/sarvatobhadraPeriods';
+import { BENEFIC_GRAHAS, janmaNakshatra } from '@/lib/sarvatobhadraPeriods';
+import { transitsOverNatal, type Verdict } from '@/lib/sarvatobhadraTransits';
 import SarvatobhadraPeriods from './SarvatobhadraPeriods';
 import { formatDms } from '@/lib/specialSphutas';
 import { useGrahaNames } from '@/lib/grahaNames';
@@ -67,6 +68,13 @@ interface Mark { name: string; label: string; retrograde: boolean; transit: bool
 
 /** A graha (or the Lagna) in its square, natal or transiting. */
 interface Entry extends Mark { id: string; position: SbcPosition; longitude: number }
+
+const VERDICT_CLASS: Record<Verdict, string> = {
+  clear: 'text-zinc-400 dark:text-zinc-500',
+  supported: 'text-emerald-600 dark:text-emerald-400',
+  afflicted: 'text-rose-600 dark:text-rose-400',
+  mixed: 'text-amber-600 dark:text-amber-400',
+};
 
 const keyOf = (position: SbcPosition) => `${position[0]}-${position[1]}`;
 const centre = (position: SbcPosition) => ({ x: position[1] * 100 + 50, y: position[0] * 100 + 50 });
@@ -184,6 +192,17 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
 
     return { entries, marks, vedha, roles, janma, janmaIndex, tithi, weekday, vara, nameSquares, pierced, points, latta, kickedBy };
   }, [chart, transitPlanets, showTransit, nakshatraAdjust, moon, sun, code, nameText, ketuLatta]);
+
+  // The transits at the target moment over each natal graha, whether or not the transit overlay is on.
+  const natalRows = useMemo(() => {
+    const place = (planet: PlanetData) => ({ name: planet.name, longitude: planet.longitude });
+    return transitsOverNatal(
+      chart.planets.filter(item => GRAHAS.includes(item.name)).map(place),
+      transitPlanets.filter(item => GRAHAS.includes(item.name)).map(place),
+      nakshatraAdjust,
+      ketuLatta,
+    );
+  }, [chart, transitPlanets, nakshatraAdjust, ketuLatta]);
 
   const selected = selectedId ? model.vedha.get(selectedId) ?? null : null;
   const selectedEntry = selectedId ? model.entries.find(entry => entry.id === selectedId) ?? null : null;
@@ -449,6 +468,44 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
         </div>
         <p className="mt-1 text-[9px] font-mono text-zinc-400 dark:text-zinc-600">{t('The name after ← is the nakshatra of the birth chart the kick lands on, counted from the Moon’s (Janma, Jāti, Karma, Abhiṣeka, Saṅghātika, Sāmudāyika, Naidhana); red when it is the Janma, the Karma or the Abhiṣeka. *Ketu has no lattā in the verses; 9 behind is the Sarvatobhadra variant.')}</p>
       </div>
+
+      {transitPlanets.length > 0 && (
+        <div data-sbc="natal-transits">
+          <div className="mb-1 text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600">{t('Transits over natal planets')}</div>
+          <p className="mb-1 text-[9px] font-mono text-zinc-400 dark:text-zinc-600">
+            {t('For each natal graha: the transiting grahas in its nakshatra (conjunction), with vedha on it (a line of the chakra ends on its nakshatra), aspecting its sign (their own aspects), and the ones whose lattā falls on it. Benefics are green and malefics red, the lattā by the nature of the kicker. The verdict is supported when only benefics reach it, afflicted when only malefics, mixed when both and clear when none; it is read from the examples of another program, not from a classic (docs/sarvatobhadra-periods.md). Set the transit date above.')}
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[560px] border-collapse text-left font-mono text-[10px] text-zinc-600 dark:text-zinc-300" data-sbc-natal-table>
+              <thead>
+                <tr className="text-zinc-500 dark:text-zinc-400">
+                  {['Natal graha', 'Nakshatra', 'Transit on it', 'Vedha', 'Other aspects', 'Latta', 'Verdict'].map(label => (
+                    <th key={label} scope="col" className="border-b border-zinc-200 p-1.5 dark:border-zinc-700">{t(label)}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {natalRows.map(row => {
+                  const hits = (names: string[]) => names.length === 0
+                    ? '—'
+                    : names.map((name, index) => <span key={name} className={BENEFIC_GRAHAS.includes(name) ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}>{index > 0 && ' '}{code(name)}</span>);
+                  return (
+                    <tr key={row.natal} data-sbc-natal={row.natal} data-sbc-natal-verdict={row.verdict}>
+                      <th scope="row" className="border-b border-zinc-100 p-1.5 font-bold dark:border-zinc-800">{code(row.natal)}</th>
+                      <td className="border-b border-zinc-100 p-1.5 dark:border-zinc-800">{NAKSHATRA_NAMES[row.star]}</td>
+                      <td className="border-b border-zinc-100 p-1.5 dark:border-zinc-800">{hits(row.conjunction)}</td>
+                      <td className="border-b border-zinc-100 p-1.5 dark:border-zinc-800">{hits(row.vedha)}</td>
+                      <td className="border-b border-zinc-100 p-1.5 dark:border-zinc-800">{hits(row.aspects)}</td>
+                      <td className="border-b border-zinc-100 p-1.5 dark:border-zinc-800">{hits(row.latta)}</td>
+                      <td className={`border-b border-zinc-100 p-1.5 font-bold dark:border-zinc-800 ${VERDICT_CLASS[row.verdict]}`}>{t(row.verdict)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {targetDate && (
         <SarvatobhadraPeriods points={model.points} janma={model.janmaIndex} nakshatraAdjust={nakshatraAdjust} targetDate={targetDate} calculationSettings={calculationSettings} />

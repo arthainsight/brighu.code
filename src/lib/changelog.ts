@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: 'v4.45',
+    date: '2026-11-18',
+    title: 'Sarvatobhadra: Transits over natal planets',
+    changes: [
+      'ANALYSIS → Sarvatobhadra: the table Transits over natal planets: for each natal graha, the transiting grahas of the target moment in its nakṣatra (conjunction), with vedha on it, aspecting its sign, and with their lattā falling on it, shown green for benefics and red for malefics, and a verdict (supported, afflicted, mixed, clear). The verdict is read from the examples of another program, not from a classic: each hit counts by the nature of the graha that makes it.',
+      'Updated the application version to v4.45.',
+    ],
+  },
+  {
     version: 'v4.44',
     date: '2026-11-18',
     title: 'Sarvatobhadra: special nakṣatras and the Lattā table',

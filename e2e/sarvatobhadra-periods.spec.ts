@@ -26,6 +26,13 @@ test('ANALYSIS Sarvatobhadra marks the lattā and lists the good and difficult p
   await visible(page, page.locator('[data-sbc="latta-toggle"]')).click();
   expect(await visible(page, page.locator('[data-sbc="chart"]')).locator('[data-sbc-latta-square]').count()).toBeGreaterThanOrEqual(1);
 
+  // The transits over the natal planets: one row for each of the nine, each with a verdict.
+  const natal = visible(page, page.locator('[data-sbc="natal-transits"]'));
+  await expect(natal.locator('[data-sbc-natal]')).toHaveCount(9);
+  for (const verdict of await natal.locator('[data-sbc-natal]').evaluateAll(rows => rows.map(row => row.getAttribute('data-sbc-natal-verdict')))) {
+    expect(['clear', 'supported', 'afflicted', 'mixed']).toContain(verdict);
+  }
+
   // The periods from the target date on, loaded from the sign-change series.
   const periods = visible(page, page.locator('[data-sbc="periods"]'));
   await expect(periods.locator('[data-sbc-periods="windows"]')).toBeVisible({ timeout: 30_000 });

@@ -14,6 +14,14 @@ export const LANGUAGES: { value: Language; label: string }[] = [
 ];
 
 export const FI: Record<string, string> = {
+  "Transits over natal planets": "Kulkijat syntymägrahojen yllä",
+  "For each natal graha: the transiting grahas in its nakshatra (conjunction), with vedha on it (a line of the chakra ends on its nakshatra), aspecting its sign (their own aspects), and the ones whose lattā falls on it. Benefics are green and malefics red, the lattā by the nature of the kicker. The verdict is supported when only benefics reach it, afflicted when only malefics, mixed when both and clear when none; it is read from the examples of another program, not from a classic (docs/sarvatobhadra-periods.md). Set the transit date above.": "Jokaisesta syntymägrahasta: kulkevat grahat sen nakshatrassa (yhtymä), grahat joiden vedha osuu siihen (kakran linja päättyy sen nakshatraan), jotka katsovat sen merkkiä (omilla aspekteillaan) ja joiden lattā osuu siihen. Hyväntekijät ovat vihreällä ja pahantekijät punaisella, lattā potkaisijan luonteen mukaan. Tuomio on tuettu, kun vain hyväntekijät yltävät siihen, vaivattu, kun vain pahantekijät, sekoitettu, kun molemmat, ja selvä, kun ei kumpikaan; se on luettu toisen ohjelman esimerkeistä, ei klassikosta (docs/sarvatobhadra-periods.md). Aseta kulkupäivä yllä.",
+  "Natal graha": "Syntymägraha",
+  "Transit on it": "Kulkija sillä",
+  "Other aspects": "Muut aspektit",
+  "Verdict": "Tuomio",
+  "supported": "tuettu",
+  "afflicted": "vaivattu",
   "Special nakshatras (from Janma)": "Erikoisnakshatrat (Janmasta)",
   "Special nakshatra": "Erikoisnakshatra",
   "Star": "Tähti",
