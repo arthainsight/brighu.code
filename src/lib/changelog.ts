@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: 'v4.44',
+    date: '2026-11-18',
+    title: 'Sarvatobhadra: special nakṣatras and the Lattā table',
+    changes: [
+      'ANALYSIS → Sarvatobhadra: the special nakṣatras from the Moon\'s (Janma 1, Jāti 3, Karma 10, Abhiṣeka 15, Saṅghātika 16, Sāmudāyika 18, Naidhana 23) are listed, and the Lattā is a table of graha, kick, transit star and the nakṣatra it falls on, with the special nakṣatra it is (red for the Janma, the Karma and the Abhiṣeka). A button adds Ketu 9 behind, the Sarvatobhadra variant. The counts of the special nakṣatras are from another program\'s page, not checked against a classic here.',
+      'The good and difficult periods now count the vedha on the Karma and the Abhiṣeka nakṣatras as well as on the Janma, and the lattā on any of the three as difficult; the list says "vedha on …" and "lattā on …".',
+      'Updated the application version to v4.44.',
+    ],
+  },
+  {
     version: 'v4.43',
     date: '2026-11-18',
     title: 'ANALYSIS → Sarvatobhadra: Lattā and the good and difficult periods',

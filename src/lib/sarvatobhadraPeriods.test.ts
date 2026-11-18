@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { grahaStretches, impactWindows, janmaNakshatra, LATTA_ON_JANMA_WEIGHT, POINT_WEIGHT } from './sarvatobhadraPeriods';
-import { sbcCellOf, sbcVedha, type SbcPoint } from './sarvatobhadra';
+import { sbcCellOf, sbcVedha, specialNakshatraIndex, specialOf, type SbcPoint } from './sarvatobhadra';
 import { lattaNakshatra } from './phaladipikaGochara';
 
 const DAY = 86_400_000;
@@ -47,6 +47,19 @@ assert.equal(only[0].peak, -POINT_WEIGHT.janma);
 assert.deepEqual(only[0].causes, [ashwini]);
 const mixed = impactWindows([ashwini, { ...jupiter, start: start + 20 * DAY, end: start + 25 * DAY }], start, 30);
 assert.deepEqual(mixed.map(item => item.quality), ['difficult', 'good']);
+
+// --- The special nakshatras from the Moon's: Janma 1, Jati 3, Karma 10, Abhisheka 15, Sanghatika 16, Samudayika 18, Naidhana 23 ----------------------
+assert.equal(specialOf(11, 11), 'Janma');
+assert.equal(specialOf(11, specialNakshatraIndex(11, 10)), 'Karma');
+assert.equal(specialNakshatraIndex(11, 10), 20, 'the 10th counting the own as 1, 11 + 9');
+assert.equal(specialOf(25, specialNakshatraIndex(25, 15)), 'Abhiṣeka', 'wraps past Revati');
+assert.equal(specialOf(0, 1), null, 'the 2nd is none');
+// A kick on the Karma or the Abhisheka of the birth counts against too, with its own weight.
+// The Sun in Ashwini kicks the 12th on, nakshatra 11; for a Moon in nakshatra 2 that is the 10th: the Karma.
+const karmaSun = grahaStretches('Sun', series, [], 2).find(item => item.nakshatra === 'Ashwini')!;
+assert.equal(karmaSun.latta!.key, 'Karma');
+assert.equal(karmaSun.latta!.onJanma, false);
+assert.equal(karmaSun.score, -2);
 
 assert.equal(janmaNakshatra(0), 0);
 assert.equal(janmaNakshatra(359.9), 26);

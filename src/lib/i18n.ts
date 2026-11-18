@@ -14,6 +14,21 @@ export const LANGUAGES: { value: Language; label: string }[] = [
 ];
 
 export const FI: Record<string, string> = {
+  "Special nakshatras (from Janma)": "Erikoisnakshatrat (Janmasta)",
+  "Special nakshatra": "Erikoisnakshatra",
+  "Star": "Tähti",
+  "Count from Janma": "Lasku Janmasta",
+  "vedha on": "vedha kohteeseen",
+  "lattā on": "lattā kohteeseen",
+  "Karma nakshatra": "Karma-nakshatra",
+  "Abhisheka nakshatra": "Abhisheka-nakshatra",
+  "Ketu 9 behind (Sarvatobhadra variant)": "Ketu 9 taaksepäin (Sarvatobhadra-variantti)",
+  "Kick": "Potku",
+  "Transit star": "Kulkeva tähti",
+  "Latta falls on": "Lattā osuu",
+  "The name after ← is the nakshatra of the birth chart the kick lands on, counted from the Moon’s (Janma, Jāti, Karma, Abhiṣeka, Saṅghātika, Sāmudāyika, Naidhana); red when it is the Janma, the Karma or the Abhiṣeka. *Ketu has no lattā in the verses; 9 behind is the Sarvatobhadra variant.": "Nuolen ← jälkeinen nimi on syntymäkartan nakshatra, johon potku osuu, laskettuna Kuun nakshatrasta (Janma, Jāti, Karma, Abhiṣeka, Saṅghātika, Sāmudāyika, Naidhana); punaisella, kun se on Janma, Karma tai Abhiṣeka. *Ketulla ei ole lattāa jakeissa; 9 taaksepäin on Sarvatobhadra-variantti.",
+  "ahead": "eteenpäin",
+  "behind": "taaksepäin",
   "Latta": "Lattā",
   "The lattā is the kick of a graha: it falls on the nakshatra 12 on from the Sun, 3 from Mars, 6 from Jupiter and 8 from Saturn, and 5 before Venus, 7 before Mercury, 9 before Rahu and 22 before the Moon, counting its own as 1 (Phaladipika 26.42–47). Ketu has none. Press Latta above to mark the squares; ↯ is the kicker, ↗ a transiting graha. A kick on the birth nakshatra is the one the text warns of; a graha standing in the square kicked is struck with it.": "Lattā on grahan potku: se osuu nakshatraan, joka on Auringosta 12. eteenpäin, Marsista 3., Jupiterista 6. ja Saturnuksesta 8., sekä Venuksesta 5., Merkuriuksesta 7., Rahusta 9. ja Kuusta 22. taaksepäin, oma nakshatra laskettuna ykkösenä (Phaladipika 26.42–47). Ketulla ei ole. Paina yllä Latta merkitäksesi ruudut; ↯ on potkaisija, ↗ kulkeva graha. Potku syntymänakshatraan on se, josta teksti varoittaa; potketussa ruudussa oleva graha saa potkun mukana.",
   "lattā on the birth nakshatra": "lattā syntymänakshatrassa",

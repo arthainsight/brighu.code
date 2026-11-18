@@ -10,6 +10,10 @@ The kick of a graha, from the rules the app already has for the Phaladīpikā (2
 
 The Muhūrta Mārtaṇḍa (v. 16) counts some of the grahas otherwise (Mercury the 22nd, Venus the 24th, Rāhu the 20th, the Moon the 7th); Mahādosha's Lattā follows that text (`docs/muhurta-martanda-kalaprakasika.md`). The chakra follows the Phaladīpikā, as the transit table does.
 
+## Special nakṣatras and the Lattā table
+
+The page lists the special nakṣatras counted from the Moon's, as another program shows them on its Sarvatobhadra page (a screenshot the user sent; **not checked against a classic here**): Janma 1, Jāti 3, Karma 10, Abhiṣeka 15, Saṅghātika 16, Sāmudāyika 18, Naidhana 23. The Janma, the Karma and the Abhiṣeka are marked (red). The Lattā list is a table of graha, kick (12 ahead …), the star it stands in and the nakṣatra the kick falls on, with the special nakṣatra it is (`Revati ← Jāti`) and red when it is one of the three. Ketu has no lattā in the verses; the "Ketu 9 behind" button adds the Sarvatobhadra variant (as Rāhu's), marked *. The Phaladīpikā's own list of special nakṣatras (Janma, Vipat, Pratyari, Vadha, Karma, Ādhāna, Vainaśika) stays in the Gochara table.
+
 ## Good and difficult periods
 
 The vedha of a transiting graha (the line across the chakra and the two diagonals from its nakṣatra's square) reaches the points of the birth the chakra is already read for: the Moon's nakṣatra, the Moon's sign, the Lagna's sign, the birth tithi and weekday, and the syllable of the name. While the graha stands in one square (and one nakṣatra of the 27), the points it reaches are the same, so the time is cut into **stretches** at the changes of nakṣatra (the edge is half way between two samples of the ephemeris: 12 hours for the Sun, Mars, Mercury and Venus, a day for Jupiter, Saturn and the nodes, 3 hours for the Moon).
@@ -17,8 +21,8 @@ The vedha of a transiting graha (the line across the chakra and the two diagonal
 | Choice | Value |
 |---|---|
 | Benefics | Moon, Mercury, Jupiter, Venus; the Sun, Mars, Saturn, Rāhu and Ketu are malefics (the teaching is that a malefic's vedha harms and a benefic's helps; it gives no scale) |
-| Weight of the point reached | janma nakṣatra 3, Moon sign 2, Lagna sign 2, tithi 1, weekday 1, name syllable 1; a line that only crosses the square counts as one that ends on it |
-| Score of a stretch | the sum of the weights, + for a benefic, − for a malefic; and −3 when the graha's lattā falls on the birth nakṣatra |
+| Weight of the point reached | janma nakṣatra 3, Karma nakṣatra 2, Abhiṣeka nakṣatra 2, Moon sign 2, Lagna sign 2, tithi 1, weekday 1, name syllable 1; a line that only crosses the square counts as one that ends on it |
+| Score of a stretch | the sum of the weights, + for a benefic, − for a malefic; and the lattā of the graha on the Janma (−3), the Karma (−2) or the Abhiṣeka (−2) nakṣatra |
 | Window of days | each day is taken at its middle: its net score is the sum of the stretches then running; days of the same sign (good > 0, difficult < 0) run together into a window, a day at 0 ends it |
 | The Moon | left out of the windows (it crosses a square in a day or so) unless "with the Moon" is pressed; the list "by graha" shows its stretches with the hour |
 | Retrograde | not weighed |

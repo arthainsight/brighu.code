@@ -73,8 +73,8 @@ export default function SarvatobhadraPeriods({ points, janma, nakshatraAdjust, t
   const describe = (item: Stretch) => (
     <>
       <span className="font-bold">{code(item.body)}</span> <span className="text-zinc-400 dark:text-zinc-500">{item.nakshatra}</span>
-      {item.hits.length > 0 && <> → {item.hits.map(hit => t(SBC_POINT_LABELS[hit.point.id])).filter((label, index, all) => all.indexOf(label) === index).join(', ')}</>}
-      {item.latta?.onJanma && <span className="text-rose-600 dark:text-rose-400"> ↯ {t('lattā on the birth nakshatra')}</span>}
+      {item.hits.length > 0 && <> → {t('vedha on')} {item.hits.map(hit => t(SBC_POINT_LABELS[hit.point.id])).filter((label, index, all) => all.indexOf(label) === index).join(', ')}</>}
+      {item.latta?.key && <span className="text-rose-600 dark:text-rose-400"> ↯ {t('lattā on')} {item.latta.key}</span>}
     </>
   );
 

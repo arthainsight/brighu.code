@@ -178,11 +178,29 @@ export function sbcLetterSquares(text: string): SbcPosition[] {
 }
 
 /** The points of a birth that the chakra is read for. */
-export type SbcPointId = 'janma' | 'moonSign' | 'lagnaSign' | 'tithi' | 'vara' | 'name';
+export type SbcPointId = 'janma' | 'karma' | 'abhisheka' | 'moonSign' | 'lagnaSign' | 'tithi' | 'vara' | 'name';
+
+/**
+ * The special nakṣatras counted from the Moon's (Janma), as another program shows them on its Sarvatobhadra page: Janma 1, Jāti 3, Karma 10, Abhiṣeka 15,
+ * Saṅghātika 16, Sāmudāyika 18 and Naidhana 23. The page marks the Janma, the Karma and the Abhiṣeka red (the ones whose hit is read as a harm or a help
+ * to the self, the work and the standing). Not checked against a classic here (docs/sarvatobhadra-periods.md).
+ */
+export const SBC_SPECIAL_NAKSHATRAS = [
+  { name: 'Janma', count: 1, key: 'janma' }, { name: 'Jāti', count: 3 }, { name: 'Karma', count: 10, key: 'karma' }, { name: 'Abhiṣeka', count: 15, key: 'abhisheka' },
+  { name: 'Saṅghātika', count: 16 }, { name: 'Sāmudāyika', count: 18 }, { name: 'Naidhana', count: 23 },
+] as const;
+export type SbcSpecialName = (typeof SBC_SPECIAL_NAKSHATRAS)[number]['name'];
+/** The three the page marks red. */
+export const SBC_KEY_SPECIALS: readonly SbcSpecialName[] = ['Janma', 'Karma', 'Abhiṣeka'];
+/** The nakṣatra (0–26) of a special nakṣatra, from the Moon's (0–26). */
+export const specialNakshatraIndex = (janma: number, count: number) => (janma + count - 1) % 27;
+/** The special nakṣatra a nakṣatra (0–26) is, counted from the Moon's, or null. */
+export const specialOf = (janma: number, nakshatra: number): SbcSpecialName | null =>
+  SBC_SPECIAL_NAKSHATRAS.find(item => item.count === ((nakshatra - janma + 27) % 27) + 1)?.name ?? null;
 
 /** The names of the points of a birth, as the page writes them. */
 export const SBC_POINT_LABELS: Record<SbcPointId, string> = {
-  janma: 'Janma nakshatra', moonSign: 'Moon sign', lagnaSign: 'Lagna sign', tithi: 'Birth tithi', vara: 'Birth day', name: 'Name syllable',
+  janma: 'Janma nakshatra', karma: 'Karma nakshatra', abhisheka: 'Abhisheka nakshatra', moonSign: 'Moon sign', lagnaSign: 'Lagna sign', tithi: 'Birth tithi', vara: 'Birth day', name: 'Name syllable',
 };
 
 export interface SbcPoint {

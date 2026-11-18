@@ -9,14 +9,15 @@
 import { NAKSHATRA_NAMES, NAKSHATRA_SIZE } from './nakshatras';
 import { normalizeDegrees } from './angles';
 import { lattaNakshatra, type TransitGraha } from './phaladipikaGochara';
-import { sbcCellOf, sbcNakshatra, sbcPierces, sbcVedha, type SbcPierce, type SbcPoint, type SbcPointId } from './sarvatobhadra';
+import { SBC_KEY_SPECIALS, sbcCellOf, sbcNakshatra, sbcPierces, sbcVedha, specialOf, type SbcPierce, type SbcPoint, type SbcPointId } from './sarvatobhadra';
 import type { LongitudeSeries } from './transitHits';
 
 export const BENEFIC_GRAHAS: readonly string[] = ['Moon', 'Mercury', 'Jupiter', 'Venus'];
 /** What a point of the birth weighs when a line reaches it. */
-export const POINT_WEIGHT: Record<SbcPointId, number> = { janma: 3, moonSign: 2, lagnaSign: 2, tithi: 1, vara: 1, name: 1 };
-/** What the lattā on the birth nakṣatra weighs (always against). */
-export const LATTA_ON_JANMA_WEIGHT = 3;
+export const POINT_WEIGHT: Record<SbcPointId, number> = { janma: 3, karma: 2, abhisheka: 2, moonSign: 2, lagnaSign: 2, tithi: 1, vara: 1, name: 1 };
+/** What the lattā on the Janma, the Karma or the Abhiṣeka nakṣatra weighs (always against). */
+export const LATTA_WEIGHT: Record<string, number> = { Janma: 3, Karma: 2, 'Abhiṣeka': 2 };
+export const LATTA_ON_JANMA_WEIGHT = LATTA_WEIGHT.Janma;
 
 export type Quality = 'good' | 'difficult';
 
@@ -28,8 +29,8 @@ export interface Stretch {
   /** The square the graha stands in, by its nakṣatra among the 28. */
   nakshatra: string;
   hits: SbcPierce[];
-  /** The nakṣatra the graha kicks (the lattā) and whether it is the birth nakṣatra; null for Ketu, which the text does not name. */
-  latta: { nakshatra: string; onJanma: boolean } | null;
+  /** The nakṣatra the graha kicks (the lattā), whether it is the birth nakṣatra and which of Janma, Karma and Abhiṣeka it is, if any; null for Ketu, which the text does not name. */
+  latta: { nakshatra: string; onJanma: boolean; key: string | null } | null;
   /** The benefit (+) or the harm (−) of the stretch: the weights of the points reached, for or against by the graha, and the lattā on the birth nakṣatra. */
   score: number;
 }
@@ -61,10 +62,12 @@ export function grahaStretches(body: string, series: LongitudeSeries, points: re
     const lines = sbcVedha(sbcCellOf(lon));
     const hits = lines ? sbcPierces(lines, points) : [];
     const kicked = body === 'Ketu' ? null : lattaNakshatra(body as TransitGraha, lon);
-    const latta = kicked === null ? null : { nakshatra: NAKSHATRA_NAMES[kicked], onJanma: janma !== null && kicked === janma };
+    const special = kicked === null || janma === null ? null : specialOf(janma, kicked);
+    const key = special && SBC_KEY_SPECIALS.includes(special) ? special : null;
+    const latta = kicked === null ? null : { nakshatra: NAKSHATRA_NAMES[kicked], onJanma: janma !== null && kicked === janma, key };
     const reach = hits.reduce((sum, hit) => sum + POINT_WEIGHT[hit.point.id], 0) * (benefic ? 1 : -1);
-    const score = reach - (latta?.onJanma ? LATTA_ON_JANMA_WEIGHT : 0);
-    if (hits.length === 0 && !latta?.onJanma) return;
+    const score = reach - (key ? LATTA_WEIGHT[key] : 0);
+    if (hits.length === 0 && !key) return;
     result.push({ body, start: from, end: to, nakshatra: sbcNakshatra(lon), hits, latta, score });
   });
   return result;
