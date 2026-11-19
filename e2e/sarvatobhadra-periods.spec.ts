@@ -10,6 +10,13 @@ test('ANALYSIS Sarvatobhadra marks the lattā and lists the good and difficult p
   await selectWorkspace(page, 'ANALYSIS');
   await visible(page, page.getByRole('button', { name: 'Sarvatobhadra', exact: true })).click();
 
+  // Each line of vedha tells the pada it reaches (the pada number of the graha) and the house of that pada.
+  const vedha = visible(page, page.locator('[data-sbc="vedha"]'));
+  const reach = vedha.locator('[data-sbc-vedha-pada]').first();
+  expect(['1', '2', '3', '4', 'none']).toContain(await reach.getAttribute('data-sbc-vedha-pada'));
+  expect(Number(await reach.getAttribute('data-sbc-vedha-house'))).toBeGreaterThanOrEqual(1);
+  await expect(vedha.locator('[data-sbc-vedha-from]').first()).toContainText(/pada [1-4]|no pada/);
+
   // The special nakshatras from the Moon's: eleven, the king's three counted in 28.
   const specials = visible(page, page.locator('[data-sbc="specials"]'));
   await expect(specials.locator('[data-sbc-special]')).toHaveCount(11);

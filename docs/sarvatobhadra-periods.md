@@ -32,6 +32,10 @@ Jāti, Deśa and Abhiṣeka are the king's nakṣatras in the texts (of the cast
 
 The Lattā list is a table of graha, kick (12 ahead …), the star it stands in and the nakṣatra the kick falls on, with the special nakṣatra it is (`Revati ← Jāti`) and red when it is one of the three. Ketu has no lattā in the verses; the "Ketu 9 behind" button adds the Sarvatobhadra variant (as Rāhu's), marked *. The Phaladīpikā's own list of special nakṣatras (Janma, Vipat, Pratyari, Vadha, Karma, Ādhāna, Vainaśika) stays in the Gochara table.
 
+## The pada a vedha reaches
+
+Each line of vedha in ANALYSIS → Sarvatobhadra → Vedha tells which **pada** of the target nakṣatra it pierces, the rāśi that pada lies in and its navāṁśa, with the **house** of each from the Lagna (`vedhaPadaOf` in `sarvatobhadra.ts`): a graha in the n-th pada of its nakṣatra pierces the n-th pada of the nakṣatra at the end of its line ("the part pierced is of the same number as the part the graha is in", the Muhūrtadīpikā quoted in the Muhūrtacintāmaṇi commentary on 6.62, said there of the vedhas of the Upagraha, the Lattā and the Caṇḍāyudha). **This is a reading**: the texts of the chakra itself (Vyāsa, Narapati) give the nakṣatra at the end of a line and a rule of pādas only for the corner nakṣatras (v. 52), not a pada for every line. The rāśi is that of the middle of the pierced pada (a pada is 3°20′, 9 to a sign), the navāṁśa that pada's own sign; Abhijit has no pada of its own (it is shown with Capricorn). In **Birth points pierced** the pada reached on the Janma nakṣatra is compared with the pada of the birth Moon: the same number is marked "the birth pada".
+
 ## The whole nakṣatra or only the pada
 
 A kick, an Upagraha and a Pāta can be taken as biting the **whole nakṣatra** (the way the app had it) or **only the pada** with the number of the pada the graha stands in (Muhūrtacintāmaṇi 6.62, *pātopagrahalattāsu neṣṭo 'ṅghriḥ kheṭapatsamaḥ*, with the Muhūrtadīpikā quoted in Mahīdhara's Hindi; see `docs/sarvatobhadra-latta-vedha-sources.md`). The choice is on both pages, off (the whole nakṣatra) to begin with:

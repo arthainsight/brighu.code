@@ -14,6 +14,9 @@ export const LANGUAGES: { value: Language; label: string }[] = [
 ];
 
 export const FI: Record<string, string> = {
+  "no pada": "ei padaa",
+  "the birth pada": "syntymäpada",
+  "the Moon is in pada": "Kuu on padassa",
   "ᵃ counted in the 28 nakshatras with Abhijit (the king’s three). Other lists give Jāti 4, Deśa 12 and Mānasa 11, and Vyāsa v. 282 Jāti 25, Deśa 26, Abhiṣeka 27; they are not used. Mānasa 25 and Jāti 26 are the same nakshatra.": "ᵃ lasketaan 28 nakshatrasta Abhijit mukana (kuninkaan kolme). Muut listat antavat Jāti 4, Deśa 12 ja Mānasa 11, ja Vyāsa v. 282 Jāti 25, Deśa 26, Abhiṣeka 27; niitä ei käytetä. Mānasa 25 ja Jāti 26 ovat sama nakshatra.",
   "Lattā, Upagraha and Pāta bite": "Lattā, Upagraha ja Pāta purevat",
   "the whole nakṣatra": "koko nakṣatran",

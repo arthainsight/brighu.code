@@ -1,5 +1,5 @@
 import { normalizeDegrees } from './angles';
-import { NAKSHATRA_NAMES, NAKSHATRA_SIZE } from './nakshatras';
+import { NAKSHATRA_NAMES, NAKSHATRA_SIZE, padaOfLongitude } from './nakshatras';
 
 // The Sarvatobhadra Chakra: nine rows of nine squares. The nakṣatras (28, with Abhijit) go round the edge, the
 // vowels, the consonants and the twelve rāśis inside it, and the five groups of tithis with the days of the week
@@ -240,4 +240,28 @@ export function sbcPierces(lines: readonly VedhaLine[], points: readonly SbcPoin
     }
   }
   return hits;
+}
+
+// --- The pada a vedha reaches --------------------------------------------------------------------------------------------------------------------------
+
+export interface VedhaPada {
+  /** The pada (1–4) of the target nakṣatra that is pierced; null for Abhijit, which has no pada of its own in the texts. */
+  pada: number | null;
+  /** The rāśi (1–12) the pierced pada lies in, and the navāṁśa sign of that pada (the sign the pada is). */
+  sign: number;
+  navamsaSign: number | null;
+}
+
+/**
+ * The part of a nakṣatra a graha's vedha reaches: the pada with the number of the pada the graha stands in ("the part pierced is of the same number as the part the
+ * graha is in", the Muhūrtadīpikā quoted in the Muhūrtacintāmaṇi commentary on 6.62, for the vedhas of the Upagraha, the Lattā and the Caṇḍāyudha). It is the reading
+ * used here for the lines of the chakra: the texts of the chakra give the nakṣatra at the end of a line and only a corner rule for padas (docs/sarvatobhadra-periods.md).
+ * `longitude` is the graha's, `adjust` the nakṣatra zodiac's offset from the chart's, and `target` one of the 28 names (Abhijit included).
+ */
+export function vedhaPadaOf(longitude: number, target: string, adjust = 0): VedhaPada {
+  if (target === 'Abhijit') return { pada: null, sign: 10, navamsaSign: null };
+  const pada = padaOfLongitude(longitude + adjust);
+  const index = (NAKSHATRA_NAMES as readonly string[]).indexOf(target);
+  const middle = index * NAKSHATRA_SIZE + (pada - 0.5) * (NAKSHATRA_SIZE / 4);
+  return { pada, sign: Math.floor(normalizeDegrees(middle - adjust) / 30) + 1, navamsaSign: ((index * 4 + pada - 1) % 12) + 1 };
 }

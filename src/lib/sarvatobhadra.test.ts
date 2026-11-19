@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { NAKSHATRA_NAMES, NAKSHATRA_SIZE } from './nakshatras';
 import {
+  vedhaPadaOf,
   ABHIJIT_END, ABHIJIT_START, SBC_GRID, SBC_NAKSHATRA_CELLS, SBC_SIGN_CELLS, SBC_TITHI_CELLS, TITHI_GROUPS,
   sbcCellOf, sbcLetterSquares, sbcMarkLayout, sbcNakshatra, sbcPierces, sbcVedha, tithiOf, vedicWeekday, weekdayGroup,
 } from './sarvatobhadra';
@@ -193,5 +194,18 @@ assert.deepEqual(reaches.map(hit => [hit.point.id, hit.direction, hit.at]), [['j
 // A point on none of the lines is not reached, and a graha does not pierce its own square.
 assert.deepEqual(sbcPierces(sbcVedha(SBC_NAKSHATRA_CELLS.Vishakha)!, [{ id: 'janma', position: SBC_NAKSHATRA_CELLS.Vishakha }]), []);
 assert.deepEqual(sbcPierces(sbcVedha(SBC_NAKSHATRA_CELLS.Ashwini)!, [{ id: 'name', position: at('kh') }]), []);
+
+// --- The pada a vedha reaches: the number of the pada the graha stands in ------------------------------------------------------------------------------
+// A graha at 5° of Ashwini is in its 2nd pada (3°20′–6°40′); its vedha on Magha (120°–133°20′, Leo) reaches Magha's 2nd pada, 123°20′–126°40′, in Leo, whose navāṁśa is Taurus.
+const reach = vedhaPadaOf(5, 'Magha');
+assert.deepEqual(reach, { pada: 2, sign: 5, navamsaSign: 2 });
+// The first pada of Magha is Leo with the navāṁśa of Aries (Magha 1 is the 1st of the Leo navāṁśas); a graha in a 1st pada reaches it.
+assert.deepEqual(vedhaPadaOf(1, 'Magha'), { pada: 1, sign: 5, navamsaSign: 1 });
+// The last pada of Revati is Pisces, the navāṁśa of Pisces too (the 108th navāṁśa); a graha in its 4th pada (at 10°) reaches it.
+assert.deepEqual(vedhaPadaOf(10, 'Revati'), { pada: 4, sign: 12, navamsaSign: 12 });
+// Abhijit has no pada of its own in the texts, only its place at 6°40′–10°53′20″ of Capricorn.
+assert.deepEqual(vedhaPadaOf(5, 'Abhijit'), { pada: null, sign: 10, navamsaSign: null });
+// With the nakṣatra zodiac moved the graha's pada is of its longitude there: 5° and an offset of 1°48′ puts it at 6°48′, in the 3rd pada.
+assert.equal(vedhaPadaOf(5, 'Magha', 1.8).pada, 3);
 
 console.log('sarvatobhadra tests passed');

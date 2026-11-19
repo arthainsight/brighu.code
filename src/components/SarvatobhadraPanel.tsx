@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import type { CalculationSettings, ChartData, PlanetData } from '@/types';
 import {
-  SBC_GRID, SBC_KEY_SPECIALS, SBC_NAKSHATRA_CELLS, SBC_POINT_LABELS, SBC_SPECIAL_NAKSHATRAS, specialNakshatraName, specialsOf, SBC_SIGN_CELLS, SBC_TITHI_CELLS,
+  SBC_GRID, SBC_KEY_SPECIALS, SBC_NAKSHATRA_CELLS, SBC_POINT_LABELS, SBC_SPECIAL_NAKSHATRAS, specialNakshatraName, specialsOf, vedhaPadaOf, SBC_SIGN_CELLS, SBC_TITHI_CELLS,
   sbcCellOf, sbcLetterSquares, sbcMarkLayout, sbcNakshatra, sbcPierces, sbcVedha, tithiOf, vedicWeekday, weekdayGroup, type SbcCell, type SbcKind, type SbcPoint, type SbcPosition,
 } from '@/lib/sarvatobhadra';
 import { SIGN_ABBR } from '@/lib/signs';
@@ -377,6 +377,17 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
                     <span key={keyOf(line.target)} data-sbc-vedha-target={target.label} title={t(line.direction === 'across' ? 'across' : 'diagonal')}>
                       {index > 0 && ' · '}
                       <span className={occupants.length ? 'font-bold' : ''}>{target.label}</span>
+                      {(() => {
+                        const reach = vedhaPadaOf(entry.longitude, target.label, nakshatraAdjust);
+                        const house = (sign: number) => ((sign - chart.ascendant.sign + 12) % 12) + 1;
+                        return (
+                          <span className="text-zinc-500 dark:text-zinc-400" data-sbc-vedha-pada={reach.pada ?? 'none'} data-sbc-vedha-house={house(reach.sign)}>
+                            {reach.pada === null
+                              ? ` (${t('no pada')} · ${SIGN_ABBR[reach.sign - 1]} ${t('house')} ${house(reach.sign)})`
+                              : ` (${t('pada')} ${reach.pada} · ${SIGN_ABBR[reach.sign - 1]} ${t('house')} ${house(reach.sign)} · ${t('navamsa')} ${SIGN_ABBR[reach.navamsaSign! - 1]} ${t('house')} ${house(reach.navamsaSign!)})`}
+                          </span>
+                        );
+                      })()}
                       {occupants.length > 0 && <span className="text-red-700 dark:text-red-400"> [{occupants.map(other => `${other.label}${other.transit ? '↗' : ''}`).join(' ')}]</span>}
                     </span>
                   );
@@ -404,6 +415,11 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
                   <span key={`${hit.point.id}-${hit.point.position.join('-')}`} data-sbc-pierced-point={hit.point.id} data-sbc-pierced-at={hit.at}>
                     {index > 0 && ' · '}
                     {t(SBC_POINT_LABELS[hit.point.id])} <span className="text-zinc-400 dark:text-zinc-500">({t(hit.at === 'end' ? 'line end' : 'crossed')})</span>
+                    {hit.point.id === 'janma' && moon && hit.at === 'end' && (() => {
+                      const reached = padaOfLongitude(entry.longitude + nakshatraAdjust);
+                      const birth = padaOfLongitude(moon.longitude + nakshatraAdjust);
+                      return <span data-sbc-pierced-pada={reached} data-sbc-pierced-exact={reached === birth ? 'true' : 'false'} className={reached === birth ? 'text-rose-600 dark:text-rose-400' : 'text-zinc-400 dark:text-zinc-500'}> {t('pada')} {reached}{reached === birth ? ` = ${t('the birth pada')}` : ` (${t('the Moon is in pada')} ${birth})`}</span>;
+                    })()}
                   </span>
                 ))}
               </li>

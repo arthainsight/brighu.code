@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: 'v4.49',
+    date: '2026-11-19',
+    title: 'Sarvatobhadra: the pada a vedha reaches',
+    changes: [
+      'ANALYSIS → Sarvatobhadra → Vedha: each line of vedha now tells the pada of the target nakṣatra it pierces (the pada number of the graha: the part pierced is of the same number as the part the graha is in, the Muhūrtadīpikā quoted in the Muhūrtacintāmaṇi commentary), with the rāśi and the navāṁśa of that pada and their houses from the Lagna. In Birth points pierced the pada reached on the Janma nakṣatra is compared with the birth Moon\'s pada. The pada rule for the lines of the chakra is a reading, named on the page and in docs/sarvatobhadra-periods.md.',
+      'Updated the application version to v4.49.',
+    ],
+  },
+  {
     version: 'v4.48',
     date: '2026-11-19',
     title: 'Sarvatobhadra: the special nakṣatras as the tārā list',
