@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import type { CalculationSettings, ChartData, PlanetData } from '@/types';
 import {
-  SBC_GRID, SBC_KEY_SPECIALS, SBC_NAKSHATRA_CELLS, SBC_POINT_LABELS, SBC_SPECIAL_NAKSHATRAS, specialNakshatraIndex, specialOf, SBC_SIGN_CELLS, SBC_TITHI_CELLS,
+  SBC_GRID, SBC_KEY_SPECIALS, SBC_NAKSHATRA_CELLS, SBC_POINT_LABELS, SBC_SPECIAL_NAKSHATRAS, specialNakshatraName, specialsOf, SBC_SIGN_CELLS, SBC_TITHI_CELLS,
   sbcCellOf, sbcLetterSquares, sbcMarkLayout, sbcNakshatra, sbcPierces, sbcVedha, tithiOf, vedicWeekday, weekdayGroup, type SbcCell, type SbcKind, type SbcPoint, type SbcPosition,
 } from '@/lib/sarvatobhadra';
 import { SIGN_ABBR } from '@/lib/signs';
@@ -161,7 +161,7 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
     if (moon) {
       const base = janmaNakshatra(moon.longitude, nakshatraAdjust);
       for (const item of SBC_SPECIAL_NAKSHATRAS) {
-        if (item.count === 10 || item.count === 15) points.push({ id: item.count === 10 ? 'karma' : 'abhisheka', position: SBC_NAKSHATRA_CELLS[NAKSHATRA_NAMES[specialNakshatraIndex(base, item.count)]] });
+        if (item.name === 'Karma' || item.name === 'Abhiṣeka') points.push({ id: item.name === 'Karma' ? 'karma' : 'abhisheka', position: SBC_NAKSHATRA_CELLS[specialNakshatraName(base, item)] });
       }
     }
     points.push({ id: 'lagnaSign', position: SBC_SIGN_CELLS[chart.ascendant.sign] });
@@ -185,10 +185,11 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
       const kickerPada = padaOfLongitude(entry.longitude + nakshatraAdjust);
       // With the pada chosen, the Janma is struck only when the birth Moon stands in the pada with the number of the kicker's pada.
       const moonPada = moon ? padaOfLongitude(moon.longitude + nakshatraAdjust) : null;
-      let special = janmaIndex === null ? null : specialOf(janmaIndex, kicked);
-      if (special === 'Janma' && kickPart === 'pada' && moonPada !== kickerPada) special = null;
+      let specials = janmaIndex === null ? [] : specialsOf(janmaIndex, kicked);
+      if (kickPart === 'pada' && moonPada !== kickerPada) specials = specials.filter(name => name !== 'Janma');
+      const special = specials.length ? specials.join(' / ') : null;
       return [{
-        entry, nakshatra, position, onJanma: special === 'Janma', special, kickerPada,
+        entry, nakshatra, position, onJanma: specials.includes('Janma'), special, specials, kickerPada,
         star: NAKSHATRA_NAMES[star27(entry.longitude)], rule,
         occupants: entries.filter(other => other.id !== entry.id && keyOf(other.position) === keyOf(position)),
       }];
@@ -426,12 +427,13 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
               {SBC_SPECIAL_NAKSHATRAS.map(item => (
                 <tr key={item.name} data-sbc-special={item.name} className={(SBC_KEY_SPECIALS as readonly string[]).includes(item.name) ? 'bg-amber-50 dark:bg-amber-950/30' : ''}>
                   <th scope="row" className="border-b border-zinc-100 p-1.5 dark:border-zinc-800">{item.name}</th>
-                  <td className="border-b border-zinc-100 p-1.5 dark:border-zinc-800">{NAKSHATRA_NAMES[specialNakshatraIndex(model.janmaIndex!, item.count)]}</td>
-                  <td className="border-b border-zinc-100 p-1.5 tabular-nums dark:border-zinc-800">{item.count}</td>
+                  <td className="border-b border-zinc-100 p-1.5 dark:border-zinc-800">{specialNakshatraName(model.janmaIndex!, item)}</td>
+                  <td className="border-b border-zinc-100 p-1.5 tabular-nums dark:border-zinc-800">{item.count}{item.cycle === 28 ? ' ᵃ' : ''}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <p className="mt-1 max-w-xl text-[9px] font-mono text-zinc-400 dark:text-zinc-600">{t('ᵃ counted in the 28 nakshatras with Abhijit (the king’s three). Other lists give Jāti 4, Deśa 12 and Mānasa 11, and Vyāsa v. 282 Jāti 25, Deśa 26, Abhiṣeka 27; they are not used. Mānasa 25 and Jāti 26 are the same nakshatra.')}</p>
         </div>
       )}
 
@@ -456,8 +458,8 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
               </tr>
             </thead>
             <tbody>
-              {model.latta.map(({ entry, nakshatra, onJanma, special, star, rule, occupants, kickerPada }) => {
-                const red = onJanma || (special !== null && SBC_KEY_SPECIALS.includes(special));
+              {model.latta.map(({ entry, nakshatra, onJanma, special, specials, star, rule, occupants, kickerPada }) => {
+                const red = onJanma || specials.some(name => SBC_KEY_SPECIALS.includes(name));
                 return (
                   <tr key={entry.id} data-sbc-latta-from={entry.id} data-sbc-latta-on={nakshatra} data-sbc-latta-special={special ?? undefined} data-sbc-latta-janma={onJanma ? 'true' : undefined} className={entry.transit ? 'text-violet-700 dark:text-violet-300' : ''}>
                     <th scope="row" className="border-b border-zinc-100 p-1.5 font-bold dark:border-zinc-800">{entry.label}{entry.transit ? '↗' : ''}</th>

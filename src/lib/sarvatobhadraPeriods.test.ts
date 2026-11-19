@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { grahaStretches, impactWindows, janmaNakshatra, LATTA_ON_JANMA_WEIGHT, POINT_WEIGHT } from './sarvatobhadraPeriods';
-import { sbcCellOf, sbcVedha, specialNakshatraIndex, specialOf, type SbcPoint } from './sarvatobhadra';
+import { SBC_SPECIAL_NAKSHATRAS, sbcCellOf, sbcVedha, specialNakshatraName, specialsOf, type SbcPoint } from './sarvatobhadra';
 import { lattaNakshatra } from './phaladipikaGochara';
 
 const DAY = 86_400_000;
@@ -48,12 +48,23 @@ assert.deepEqual(only[0].causes, [ashwini]);
 const mixed = impactWindows([ashwini, { ...jupiter, start: start + 20 * DAY, end: start + 25 * DAY }], start, 30);
 assert.deepEqual(mixed.map(item => item.quality), ['difficult', 'good']);
 
-// --- The special nakshatras from the Moon's: Janma 1, Jati 3, Karma 10, Abhisheka 15, Sanghatika 16, Samudayika 18, Naidhana 23 ----------------------
-assert.equal(specialOf(11, 11), 'Janma');
-assert.equal(specialOf(11, specialNakshatraIndex(11, 10)), 'Karma');
-assert.equal(specialNakshatraIndex(11, 10), 20, 'the 10th counting the own as 1, 11 + 9');
-assert.equal(specialOf(25, specialNakshatraIndex(25, 15)), 'Abhiṣeka', 'wraps past Revati');
-assert.equal(specialOf(0, 1), null, 'the 2nd is none');
+// --- The special nakshatras from the Moon's: Janma 1, Naidhana 7, Karma 10, Sanghatika 16, Samudayika 18, Adhana 19, Vainasika 23, Manasa 25, and the king's
+// Jati 26, Desa 27 and Abhiseka 28, which are counted in the 28 nakshatras with Abhijit ------------------------------------------------------------------
+const item = (name: string) => SBC_SPECIAL_NAKSHATRAS.find(entry => entry.name === name)!;
+assert.deepEqual(SBC_SPECIAL_NAKSHATRAS.map(entry => `${entry.name} ${entry.count}`), ['Janma 1', 'Naidhana 7', 'Karma 10', 'Saṅghātika 16', 'Sāmudāyika 18', 'Ādhāna 19', 'Vaināśika 23', 'Mānasa 25', 'Jāti 26', 'Deśa 27', 'Abhiṣeka 28']);
+assert.deepEqual(specialsOf(11, 11), ['Janma']);
+assert.equal(specialNakshatraName(11, item('Karma')), 'Uttara Ashadha', 'the 10th counting the own as 1: 11 + 9 = 20');
+assert.equal(specialNakshatraName(0, item('Naidhana')), 'Punarvasu', 'the 7th from Ashwini');
+assert.equal(specialNakshatraName(0, item('Vaināśika')), 'Dhanishtha', 'the 23rd from Ashwini');
+// The 28 count: Abhiseka is the nakshatra just before the Janma, Abhijit counted between Uttara Ashadha and Shravana.
+assert.equal(specialNakshatraName(0, item('Abhiṣeka')), 'Revati');
+assert.equal(specialNakshatraName(25, item('Abhiṣeka')), 'Purva Bhadrapada', 'from Uttara Bhadrapada, the one before it');
+assert.equal(specialNakshatraName(21, item('Abhiṣeka')), 'Abhijit', 'from Shravana the one before is Abhijit');
+assert.equal(specialNakshatraName(23, item('Jāti')), 'Abhijit', 'the 26th of the 28 from Shatabhisha');
+// Manasa 25 and Jati 26 are the same nakshatra, three before the Janma.
+assert.deepEqual(specialsOf(0, 24), ['Mānasa', 'Jāti']);
+assert.deepEqual(specialsOf(0, 1), [], 'the 2nd is none');
+
 // A kick on the Karma or the Abhisheka of the birth counts against too, with its own weight.
 // The Sun in Ashwini kicks the 12th on, nakshatra 11; for a Moon in nakshatra 2 that is the 10th: the Karma.
 const karmaSun = grahaStretches('Sun', series, [], 2).find(item => item.nakshatra === 'Ashwini')!;

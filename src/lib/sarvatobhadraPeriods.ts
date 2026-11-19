@@ -10,7 +10,7 @@ import { NAKSHATRA_NAMES, NAKSHATRA_SIZE } from './nakshatras';
 import { normalizeDegrees } from './angles';
 import { padaOfLongitude } from './nakshatras';
 import { lattaNakshatra, type TransitGraha } from './phaladipikaGochara';
-import { SBC_KEY_SPECIALS, sbcCellOf, sbcNakshatra, sbcPierces, sbcVedha, specialOf, type SbcPierce, type SbcPoint, type SbcPointId } from './sarvatobhadra';
+import { SBC_KEY_SPECIALS, sbcCellOf, sbcNakshatra, sbcPierces, sbcVedha, specialsOf, type SbcPierce, type SbcPoint, type SbcPointId } from './sarvatobhadra';
 import type { LongitudeSeries } from './transitHits';
 
 export const BENEFIC_GRAHAS: readonly string[] = ['Moon', 'Mercury', 'Jupiter', 'Venus'];
@@ -64,11 +64,11 @@ export function grahaStretches(body: string, series: LongitudeSeries, points: re
     const lines = sbcVedha(sbcCellOf(lon));
     const hits = lines ? sbcPierces(lines, points) : [];
     const kicked = body === 'Ketu' ? null : lattaNakshatra(body as TransitGraha, lon);
-    let special = kicked === null || janma === null ? null : specialOf(janma, kicked);
+    let specials = kicked === null || janma === null ? [] : specialsOf(janma, kicked);
     // The Janma is bitten only in the pada of the birth Moon's number when the pada is chosen (the Karma and the Abhiṣeka stay whole nakṣatras).
-    if (special === 'Janma' && kickPart === 'pada' && janmaPada !== null && padaOfLongitude(lon) !== janmaPada) special = null;
-    const key = special && SBC_KEY_SPECIALS.includes(special) ? special : null;
-    const latta = kicked === null ? null : { nakshatra: NAKSHATRA_NAMES[kicked], onJanma: special === 'Janma', key };
+    if (kickPart === 'pada' && janmaPada !== null && padaOfLongitude(lon) !== janmaPada) specials = specials.filter(name => name !== 'Janma');
+    const key = SBC_KEY_SPECIALS.find(name => specials.includes(name)) ?? null;
+    const latta = kicked === null ? null : { nakshatra: NAKSHATRA_NAMES[kicked], onJanma: specials.includes('Janma'), key };
     const reach = hits.reduce((sum, hit) => sum + POINT_WEIGHT[hit.point.id], 0) * (benefic ? 1 : -1);
     const score = reach - (key ? LATTA_WEIGHT[key] : 0);
     if (hits.length === 0 && !key) return;

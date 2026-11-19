@@ -181,22 +181,35 @@ export function sbcLetterSquares(text: string): SbcPosition[] {
 export type SbcPointId = 'janma' | 'karma' | 'abhisheka' | 'moonSign' | 'lagnaSign' | 'tithi' | 'vara' | 'name';
 
 /**
- * The special nakṣatras counted from the Moon's (Janma), as another program shows them on its Sarvatobhadra page: Janma 1, Jāti 3, Karma 10, Abhiṣeka 15,
- * Saṅghātika 16, Sāmudāyika 18 and Naidhana 23. The page marks the Janma, the Karma and the Abhiṣeka red (the ones whose hit is read as a harm or a help
- * to the self, the work and the standing). Not checked against a classic here (docs/sarvatobhadra-periods.md).
+ * The special nakṣatras (the tārās of the Narapatijayacaryā, Vyāsa's Trailokyadīpaka, Nārada and the Phaladīpikā) counted from the Moon's nakṣatra, the list a user
+ * found: Janma 1, Naidhana 7, Karma 10, Saṅghātika 16, Sāmudāyika 18, Ādhāna 19, Vaināśika 23, Mānasa 25 and the king's three, Jāti 26, Deśa 27 and Abhiṣeka 28, which
+ * only come out in a count of the 28 nakṣatras with Abhijit (the Svaracintāmaṇi's 26, 27 and 28 of the Phaladīpikā editor's note). The others the user's list gives as
+ * alternatives (Jāti 4, Deśa 12, Mānasa 11) and the 25, 26, 27 of Vyāsa v. 282 are not used (docs/sarvatobhadra-periods.md). Mānasa 25 and Jāti 26 are the same nakṣatra
+ * (three before the Janma). The Janma, the Karma and the Abhiṣeka are the three another program marks red; no text does (the texts give Janma death, Karma distress,
+ * Abhiṣeka bonds).
  */
 export const SBC_SPECIAL_NAKSHATRAS = [
-  { name: 'Janma', count: 1, key: 'janma' }, { name: 'Jāti', count: 3 }, { name: 'Karma', count: 10, key: 'karma' }, { name: 'Abhiṣeka', count: 15, key: 'abhisheka' },
-  { name: 'Saṅghātika', count: 16 }, { name: 'Sāmudāyika', count: 18 }, { name: 'Naidhana', count: 23 },
+  { name: 'Janma', count: 1, cycle: 27 }, { name: 'Naidhana', count: 7, cycle: 27 }, { name: 'Karma', count: 10, cycle: 27 },
+  { name: 'Saṅghātika', count: 16, cycle: 27 }, { name: 'Sāmudāyika', count: 18, cycle: 27 }, { name: 'Ādhāna', count: 19, cycle: 27 },
+  { name: 'Vaināśika', count: 23, cycle: 27 }, { name: 'Mānasa', count: 25, cycle: 27 },
+  { name: 'Jāti', count: 26, cycle: 28 }, { name: 'Deśa', count: 27, cycle: 28 }, { name: 'Abhiṣeka', count: 28, cycle: 28 },
 ] as const;
 export type SbcSpecialName = (typeof SBC_SPECIAL_NAKSHATRAS)[number]['name'];
-/** The three the page marks red. */
+/** The three marked red. */
 export const SBC_KEY_SPECIALS: readonly SbcSpecialName[] = ['Janma', 'Karma', 'Abhiṣeka'];
-/** The nakṣatra (0–26) of a special nakṣatra, from the Moon's (0–26). */
-export const specialNakshatraIndex = (janma: number, count: number) => (janma + count - 1) % 27;
-/** The special nakṣatra a nakṣatra (0–26) is, counted from the Moon's, or null. */
-export const specialOf = (janma: number, nakshatra: number): SbcSpecialName | null =>
-  SBC_SPECIAL_NAKSHATRAS.find(item => item.count === ((nakshatra - janma + 27) % 27) + 1)?.name ?? null;
+
+/** The 28 nakṣatras in order, Abhijit between Uttara Āṣāḍhā (the 21st) and Śravaṇa. */
+const NAKSHATRAS_28: readonly string[] = [...NAKSHATRA_NAMES.slice(0, 21), 'Abhijit', ...NAKSHATRA_NAMES.slice(21)];
+
+/** The nakṣatra of a special nakṣatra (its name: one of the 27 or Abhijit), from the Moon's nakṣatra (0–26). */
+export function specialNakshatraName(janma: number, item: (typeof SBC_SPECIAL_NAKSHATRAS)[number]): string {
+  if (item.cycle === 27) return NAKSHATRA_NAMES[(janma + item.count - 1) % 27];
+  const start = janma < 21 ? janma : janma + 1;
+  return NAKSHATRAS_28[(start + item.count - 1) % 28];
+}
+/** The special nakṣatras a nakṣatra (0–26) is, counted from the Moon's: none, one or two (Mānasa and Jāti are the same). */
+export const specialsOf = (janma: number, nakshatra: number): SbcSpecialName[] =>
+  SBC_SPECIAL_NAKSHATRAS.filter(item => specialNakshatraName(janma, item) === NAKSHATRA_NAMES[nakshatra]).map(item => item.name);
 
 /** The names of the points of a birth, as the page writes them. */
 export const SBC_POINT_LABELS: Record<SbcPointId, string> = {

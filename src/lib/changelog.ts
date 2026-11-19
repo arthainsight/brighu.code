@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: 'v4.48',
+    date: '2026-11-19',
+    title: 'Sarvatobhadra: the special nakṣatras as the tārā list',
+    changes: [
+      'ANALYSIS → Sarvatobhadra: the special nakṣatras from the Moon\'s are now Janma 1, Naidhana 7, Karma 10, Saṅghātika 16, Sāmudāyika 18, Ādhāna 19, Vaināśika 23, Mānasa 25 and the king\'s Jāti 26, Deśa 27 and Abhiṣeka 28 (counted in the 28 nakṣatras with Abhijit). Jāti 3, Abhiṣeka 15 and Naidhana 23, which were read from a screenshot and are in no text, are gone. Mānasa and Jāti fall on the same nakṣatra; the lattā list names both. The page lists the alternatives it does not use (Jāti 4, Deśa 12, Mānasa 11; Vyāsa 25, 26, 27).',
+      'Updated the application version to v4.48.',
+    ],
+  },
+  {
     version: 'v4.47',
     date: '2026-11-19',
     title: 'Lattā, Upagraha and Pāta: the whole nakṣatra or only the pada',

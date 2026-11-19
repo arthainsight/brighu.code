@@ -12,7 +12,25 @@ The Muhūrta Mārtaṇḍa (v. 16) counts some of the grahas otherwise (Mercury 
 
 ## Special nakṣatras and the Lattā table
 
-The page lists the special nakṣatras counted from the Moon's, as another program shows them on its Sarvatobhadra page (a screenshot the user sent; **not checked against a classic here**): Janma 1, Jāti 3, Karma 10, Abhiṣeka 15, Saṅghātika 16, Sāmudāyika 18, Naidhana 23. The Janma, the Karma and the Abhiṣeka are marked (red). The Lattā list is a table of graha, kick (12 ahead …), the star it stands in and the nakṣatra the kick falls on, with the special nakṣatra it is (`Revati ← Jāti`) and red when it is one of the three. Ketu has no lattā in the verses; the "Ketu 9 behind" button adds the Sarvatobhadra variant (as Rāhu's), marked *. The Phaladīpikā's own list of special nakṣatras (Janma, Vipat, Pratyari, Vadha, Karma, Ādhāna, Vainaśika) stays in the Gochara table.
+The special nakṣatras (tārās) counted from the Moon's, from a list a user found, checked against the texts read for `docs/sarvatobhadra-latta-vedha-sources.md`:
+
+| Name | Count | Source |
+|---|---|---|
+| Janma | 1 | Narapati v. 62–66, Vyāsa 276–291, Nārada 24.11–12, Phaladīpikā 26.28 |
+| Naidhana | 7 | the user's list (the Vadha tārā, the 7th); in the texts read "Naidhana" is the 8th house, so this one is **not confirmed** in them |
+| Karma | 10 | texts |
+| Saṅghātika | 16 | texts |
+| Sāmudāyika | 18 | texts (Vyāsa v. 291, a variant list, has Udaya at 18) |
+| Ādhāna | 19 | texts |
+| Vaināśika (Vināśa) | 23 | texts (the Kālaprakāśikā's English says the 22nd; not resolved) |
+| Mānasa | 25 | Vyāsa v. 291, Nārada 24.12 (the user's list also gives 11, not used) |
+| Jāti | 26 | the user's list; the Phaladīpikā editor's note citing the Svaracintāmaṇi numbers Jāti, Deśa and Abhiṣeka 26, 27 and 28 (the user's list also gives 4, not used) |
+| Deśa | 27 | the same (the user's list also gives 12, not used) |
+| Abhiṣeka | 28 | the same |
+
+Jāti, Deśa and Abhiṣeka are the king's nakṣatras in the texts (of the caste, the country, the consecration); a count of 26, 27 and 28 only exists in the **28 nakṣatras with Abhijit**, so those three are counted in that cycle (Abhijit between Uttara Āṣāḍhā and Śravaṇa); the rest in the 27. Mānasa 25 and Jāti 26 then fall on the same nakṣatra (three before the Janma), and the page names both. Vyāsa v. 282 (another book) numbers Jāti, Deśa, Abhiṣeka 25, 26, 27; not used. The earlier list taken from a screenshot (Jāti 3, Abhiṣeka 15, Naidhana 23) is dropped: Jāti 3 and Abhiṣeka 15 are in no text, and the 23rd is the Vaināśika. The Janma, the Karma and the Abhiṣeka are still marked red as in the other program the screenshots are from; **no text gives that** (the texts give Janma death, Karma distress, Ādhāna exile, Abhiṣeka bonds).
+
+The Lattā list is a table of graha, kick (12 ahead …), the star it stands in and the nakṣatra the kick falls on, with the special nakṣatra it is (`Revati ← Jāti`) and red when it is one of the three. Ketu has no lattā in the verses; the "Ketu 9 behind" button adds the Sarvatobhadra variant (as Rāhu's), marked *. The Phaladīpikā's own list of special nakṣatras (Janma, Vipat, Pratyari, Vadha, Karma, Ādhāna, Vainaśika) stays in the Gochara table.
 
 ## The whole nakṣatra or only the pada
 

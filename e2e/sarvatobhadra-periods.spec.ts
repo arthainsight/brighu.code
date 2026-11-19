@@ -10,11 +10,11 @@ test('ANALYSIS Sarvatobhadra marks the lattā and lists the good and difficult p
   await selectWorkspace(page, 'ANALYSIS');
   await visible(page, page.getByRole('button', { name: 'Sarvatobhadra', exact: true })).click();
 
-  // The special nakshatras from the Moon's: seven, and the Janma is its own.
+  // The special nakshatras from the Moon's: eleven, the king's three counted in 28.
   const specials = visible(page, page.locator('[data-sbc="specials"]'));
-  await expect(specials.locator('[data-sbc-special]')).toHaveCount(7);
+  await expect(specials.locator('[data-sbc-special]')).toHaveCount(11);
   await expect(specials.locator('[data-sbc-special="Janma"] td').last()).toHaveText('1');
-  await expect(specials.locator('[data-sbc-special="Abhiṣeka"] td').last()).toHaveText('15');
+  await expect(specials.locator('[data-sbc-special="Abhiṣeka"] td').last()).toHaveText(/28/);
 
   // The lattā: eight grahas kick (Ketu has none), and pressing Latta marks the squares on the chakra.
   const latta = visible(page, page.locator('[data-sbc="latta"]'));
