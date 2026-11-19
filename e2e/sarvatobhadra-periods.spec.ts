@@ -16,6 +16,13 @@ test('ANALYSIS Sarvatobhadra marks the lattā and lists the good and difficult p
   expect(['1', '2', '3', '4', 'none']).toContain(await reach.getAttribute('data-sbc-vedha-pada'));
   expect(Number(await reach.getAttribute('data-sbc-vedha-house'))).toBeGreaterThanOrEqual(1);
   await expect(vedha.locator('[data-sbc-vedha-from]').first()).toContainText(/pada [1-4]|no pada/);
+  // Every line names a sign and a house between 1 and 12 and nothing is undefined.
+  await expect(vedha).not.toContainText('undefined');
+  await expect(vedha).not.toContainText('NaN');
+  for (const house of await vedha.locator('[data-sbc-vedha-house]').evaluateAll(items => items.map(item => Number(item.getAttribute('data-sbc-vedha-house'))))) {
+    expect(house).toBeGreaterThanOrEqual(1);
+    expect(house).toBeLessThanOrEqual(12);
+  }
 
   // The special nakshatras from the Moon's: eleven, the king's three counted in 28.
   const specials = visible(page, page.locator('[data-sbc="specials"]'));

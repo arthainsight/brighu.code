@@ -378,7 +378,7 @@ export default function SarvatobhadraPanel({ chart, transitPlanets = [], nakshat
                       {index > 0 && ' · '}
                       <span className={occupants.length ? 'font-bold' : ''}>{target.label}</span>
                       {(() => {
-                        const reach = vedhaPadaOf(entry.longitude, target.label, nakshatraAdjust);
+                        const reach = vedhaPadaOf(entry.longitude, target.nakshatra ?? '', nakshatraAdjust);
                         const house = (sign: number) => ((sign - chart.ascendant.sign + 12) % 12) + 1;
                         return (
                           <span className="text-zinc-500 dark:text-zinc-400" data-sbc-vedha-pada={reach.pada ?? 'none'} data-sbc-vedha-house={house(reach.sign)}>

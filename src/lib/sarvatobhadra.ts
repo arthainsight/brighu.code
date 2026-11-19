@@ -262,6 +262,7 @@ export function vedhaPadaOf(longitude: number, target: string, adjust = 0): Vedh
   if (target === 'Abhijit') return { pada: null, sign: 10, navamsaSign: null };
   const pada = padaOfLongitude(longitude + adjust);
   const index = (NAKSHATRA_NAMES as readonly string[]).indexOf(target);
+  if (index < 0) throw new Error(`Not a nakshatra: ${target}`);
   const middle = index * NAKSHATRA_SIZE + (pada - 0.5) * (NAKSHATRA_SIZE / 4);
   return { pada, sign: Math.floor(normalizeDegrees(middle - adjust) / 30) + 1, navamsaSign: ((index * 4 + pada - 1) % 12) + 1 };
 }

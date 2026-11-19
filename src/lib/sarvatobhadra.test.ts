@@ -203,6 +203,16 @@ assert.deepEqual(reach, { pada: 2, sign: 5, navamsaSign: 2 });
 assert.deepEqual(vedhaPadaOf(1, 'Magha'), { pada: 1, sign: 5, navamsaSign: 1 });
 // The last pada of Revati is Pisces, the navāṁśa of Pisces too (the 108th navāṁśa); a graha in its 4th pada (at 10°) reaches it.
 assert.deepEqual(vedhaPadaOf(10, 'Revati'), { pada: 4, sign: 12, navamsaSign: 12 });
+// Every nakshatra square of the chakra, by the name it carries (not the abbreviation it shows), gives a sign and a navamsa; an abbreviation is refused.
+for (const row of SBC_GRID) {
+  for (const cell of row) {
+    if (cell.kind !== 'nakshatra') continue;
+    const found = vedhaPadaOf(37, cell.nakshatra!);
+    assert.ok(found.sign >= 1 && found.sign <= 12, `${cell.nakshatra} has a sign`);
+    assert.ok(cell.nakshatra === 'Abhijit' ? found.navamsaSign === null : found.navamsaSign! >= 1 && found.navamsaSign! <= 12, `${cell.nakshatra} has a navamsa`);
+  }
+}
+assert.throws(() => vedhaPadaOf(5, 'Magh'), /Not a nakshatra/);
 // Abhijit has no pada of its own in the texts, only its place at 6°40′–10°53′20″ of Capricorn.
 assert.deepEqual(vedhaPadaOf(5, 'Abhijit'), { pada: null, sign: 10, navamsaSign: null });
 // With the nakṣatra zodiac moved the graha's pada is of its longitude there: 5° and an offset of 1°48′ puts it at 6°48′, in the 3rd pada.
