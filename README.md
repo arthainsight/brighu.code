@@ -44,6 +44,7 @@ This is not meant to replace traditional study — it's meant to **accelerate it
 * Surya Hora Lagna (ANALYSIS): the Hora Lagna from the Sun (material wealth) and from the Lagna (intellectual wealth), with the savya / apasavya direction, and the avatāra that guards the birth hour
 * True signs (ANALYSIS): the signs the grahas take in D1, D9, D7, D12, D10 and D16 with weights, overall and for each graha
 * Wealth assessment (ANALYSIS): the Moon from the Sun, the horā as a table of Leo against Cancer, the houses of money and the pattern of the dhana yogas with their spoilers, and the confirmation from the Moon and the vargas
+* Open Gauquelin (LIBRARY): the user's own copy of the Open Gauquelin Database (about 25 000 people with a birth time) read in the browser, by occupation group, with the chart of each person to open or keep
 * Mixed charts (the D1 chart inside, any varga outside, in the same houses)
 * Selectable ayanamsa, including a signed custom offset from Lahiri
 * Transits with automatic recalculation

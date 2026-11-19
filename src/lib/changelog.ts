@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: 'v4.46',
+    date: '2026-11-19',
+    title: 'LIBRARY → Open Gauquelin',
+    changes: [
+      'LIBRARY → Open Gauquelin: the user\'s own copy of the Open Gauquelin Database (opengauquelin.org, ogdb-time.csv.zip or the CSV) is read in the browser and kept in its IndexedDB; none of the data is in the program. The occupations are the groups (98 of them in the file, Military personnel, Physician, Actor, Politician, Painter …); a person opens in the CHART workspace, or one person or a group of up to 500 is saved to the saved charts under the client "OGDB <occupation>".',
+      'The file\'s time zones come from the local and the UT clock of each row, a place without coordinates takes those of the same place, and the longitude of many French rows (written the wrong way round) is turned back; 21 482 of the 24 539 rows are read, and the page says how many were left out and how many places are a guess. The licence of the data was not confirmed, so it is not shipped (docs/open-gauquelin.md).',
+      'Updated the application version to v4.46.',
+    ],
+  },
+  {
     version: 'v4.45',
     date: '2026-11-18',
     title: 'Sarvatobhadra: Transits over natal planets',

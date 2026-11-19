@@ -6,6 +6,7 @@ import { useT } from '@/lib/i18n';
 import { useState } from 'react';
 import ResearchPanel from './ResearchPanel';
 import CompatibilityPanel from './CompatibilityPanel';
+import GauquelinPanel from './GauquelinPanel';
 
 interface Props {
   calculationSettings?: CalculationSettings;
@@ -16,7 +17,7 @@ interface Props {
 /** The Library workspace provides a dedicated home for cross-chart research. */
 export default function LibraryPanel({ calculationSettings, onOpenChart }: Props) {
   const t = useT();
-  const [section, setSection] = useState<'research' | 'compatibility'>('research');
+  const [section, setSection] = useState<'research' | 'compatibility' | 'gauquelin'>('research');
   const chip = (active: boolean) => `rounded border px-3 py-1.5 text-xs ${active ? 'border-violet-500 bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300' : 'border-zinc-200 text-zinc-600 dark:border-zinc-700 dark:text-zinc-300'}`;
 
   return (
@@ -26,7 +27,7 @@ export default function LibraryPanel({ calculationSettings, onOpenChart }: Props
           {t('LIBRARY')}
         </p>
         <h1 className="text-lg font-semibold tracking-tight text-zinc-800 dark:text-zinc-100">
-          {section === 'research' ? t('Research') : t('Compatibility')}
+          {section === 'research' ? t('Research') : section === 'gauquelin' ? t('Open Gauquelin') : t('Compatibility')}
         </h1>
         <p className="max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">
           {t('Study recurring patterns across saved charts and life events.')}
@@ -35,8 +36,9 @@ export default function LibraryPanel({ calculationSettings, onOpenChart }: Props
       <div className="flex gap-2" role="group" aria-label={t('Library sections')}>
         <button type="button" aria-pressed={section === 'research'} onClick={() => setSection('research')} className={chip(section === 'research')}>{t('Research')}</button>
         <button type="button" aria-pressed={section === 'compatibility'} onClick={() => setSection('compatibility')} className={chip(section === 'compatibility')}>{t('Compatibility')}</button>
+        <button type="button" aria-pressed={section === 'gauquelin'} onClick={() => setSection('gauquelin')} className={chip(section === 'gauquelin')} data-library-section="gauquelin">{t('Open Gauquelin')}</button>
       </div>
-      {section === 'research' ? <ResearchPanel calculationSettings={calculationSettings} onOpenChart={onOpenChart} /> : <CompatibilityPanel calculationSettings={calculationSettings} />}
+      {section === 'research' ? <ResearchPanel calculationSettings={calculationSettings} onOpenChart={onOpenChart} /> : section === 'gauquelin' ? <GauquelinPanel onOpenChart={onOpenChart} /> : <CompatibilityPanel calculationSettings={calculationSettings} />}
     </section>
   );
 }
