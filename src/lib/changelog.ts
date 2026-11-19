@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: 'v4.47',
+    date: '2026-11-19',
+    title: 'Lattā, Upagraha and Pāta: the whole nakṣatra or only the pada',
+    changes: [
+      'A choice for the Lattā, the Upagraha and the Pāta: bite the whole nakṣatra (as before, still the default) or only the pada with the number of the pada the graha stands in, as the Muhūrtacintāmaṇi 6.62 has it (the kicker for the Lattā, the Sun for the other two). Muhūrta Finder has it with the Mahādoṣas, and ANALYSIS → Sarvatobhadra has it for the Lattā table, the table of transits over natal planets and the periods.',
+      'Updated the application version to v4.47.',
+    ],
+  },
+  {
     version: 'v4.46',
     date: '2026-11-19',
     title: 'LIBRARY → Open Gauquelin',

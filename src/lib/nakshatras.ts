@@ -32,3 +32,9 @@ export const NAKSHATRA_LORDS = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 
 export function nakshatraLordOf(longitude: number): string {
   return NAKSHATRA_LORDS[Math.min(Math.floor(longitude / NAKSHATRA_SIZE), 26) % 9];
 }
+
+/** The pada of a longitude within its nakṣatra, 1–4 (3°20′ each). */
+export function padaOfLongitude(longitude: number): number {
+  const within = (((longitude % NAKSHATRA_SIZE) + NAKSHATRA_SIZE) % NAKSHATRA_SIZE);
+  return Math.min(4, Math.floor(within / (NAKSHATRA_SIZE / 4)) + 1);
+}

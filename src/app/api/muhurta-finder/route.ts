@@ -111,6 +111,8 @@ export async function GET(request: NextRequest) {
   if (typeof sankrantiArc !== 'number') return NextResponse.json(sankrantiArc, { status: 400 });
   const sankrantiSolstice = numberParam('sankrantiSolstice', SANKRANTI_SOLSTICE_DEGREES, 15);
   if (typeof sankrantiSolstice !== 'number') return NextResponse.json(sankrantiSolstice, { status: 400 });
+  const faultPartText = searchParams.get('faultPart') ?? 'nakshatra';
+  if (!['nakshatra', 'pada'].includes(faultPartText)) return NextResponse.json({ error: 'faultPart must be nakshatra or pada' }, { status: 400 });
   const gandantaText = searchParams.get('gandanta') ?? 'pada';
   if (!['pada', 'four', 'two'].includes(gandantaText)) return NextResponse.json({ error: 'gandanta must be pada, four or two' }, { status: 400 });
   const vyatipataText = searchParams.get('vyatipata') ?? 'days';
@@ -147,6 +149,7 @@ export async function GET(request: NextRequest) {
     sankrantiArc,
     sankrantiSolstice,
     gandantaNakshatra: gandantaText as FinderCriteria['gandantaNakshatra'],
+    faultPart: faultPartText as FinderCriteria['faultPart'],
     vyatipataLength: vyatipataText as FinderCriteria['vyatipataLength'],
     parihara: pariharaText,
     strength: strengthText,

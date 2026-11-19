@@ -2026,6 +2026,13 @@ test('TIMING Muhurta Finder lists the stretches in which every choice holds, and
   await expect(doshas.getByLabel('Time kept clear of at a Vyatipāta or Vaidhṛti')).toHaveValue('days');
   await expect(doshas.locator('[data-finder-dosha="vishaGhati"]')).toContainText('Viṣa Ghaṭī');
   await expect(doshas.locator('[data-finder-dosha="latta"]')).toContainText('15. Lattā');
+  // The Lattā, the Upagraha and the Pāta can bite the whole nakṣatra or only the pada of the graha: the choice appears with them.
+  await expect(doshas.getByLabel('Lattā, Upagraha and Pāta bite')).toHaveCount(0);
+  await doshas.locator('[data-finder-dosha="latta"] input[type="checkbox"]').check();
+  await expect(doshas.getByLabel('Lattā, Upagraha and Pāta bite')).toHaveValue('nakshatra');
+  await doshas.getByLabel('Lattā, Upagraha and Pāta bite').selectOption('pada');
+  await doshas.locator('[data-finder-dosha="latta"] input[type="checkbox"]').uncheck();
+  await expect(doshas.getByLabel('Lattā, Upagraha and Pāta bite')).toHaveCount(0);
   // The three blemishes the book names outside the list of 21 have no number.
   await expect(doshas).toContainText('Other blemishes the book names, outside the list of 21');
   await expect(doshas.locator('[data-finder-dosha="mrityubhaga"]')).toContainText('Mṛtyubhāga (fatal degrees)');

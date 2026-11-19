@@ -69,6 +69,8 @@ type Choices = {
   sankrantiSolstice: number;
   /** The part of the nakṣatra that is Gaṇḍānta, and the time of Vyatipāta and Vaidhṛti. */
   gandantaNakshatra: 'pada' | 'four' | 'two';
+  /** The part of the nakṣatra a Lattā, Upagraha or Pāta bites. */
+  faultPart: 'nakshatra' | 'pada';
   vyatipataLength: 'days' | 'short';
   /** How much of the neutralisations of the Muhūrtacintāmaṇi is applied, and the countries of the place (null: not named, every fault counts). */
   parihara: PariharaMode;
@@ -103,6 +105,7 @@ const allChoices = (): Choices => ({
   sankrantiArc: SANKRANTI_ARC_MINUTES,
   sankrantiSolstice: SANKRANTI_SOLSTICE_DEGREES,
   gandantaNakshatra: 'pada',
+  faultPart: 'nakshatra',
   vyatipataLength: 'days',
   parihara: 'named',
   strength: 'extended',
@@ -156,6 +159,7 @@ function readChoices(): Choices {
     if (typeof saved.sankrantiArc === 'number' && saved.sankrantiArc >= 0 && saved.sankrantiArc <= 600) choices.sankrantiArc = saved.sankrantiArc;
     if (typeof saved.sankrantiSolstice === 'number' && saved.sankrantiSolstice >= 0 && saved.sankrantiSolstice <= 15) choices.sankrantiSolstice = saved.sankrantiSolstice;
     if (saved.gandantaNakshatra === 'pada' || saved.gandantaNakshatra === 'four' || saved.gandantaNakshatra === 'two') choices.gandantaNakshatra = saved.gandantaNakshatra;
+    if (saved.faultPart === 'nakshatra' || saved.faultPart === 'pada') choices.faultPart = saved.faultPart;
     if (saved.vyatipataLength === 'days' || saved.vyatipataLength === 'short') choices.vyatipataLength = saved.vyatipataLength;
     if (typeof saved.parihara === 'string' && isPariharaMode(saved.parihara)) choices.parihara = saved.parihara;
     if (typeof saved.strength === 'string' && isStrengthLevel(saved.strength)) choices.strength = saved.strength;
@@ -289,7 +293,7 @@ export default function MuhurtaFinderPanel({ chart, targetDate, ianaTimezone, ca
     const chandra = natalMoonSign !== undefined && isLimited(choices.chandra, 12) ? { moonSign: natalMoonSign, houses: choices.chandra } : undefined;
     const tara = natalNakshatra !== undefined && isLimited(choices.tara, 9) ? { nakshatra: natalNakshatra, taras: choices.tara } : undefined;
     const natal = natalMoonSign !== undefined && natalAscSign !== undefined ? { ascSign: natalAscSign, moonSign: natalMoonSign } : undefined;
-    return { vara: choices.vara, tithi: choices.tithi, nakshatra: choices.nakshatra, yoga: choices.yoga, karana: choices.karana, signs, rules: choices.rules, chandra, tara, prefer: choices.prefer, d1: choices.d1, minScore: choices.minScore, avoid: choices.avoid, natal, sankrantiArc: choices.sankrantiArc, sankrantiSolstice: choices.sankrantiSolstice, gandantaNakshatra: choices.gandantaNakshatra, vyatipataLength: choices.vyatipataLength, parihara: choices.parihara, strength: choices.strength, regions: choices.regions ?? undefined };
+    return { vara: choices.vara, tithi: choices.tithi, nakshatra: choices.nakshatra, yoga: choices.yoga, karana: choices.karana, signs, rules: choices.rules, chandra, tara, prefer: choices.prefer, d1: choices.d1, minScore: choices.minScore, avoid: choices.avoid, natal, sankrantiArc: choices.sankrantiArc, sankrantiSolstice: choices.sankrantiSolstice, gandantaNakshatra: choices.gandantaNakshatra, faultPart: choices.faultPart, vyatipataLength: choices.vyatipataLength, parihara: choices.parihara, strength: choices.strength, regions: choices.regions ?? undefined };
   }, [choices, natalMoonSign, natalAscSign, natalNakshatra]);
   const impossible = isImpossible(criteria);
   // The wishes that limit something, and the most a stretch can score.
@@ -341,6 +345,7 @@ export default function MuhurtaFinderPanel({ chart, targetDate, ianaTimezone, ca
         params.set('sankrantiSolstice', String(choices.sankrantiSolstice));
       }
       if (choices.avoid.includes('gandanta')) params.set('gandanta', choices.gandantaNakshatra);
+      if (choices.avoid.some(id => id === 'latta' || id === 'upagraha' || id === 'pata')) params.set('faultPart', choices.faultPart);
       if (choices.avoid.includes('vyatipata') || choices.avoid.includes('vaidhriti')) params.set('vyatipata', choices.vyatipataLength);
       params.set('parihara', choices.parihara);
       params.set('strength', choices.strength);
@@ -786,6 +791,21 @@ export default function MuhurtaFinderPanel({ chart, targetDate, ianaTimezone, ca
               <option value="pada">{t('a pada (3°20′, the text)')}</option>
               <option value="four">{t('4 ghaṭīs (53′20″)')}</option>
               <option value="two">{t('2 ghaṭīs (26′40″)')}</option>
+            </select>
+          </label>
+        )}
+        {choices.avoid.some(id => id === 'latta' || id === 'upagraha' || id === 'pata') && (
+          <label className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono text-zinc-500 dark:text-zinc-400">
+            <span>{t('Lattā, Upagraha and Pāta bite')}</span>
+            <select
+              value={choices.faultPart}
+              onChange={event => set('faultPart', event.target.value as Choices['faultPart'])}
+              className="rounded border border-zinc-300 bg-white px-1.5 py-1 text-xs text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+              aria-label={t('Lattā, Upagraha and Pāta bite')}
+              data-finder="fault-part"
+            >
+              <option value="nakshatra">{t('the whole nakṣatra')}</option>
+              <option value="pada">{t('only the pada of the graha (the Muhūrtacintāmaṇi 6.62)')}</option>
             </select>
           </label>
         )}

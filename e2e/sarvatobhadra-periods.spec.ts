@@ -26,6 +26,13 @@ test('ANALYSIS Sarvatobhadra marks the lattā and lists the good and difficult p
   await visible(page, page.locator('[data-sbc="latta-toggle"]')).click();
   expect(await visible(page, page.locator('[data-sbc="chart"]')).locator('[data-sbc-latta-square]').count()).toBeGreaterThanOrEqual(1);
 
+  // The lattā can bite the whole nakshatra or only the pada of the kicker, whose number is then shown.
+  await expect(latta.locator('[data-sbc-latta-from]').first()).not.toContainText('pada');
+  await visible(page, page.locator('[data-sbc="kick-pada"]')).click();
+  await expect(latta.locator('[data-sbc-latta-from]').first()).toContainText(/pada [1-4]/);
+  await visible(page, page.locator('[data-sbc="kick-nakshatra"]')).click();
+  await expect(latta.locator('[data-sbc-latta-from]').first()).not.toContainText('pada');
+
   // The transits over the natal planets: one row for each of the nine, each with a verdict.
   const natal = visible(page, page.locator('[data-sbc="natal-transits"]'));
   await expect(natal.locator('[data-sbc-natal]')).toHaveCount(9);

@@ -243,6 +243,7 @@ export async function runMuhurtaFinder(request: FinderRequest): Promise<FinderRe
   const masaAt = (jd: number) => masaWindows.find(window => jd >= window.startJd && jd < window.endJd)?.masa;
   const gandantaOptions: DoshaOptions = {
     gandantaNakshatra: criteria.gandantaNakshatra,
+    faultPart: criteria.faultPart,
     parihara: criteria.parihara && isPariharaMode(criteria.parihara) ? criteria.parihara : undefined,
     regions: criteria.regions?.filter(isRegionId),
     strength: criteria.strength && isStrengthLevel(criteria.strength) ? criteria.strength : undefined,

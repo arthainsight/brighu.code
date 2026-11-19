@@ -12,7 +12,7 @@
 // found in mahadoshaEvents.ts and muhurtaFinderRun.ts.
 
 import { MALEFICS, houseFrom, karanaOf, nakshatraOf, signOf, tithiOf, yogaOf, type FinderGraha } from './muhurtaFinder';
-import { NAKSHATRA_LORDS, NAKSHATRA_SIZE } from './nakshatras';
+import { NAKSHATRA_LORDS, NAKSHATRA_SIZE, padaOfLongitude } from './nakshatras';
 import { SIGN_LORDS } from './signs';
 import { getVargaSignIndex } from './varga';
 import {
@@ -118,17 +118,17 @@ export const DOSHAS: Record<DoshaId, DoshaInfo> = {
   latta: {
     number: 15, name: 'Lattā (Daśa Doṣa)',
     what: 'The Moon in the nakṣatra a graha "kicks": the 12th from the Sun, the 3rd from Mars, the 6th from Jupiter, the 8th from Saturn (counted on), the 7th before Mercury, the 5th before Venus and the 9th before Rāhu.',
-    notApplied: 'That the Moon is only significantly kicked in the same pada.',
+    notApplied: 'The whole nakṣatra is kicked unless the pada is chosen (the Muhūrtacintāmaṇi 6.62: only the pada with the number of the kicker\'s pada).',
   },
   upagraha: {
     number: 15, name: 'Upagraha (Daśa Doṣa)',
     what: 'The Moon in the 5th, 7th, 8th, 10th, 14th, 15th, 18th, 19th, 21st, 22nd, 23rd, 24th or 25th nakṣatra from that of the Sun.',
-    notApplied: 'That it is only significant in the same pada.',
+    notApplied: 'The whole nakṣatra counts unless the pada is chosen (only the pada with the number of the Sun\'s pada).',
   },
   pata: {
     number: 15, name: 'Pāta (Daśa Doṣa)',
     what: 'The Moon in a nakṣatra, counted from Aśvinī, whose number is the count from the Sun\'s nakṣatra to Āśleṣā, Maghā, Citrā, Anurādhā, Śravaṇa or Revatī.',
-    notApplied: 'That it is only significant in the same pada.',
+    notApplied: 'The whole nakṣatra counts unless the pada is chosen (only the pada with the number of the Sun\'s pada).',
   },
   eclipse: {
     number: 16, name: 'Grahaṇa',
@@ -330,6 +330,11 @@ export interface DoshaSky {
 export interface DoshaOptions {
   /** The part of the nakṣatra that is Gaṇḍānta: the pada (3°20′, the text), 4 ghaṭīs (53′20″) or 2 ghaṭīs (26′40″). */
   gandantaNakshatra?: 'pada' | 'four' | 'two';
+  /**
+   * The part of the nakṣatra that a Lattā, an Upagraha or a Pāta bites: the whole nakṣatra (if not given), or only the pada with the number of the pada the graha
+   * stands in (the kicking graha for the Lattā, the Sun for the other two), as the Muhūrtacintāmaṇi 6.62 has it (Pāta, Upagraha and Lattā: "the pada, not the whole").
+   */
+  faultPart?: 'nakshatra' | 'pada';
   /** How much of the neutralisations of the text is applied (none if not given). */
   parihara?: PariharaMode;
   /** How "strong" is judged for the pariharas that need a strong graha (basic if not given). */
@@ -452,6 +457,9 @@ function papashadvarga(sky: DoshaSky): boolean {
   return isMaleficSign(getVargaSignIndex(sky.asc, 9), waxing);
 }
 
+/** With the pada chosen, the Moon bites only in the pada with the number of the pada the graha (the kicker, or the Sun) stands in; otherwise the whole nakṣatra does. */
+const samePada = (sky: DoshaSky, graha: number, options?: DoshaOptions) => options?.faultPart !== 'pada' || padaOfLongitude(sky.moon) === padaOfLongitude(graha);
+
 /** The nakṣatra a graha kicks (Lattā), or undefined for a graha that kicks none. */
 const kickedBy = (sky: DoshaSky, graha: FinderGraha): number | undefined => {
   const offset = LATTA_KICK[graha];
@@ -558,12 +566,12 @@ const HAS: Record<DoshaId, (sky: DoshaSky, natal: DoshaNatal | undefined, option
   },
   dashaYoga: sky => DASHA_YOGA_REMAINDERS.includes((nakshatraOf(sky.sun) + 1 + nakshatraOf(sky.moon) + 1) % 27),
   jamitra: sky => jamitraRasi(sky) || jamitraNavamsa(sky),
-  latta: sky => {
+  latta: (sky, _natal, options) => {
     const moon = nakshatraOf(sky.moon);
-    return (Object.keys(LATTA_KICK) as FinderGraha[]).some(graha => kickedBy(sky, graha) === moon);
+    return (Object.keys(LATTA_KICK) as FinderGraha[]).some(graha => kickedBy(sky, graha) === moon && samePada(sky, longitudeIn(sky, graha), options));
   },
-  upagraha: sky => UPAGRAHA_POSITIONS.includes(((nakshatraOf(sky.moon) - nakshatraOf(sky.sun) + 27) % 27) + 1),
-  pata: sky => PATA_TARGETS.some(target => nakshatraOf(sky.moon) === (target - nakshatraOf(sky.sun) + 27) % 27),
+  upagraha: (sky, _natal, options) => UPAGRAHA_POSITIONS.includes(((nakshatraOf(sky.moon) - nakshatraOf(sky.sun) + 27) % 27) + 1) && samePada(sky, sky.sun, options),
+  pata: (sky, _natal, options) => PATA_TARGETS.some(target => nakshatraOf(sky.moon) === (target - nakshatraOf(sky.sun) + 27) % 27) && samePada(sky, sky.sun, options),
   eclipse: () => false,
   kunavamsa: (sky, _natal, _options, relief) => {
     // v. 89 and 90: the Navāṁśa joined by a malefic is destroyed by the planets that strengthen the Lagna, and by the Moon in the 11th.

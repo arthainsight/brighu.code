@@ -40,6 +40,15 @@ const ketu = (variant: boolean) => transitsOverNatal([{ name: 'Moon', longitude:
 assert.deepEqual(ketu(false).latta, []);
 assert.deepEqual(ketu(true).latta, ['Ketu']);
 
+// With the pada chosen the lattā bites only the pada of the kicker's number: the Sun in the 2nd pada of Vishakha-side (nakshatra 15) kicks Revati (26); a natal graha
+// there counts in its 2nd pada and not in its 1st.
+const secondPada = (star: number) => star * SIZE + 1.5 * (SIZE / 4);
+const firstPada = (star: number) => star * SIZE + 0.5 * (SIZE / 4);
+const kick = (natalLongitude: number, part: 'nakshatra' | 'pada') => transitsOverNatal([{ name: 'Saturn', longitude: natalLongitude }], [{ name: 'Sun', longitude: secondPada(15) }], 0, false, part)[0].latta;
+assert.deepEqual(kick(secondPada(26), 'pada'), ['Sun']);
+assert.deepEqual(kick(firstPada(26), 'pada'), []);
+assert.deepEqual(kick(firstPada(26), 'nakshatra'), ['Sun']);
+
 // The aspects by sign: Mars in Aries (sign 1) aspects the 4th, 7th and 8th (Cancer, Libra, Scorpio), not the 5th; Jupiter the 5th, 7th and 9th.
 const aspected = (name: string, from: number, to: number) => transitsOverNatal([{ name: 'Sun', longitude: (to - 1) * 30 + 15 }], [{ name, longitude: (from - 1) * 30 + 5 }], 0)[0].aspects;
 assert.deepEqual(aspected('Mars', 1, 4), ['Mars']);

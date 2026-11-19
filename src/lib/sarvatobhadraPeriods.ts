@@ -8,6 +8,7 @@
 
 import { NAKSHATRA_NAMES, NAKSHATRA_SIZE } from './nakshatras';
 import { normalizeDegrees } from './angles';
+import { padaOfLongitude } from './nakshatras';
 import { lattaNakshatra, type TransitGraha } from './phaladipikaGochara';
 import { SBC_KEY_SPECIALS, sbcCellOf, sbcNakshatra, sbcPierces, sbcVedha, specialOf, type SbcPierce, type SbcPoint, type SbcPointId } from './sarvatobhadra';
 import type { LongitudeSeries } from './transitHits';
@@ -41,7 +42,7 @@ const nakshatra27 = (longitude: number) => Math.min(26, Math.floor(normalizeDegr
  * The stretches of one graha's series in which it stays in one square (and one nakṣatra of the 27, which the Abhijit square can span two of), with what its
  * lines reach. `adjust` is the chart's nakṣatra offset; `janma` is the Moon's nakṣatra, 0–26, in the same zodiac. Stretches that reach nothing are left out.
  */
-export function grahaStretches(body: string, series: LongitudeSeries, points: readonly SbcPoint[], janma: number | null, adjust = 0): Stretch[] {
+export function grahaStretches(body: string, series: LongitudeSeries, points: readonly SbcPoint[], janma: number | null, adjust = 0, kickPart: 'nakshatra' | 'pada' = 'nakshatra', janmaPada: number | null = null): Stretch[] {
   const { longitudes, start, step } = series;
   if (longitudes.length === 0) return [];
   const benefic = BENEFIC_GRAHAS.includes(body);
@@ -49,7 +50,8 @@ export function grahaStretches(body: string, series: LongitudeSeries, points: re
   longitudes.forEach((longitude, index) => {
     const lon = longitude + adjust;
     const cell = sbcCellOf(lon);
-    const key = `${cell[0]}-${cell[1]}-${nakshatra27(lon)}`;
+    // With the pada chosen the stretches are cut at the pada too, for the lattā bites only the pada with the number of the pada of the birth Moon (the Muhūrtacintāmaṇi 6.62).
+    const key = `${cell[0]}-${cell[1]}-${nakshatra27(lon)}${kickPart === 'pada' ? `-${padaOfLongitude(lon)}` : ''}`;
     const group = groups[groups.length - 1];
     if (group && group.key === key) group.last = index;
     else groups.push({ key, first: index, last: index });
@@ -62,9 +64,11 @@ export function grahaStretches(body: string, series: LongitudeSeries, points: re
     const lines = sbcVedha(sbcCellOf(lon));
     const hits = lines ? sbcPierces(lines, points) : [];
     const kicked = body === 'Ketu' ? null : lattaNakshatra(body as TransitGraha, lon);
-    const special = kicked === null || janma === null ? null : specialOf(janma, kicked);
+    let special = kicked === null || janma === null ? null : specialOf(janma, kicked);
+    // The Janma is bitten only in the pada of the birth Moon's number when the pada is chosen (the Karma and the Abhiṣeka stay whole nakṣatras).
+    if (special === 'Janma' && kickPart === 'pada' && janmaPada !== null && padaOfLongitude(lon) !== janmaPada) special = null;
     const key = special && SBC_KEY_SPECIALS.includes(special) ? special : null;
-    const latta = kicked === null ? null : { nakshatra: NAKSHATRA_NAMES[kicked], onJanma: janma !== null && kicked === janma, key };
+    const latta = kicked === null ? null : { nakshatra: NAKSHATRA_NAMES[kicked], onJanma: special === 'Janma', key };
     const reach = hits.reduce((sum, hit) => sum + POINT_WEIGHT[hit.point.id], 0) * (benefic ? 1 : -1);
     const score = reach - (key ? LATTA_WEIGHT[key] : 0);
     if (hits.length === 0 && !key) return;

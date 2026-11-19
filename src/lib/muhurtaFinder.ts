@@ -102,6 +102,8 @@ export interface FinderCriteria {
   sankrantiSolstice?: number;
   /** The part of the nakṣatra that is Gaṇḍānta: the pada (the text), 4 ghaṭīs or 2 ghaṭīs. */
   gandantaNakshatra?: 'pada' | 'four' | 'two';
+  /** The part of the nakṣatra a Lattā, Upagraha or Pāta bites: the whole nakṣatra (if not given) or the pada of the graha (the Muhūrtacintāmaṇi 6.62). */
+  faultPart?: 'nakshatra' | 'pada';
   /** The time kept clear of at a Vyatipāta or Vaidhṛti: the three days (the text) or the short time around the moment (the book). */
   vyatipataLength?: 'days' | 'short';
   /** How much of the neutralisations (pariharas) of the Muhūrtacintāmaṇi is applied to the Mahādoṣas (none if not given). */

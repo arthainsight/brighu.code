@@ -30,9 +30,12 @@ const timeText = (time: number) => {
 };
 const qualityClass = (quality: Quality) => (quality === 'good' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400');
 
-export default function SarvatobhadraPeriods({ points, janma, nakshatraAdjust, targetDate, calculationSettings }: {
+export default function SarvatobhadraPeriods({ points, janma, janmaPada, kickPart, nakshatraAdjust, targetDate, calculationSettings }: {
   points: SbcPoint[];
   janma: number | null;
+  /** The pada (1–4) of the birth Moon, and whether the lattā bites the whole nakṣatra or only the pada of that number. */
+  janmaPada: number | null;
+  kickPart: 'nakshatra' | 'pada';
   nakshatraAdjust: number;
   targetDate: string;
   calculationSettings?: CalculationSettings;
@@ -53,14 +56,14 @@ export default function SarvatobhadraPeriods({ points, janma, nakshatraAdjust, t
       const s = data.series[body];
       if (!s) continue;
       const series: LongitudeSeries = { start: data.start, step: s.step, longitudes: s.longitudes };
-      stretches.push(...grahaStretches(body, series, points, janma, nakshatraAdjust));
+      stretches.push(...grahaStretches(body, series, points, janma, nakshatraAdjust, kickPart, janmaPada));
     }
     stretches.sort((a, b) => a.start - b.start);
     // The Moon crosses a square in a day or so: it stays in the list of stretches, but the windows of days are made without it.
     const windows = impactWindows(stretches.filter(item => item.body !== 'Moon'), data.start, days);
     return { stretches, windows };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, points, janma, nakshatraAdjust, withMoon]);
+  }, [data, points, janma, janmaPada, kickPart, nakshatraAdjust, withMoon]);
 
   const windows = (result?.windows ?? []).filter(item => filter === 'all' || item.quality === filter);
   const stretches = (result?.stretches ?? []).filter(item => filter === 'all' || (item.score > 0 ? 'good' : 'difficult') === filter);

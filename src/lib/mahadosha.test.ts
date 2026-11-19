@@ -292,6 +292,16 @@ const nearRanges = (value: number, ranges: [number, number][]) => ranges.some(([
   assert.equal(has('latta', sky({ moon: 110 })), true, 'the Moon in Āśleṣā (8), kicked by Mercury (7th before Svāti) and Venus (5th before Hasta)');
   assert.equal(has('latta', sky({ sun: 5, moon: 150 })), true, 'the Sun in Aśvinī kicks the 12th, Uttara Phalgunī');
   // Upagraha: the Moon in the 5th, 7th, 8th ... nakṣatra from the Sun's (Aśvinī is the 1st).
+  // With the pada chosen (the Muhūrtacintāmaṇi 6.62) only the pada with the number of the pada of the Sun (the kicker) bites: the Sun at 5° is in the 2nd pada of Aśvinī.
+  const pada = { faultPart: 'pada' } as const;
+  assert.equal(has('latta', sky({ sun: 5, moon: 150.5 }), undefined, pada), true, 'the Moon in the 2nd pada of Uttara Phalgunī, the Sun in the 2nd of Aśvinī');
+  assert.equal(has('latta', sky({ sun: 5, moon: 148 }), undefined, pada), false, 'the Moon in the 1st pada: the nakṣatra is kicked but not this pada');
+  assert.equal(has('latta', sky({ sun: 5, moon: 148 }), undefined, { faultPart: 'nakshatra' }), true, 'the whole nakṣatra, as before');
+  assert.equal(has('latta', sky({ sun: 5, moon: 148 })), true, 'and the whole nakṣatra when nothing is chosen');
+  assert.equal(has('upagraha', sky({ sun: 5, moon: 55 }), undefined, pada), false, 'Mṛgaśīrṣa is the 5th from Aśvinī, in its 1st pada: not the Sun\'s 2nd');
+  assert.equal(has('upagraha', sky({ sun: 5, moon: 58 }), undefined, pada), true, 'in its 2nd pada');
+  assert.equal(has('pata', sky({ sun: 5, moon: 108 }), undefined, pada), false, 'Āśleṣā, 1st pada');
+  assert.equal(has('pata', sky({ sun: 5, moon: 111 }), undefined, pada), true, 'Āśleṣā, 2nd pada');
   assert.equal(has('upagraha', sky({ sun: 5, moon: 55 })), true, 'Mṛgaśīrṣa is the 5th from Aśvinī');
   assert.equal(has('upagraha', sky({ sun: 5, moon: 20 })), false, 'Bharaṇī is the 2nd');
   // Pāta: counted from the Sun in Aśvinī to Āśleṣā is 9, so the Moon in the 9th from Aśvinī, Āśleṣā itself.

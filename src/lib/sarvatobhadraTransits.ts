@@ -6,7 +6,7 @@
 // when none does (docs/sarvatobhadra-periods.md).
 
 import { normalizeDegrees } from './angles';
-import { NAKSHATRA_SIZE } from './nakshatras';
+import { NAKSHATRA_SIZE, padaOfLongitude } from './nakshatras';
 import { lattaNakshatra, type TransitGraha } from './phaladipikaGochara';
 import { sbcCellOf, sbcVedha } from './sarvatobhadra';
 import { transitRelationsOf } from './transitHits';
@@ -35,9 +35,10 @@ const sameCell = (a: readonly [number, number], b: readonly [number, number]) =>
 
 /**
  * The row of every natal graha. `adjust` is the nakṣatra offset of the chart; `ketuLatta` gives Ketu the lattā of Rāhu (the 9th behind), which the verses do not.
+ * `kickPart` 'pada': the lattā counts only when the natal graha stands in the pada with the number of the kicker's pada.
  * A graha is not listed as aspecting or having vedha on itself by standing still, but a transiting graha over its own natal place is a conjunction like any other.
  */
-export function transitsOverNatal(natal: readonly BodyPlace[], transit: readonly BodyPlace[], adjust = 0, ketuLatta = false): NatalTransitRow[] {
+export function transitsOverNatal(natal: readonly BodyPlace[], transit: readonly BodyPlace[], adjust = 0, ketuLatta = false, kickPart: 'nakshatra' | 'pada' = 'nakshatra'): NatalTransitRow[] {
   return natal.map(planet => {
     const cell = sbcCellOf(planet.longitude + adjust);
     const star = star27(planet.longitude + adjust);
@@ -53,7 +54,8 @@ export function transitsOverNatal(natal: readonly BodyPlace[], transit: readonly
       const kicked = mover.name === 'Ketu'
         ? (ketuLatta ? (star27(mover.longitude + adjust) - 8 + 27) % 27 : null)
         : lattaNakshatra(mover.name as TransitGraha, mover.longitude + adjust);
-      if (kicked === star) row.latta.push(mover.name);
+      // With the pada chosen the kick bites only the pada with the number of the kicker's pada (the Muhūrtacintāmaṇi 6.62).
+      if (kicked === star && (kickPart === 'nakshatra' || padaOfLongitude(planet.longitude + adjust) === padaOfLongitude(mover.longitude + adjust))) row.latta.push(mover.name);
     }
     const hitters = [...new Set([...row.conjunction, ...row.vedha, ...row.aspects, ...row.latta])];
     row.good = hitters.filter(name => BENEFIC_GRAHAS.includes(name));

@@ -14,6 +14,11 @@ export const LANGUAGES: { value: Language; label: string }[] = [
 ];
 
 export const FI: Record<string, string> = {
+  "Lattā, Upagraha and Pāta bite": "Lattā, Upagraha ja Pāta purevat",
+  "the whole nakṣatra": "koko nakṣatran",
+  "only the pada of the graha (the Muhūrtacintāmaṇi 6.62)": "vain grahan padan (Muhūrtacintāmaṇi 6.62)",
+  "the whole nakshatra": "koko nakshatran",
+  "only the pada of the kicker": "vain potkaisijan padan",
   "The browser would not open its storage.": "Selain ei avannut tallennustilaansa.",
   "No person with a birth moment and a place was found in the file.": "Tiedostosta ei löytynyt yhtään henkilöä, jolla olisi syntymähetki ja paikka.",
   "{count} charts saved to the saved charts.": "{count} karttaa tallennettu tallennettuihin karttoihin.",

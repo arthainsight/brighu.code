@@ -61,6 +61,20 @@ assert.equal(karmaSun.latta!.key, 'Karma');
 assert.equal(karmaSun.latta!.onJanma, false);
 assert.equal(karmaSun.score, -2);
 
+// --- With the pada chosen only the pada of the birth Moon's number is struck ----------------------------------------------------------------------
+// The Sun in Ashwini (0°–13°20′, 1° a day) kicks nakshatra 11; the birth Moon is in nakshatra 11, in its 2nd pada (3°20′–6°40′): the kick bites the Janma only
+// while the Sun is in the 2nd pada of Ashwini.
+const whole = grahaStretches('Sun', series, [], 11, 0, 'nakshatra', 2).filter(item => item.nakshatra === 'Ashwini');
+assert.equal(whole.length, 1);
+assert.equal(whole[0].start, start);
+assert.equal(whole[0].latta!.onJanma, true, 'the whole nakshatra: from the first day');
+const padaOnly = grahaStretches('Sun', series, [], 11, 0, 'pada', 2).filter(item => item.nakshatra === 'Ashwini');
+assert.equal(padaOnly.length, 1, 'the other padas are left out');
+assert.equal(padaOnly[0].latta!.onJanma, true);
+assert.equal(padaOnly[0].score, -LATTA_ON_JANMA_WEIGHT);
+assert.equal(padaOnly[0].start, start + 3.5 * DAY, 'from half way between the samples at 3° and 4°');
+assert.equal(padaOnly[0].end, start + 6.5 * DAY, 'to half way between 6° and 7°');
+
 assert.equal(janmaNakshatra(0), 0);
 assert.equal(janmaNakshatra(359.9), 26);
 assert.equal(janmaNakshatra(10, 5), 1, 'the zodiac offset of the chart moves it');
