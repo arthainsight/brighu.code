@@ -41,6 +41,7 @@ This is not meant to replace traditional study — it's meant to **accelerate it
 * Special lagnas and chara karakas
 * Ashtakavarga: SAV and per-planet BAV, the Prastāra, the Trikoṇa and Ekādhipatya Śodhana with the Rāśi, Graha and Śodhya Piṇḍas (from the Sanskrit of BPHS 67–69, checked against PyJHora), the effects of BPHS 70 and 72 (the point of Saturn for each graha, the signs for auspicious acts, the Sarvāṣṭakavarga by house) and the Kakṣyā; and a simple reading of money from a modern lesson (houses compared, the sums against 164 and 76, where the money goes)
 * Varga dignity (ANALYSIS): the dignity of the grahas in the Navāṁśa and the other divisions, recursive through the hosts, with the average and a dominance list
+* Vela (ANALYSIS): the Sattva, Rajas or Tamas Vela of birth after Jātakapārijāta 9.123–125, by both readings of the half-yāma, with what the text does not settle said on the page
 * Surya Hora Lagna (ANALYSIS): the Hora Lagna from the Sun (material wealth) and from the Lagna (intellectual wealth), with the savya / apasavya direction, and the avatāra that guards the birth hour
 * True signs (ANALYSIS): the signs the grahas take in D1, D9, D7, D12, D10 and D16 with weights, overall and for each graha
 * Wealth assessment (ANALYSIS): the Moon from the Sun, the horā as a table of Leo against Cancer, the houses of money and the pattern of the dhana yogas with their spoilers, and the confirmation from the Moon and the vargas

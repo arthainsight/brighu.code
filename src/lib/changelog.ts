@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: 'v4.52',
+    date: '2026-11-26',
+    title: 'ANALYSIS → Vela',
+    changes: [
+      'ANALYSIS → Vela: the Sattva, Rajas or Tamas Vela of birth after Jātakapārijāta 9.123–125. A weekday has 16 half-yāmas, and the Velas run Tamas, Sattva, Rajas, Tamas … in one unbroken cycle from the first half-yāma of Sunday (Tamas), as the text and its commentary (V. Subrahmanya Sastri\'s note, the Sudhāśālinī, Mishra) have it. The page shows the Vela with the half-yāma, its beginning and end, and where the birth stands in it, with the verses and the traditional readings of 9.123 and 9.124.',
+      'The sources do not settle the length of a half-yāma (an hour and a half in Sastri\'s note, an eighth of the day and of the night in Mishra\'s commentary), where the count starts, when the weekday changes or how a birth is placed, so the page says it is not confirmed by the text, gives both lengths side by side and shows whether they agree. What the sources say is in docs/jataka-parijata-vela-sources.md and docs/vela.md.',
+      'Updated the application version to v4.52.',
+    ],
+  },
+  {
     version: 'v4.51',
     date: '2026-11-26',
     title: 'Panchang: the Kāla names',
