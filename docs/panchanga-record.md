@@ -39,7 +39,7 @@ One birth, in two programs: **1 November 1963, 11:55:00, UTC+2, Kotka, Finland**
 
 ## C. The same fields worked out by the app, each by JHora's rule (ANALYSIS is not needed: CHART → panchang)
 
-Shown by the Panchang view under "Jagannatha Hora's fields", from v4.53, with the "% left" of the four limbs above them. For the chart of the birth with the place JHora's times imply (60.4664°N, 26.9146°E), `jhoraChart.test.ts` checks: sunrise 07:42:1x and sunset 16:08:5x (within 6 s of JHora), Janma Ghatis 10.534, sidereal time 14:22:3x, Hora Lord Jupiter (Taurus), Mahakala Hora Mars (Cancer), Kaala Lord Rahu, tithi/karana % left within 0.1 of JHora, and the app's own Hora (Mars) and Kala (Madhyahna) untouched.
+Shown by the Panchang view under "Jagannatha Hora's fields", from v4.53; the "% left" of the four limbs stands on their own rows ("Shukla Purnima (15) · 19.89 % left", "Ashwini · Pada 4 · 6.15 % left", "Siddhi · 44.39 % left", "Bava · 39.78 % left"). For the chart of the birth with the place JHora's times imply (60.4664°N, 26.9146°E), `jhoraChart.test.ts` checks: sunrise 07:42:1x and sunset 16:08:5x (within 6 s of JHora), Janma Ghatis 10.534, sidereal time 14:22:3x, Hora Lord Jupiter (Taurus), Mahakala Hora Mars (Cancer), Kaala Lord Rahu, tithi/karana % left within 0.1 of JHora, and the app's own Hora (Mars) and Kala (Madhyahna) untouched.
 
 ## D. What each term is, and how it differs from the others
 

@@ -554,7 +554,8 @@ test('the panchang is in the chart view, and a graha moved to the next or the pr
   await expect(panchang.locator('[data-panchang-row="paksha"]')).toContainText(/Shukla|Krishna/);
   await expect(panchang.locator('[data-panchang-row="kala"]')).toContainText(/(Pratyūsha|Sūryodaya|Prātaḥ|Saṅgava|Madhyāhna|Parāhna|Sāyankāla|Rātri) \(\d{2}:\d{2}–\d{2}:\d{2}\)/);
   // The % left of the limbs, and Jagannatha Hora's fields, each its own system.
-  await expect(panchang.locator('[data-panchang-row="tithi left"]')).toContainText(/\d+\.\d{2} %/);
+  await expect(panchang.locator('[data-panchang-row="tithi"]')).toContainText(/(Shukla|Krishna) .+ \(\d{1,2}\) · \d+\.\d{2} % left/);
+  for (const limb of ['nakshatra', 'karana', 'yoga']) await expect(panchang.locator(`[data-panchang-row="${limb}"]`)).toContainText(/ · \d+\.\d{2} % left/);
   const jhora = panchang.locator('[data-panchang="jhora"]');
   await expect(jhora).toContainText('Jagannatha Hora');
   await expect(jhora.locator('[data-panchang-row="hora lord"]')).toContainText(/(Sun|Venus|Mercury|Moon|Saturn|Jupiter|Mars) \(\d{1,2} \/ 24, \d{2}:\d{2}:\d{2}–\d{2}:\d{2}:\d{2}\)/);

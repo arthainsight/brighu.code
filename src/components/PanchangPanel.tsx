@@ -3,7 +3,7 @@
 import { ChartData } from '@/types';
 import { calculatePanchang, PanchangResult } from '@/lib/panchang';
 
-import { useT } from '@/lib/i18n';
+import { fill, useT } from '@/lib/i18n';
 
 interface Props {
   chart: ChartData;
@@ -33,14 +33,16 @@ function Row({ label, value }: { label: string; value: string | null }) {
 
 function PanchangRows({ p }: { p: PanchangResult }) {
   const t = useT();
+  // How much of the limb was still to run, in per cent.
+  const left = (percent: number) => fill(t('{percent} % left'), { percent: percent.toFixed(2) });
   return (
     <div className="space-y-4">
       <div className="space-y-2">
         <Row label="vara"      value={`${p.vara} · ${p.varaLord}${p.beforeSunrise ? ` (${t('before sunrise')})` : ''}`} />
-        <Row label="tithi"     value={`${p.tithi} (${p.tithiNumber}) · ${p.paksha}`} />
-        <Row label="nakshatra" value={`${p.nakshatra} · Pada ${p.nakshatraPada}`} />
-        <Row label="karana"    value={p.karana} />
-        <Row label="yoga"      value={p.yoga} />
+        <Row label="tithi"     value={`${p.paksha} ${p.tithiNumber === 15 ? (p.paksha === 'Shukla' ? 'Purnima' : 'Amavasya') : p.tithi} (${p.tithiNumber}) · ${left(p.left.tithi)}`} />
+        <Row label="nakshatra" value={`${p.nakshatra} · Pada ${p.nakshatraPada} · ${left(p.left.nakshatra)}`} />
+        <Row label="karana"    value={`${p.karana} · ${left(p.left.karana)}`} />
+        <Row label="yoga"      value={`${p.yoga} · ${left(p.left.yoga)}`} />
         <Row label="hora"      value={p.hora} />
       </div>
 
@@ -61,13 +63,6 @@ function PanchangRows({ p }: { p: PanchangResult }) {
         <Row label="ritu"       value={p.ritu} />
         <Row label="paksha"     value={`${p.paksha} (${p.paksha === 'Shukla' ? t('waxing') : t('waning')})`} />
         <Row label="kala"       value={p.kala === null ? null : p.kalaMeaning ? `${p.kala} · ${t(p.kalaMeaning)}` : p.kala} />
-      </div>
-
-      <div className="border-t border-zinc-100 dark:border-zinc-800 pt-3 space-y-2" data-panchang="left">
-        <Row label="tithi left"     value={`${p.left.tithi.toFixed(2)} %`} />
-        <Row label="nakshatra left" value={`${p.left.nakshatra.toFixed(2)} %`} />
-        <Row label="yoga left"      value={`${p.left.yoga.toFixed(2)} %`} />
-        <Row label="karana left"    value={`${p.left.karana.toFixed(2)} %`} />
       </div>
 
       {p.jhora && <JhoraRows jhora={p.jhora} />}

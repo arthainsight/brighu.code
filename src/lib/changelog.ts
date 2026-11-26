@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: 'v4.54',
+    date: '2026-11-26',
+    title: 'Panchang: the % left on the rows of the limbs',
+    changes: [
+      'The rows of the panchang now say how much of the limb was still to run: "Shukla Purnima (15) · 19.89 % left" (the paksha first, and the 15th tithi named Purnima in the bright half and Amavasya in the dark), "Ashwini · Pada 4 · 6.15 % left", "Siddhi · 44.39 % left" and "Bava · 39.78 % left". The separate rows for the % left of v4.53 are gone; nothing else of the panchang changed.',
+      'Updated the application version to v4.54.',
+    ],
+  },
+  {
     version: 'v4.53',
     date: '2026-11-26',
     title: 'Panchang: the fields of Jagannatha Hora',

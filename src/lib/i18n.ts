@@ -14,6 +14,7 @@ export const LANGUAGES: { value: Language; label: string }[] = [
 ];
 
 export const FI: Record<string, string> = {
+  "{percent} % left": "{percent} % jäljellä",
   "5 min sign": "5 min merkki",
   "inferred": "pääteltyä",
   "unconfirmed": "vahvistamaton",
