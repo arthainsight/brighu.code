@@ -547,6 +547,12 @@ test('the panchang is in the chart view, and a graha moved to the next or the pr
   // The panchang is there without any setting, and can be folded away.
   const panchang = visible(page, page.locator('[data-panchang]'));
   await expect(panchang).toContainText('Pushya · Pada 2'); // the Moon at 99.8° of the Lahiri zodiac
+  // The parts of the sankalpa: the year of the sixty-year cycle, the Ayana, the Ritu, the Paksha and the Kāla of the day.
+  await expect(panchang.locator('[data-panchang-row="samvatsara"]')).toContainText(/\(\d{1,2}\) · Śaka \d{4}/);
+  await expect(panchang.locator('[data-panchang-row="ayana"]')).toContainText(/Uttarayana|Dakshinayana/);
+  await expect(panchang.locator('[data-panchang-row="ritu"]')).toContainText(/Vasanta|Grishma|Varsha|Sharad|Hemanta|Shishira/);
+  await expect(panchang.locator('[data-panchang-row="paksha"]')).toContainText(/Shukla|Krishna/);
+  await expect(panchang.locator('[data-panchang-row="kala"]')).toContainText(/(Pratah|Sangava|Madhyahna|Aparahna|Sayahna|Pradosha|Nishitha|Ushah) \(\d{2}:\d{2}–\d{2}:\d{2}\)/);
   await panchang.getByRole('button', { name: 'hide the panchang' }).click();
   await expect(panchang.locator('[data-panchang-row]')).toHaveCount(0);
   await panchang.getByRole('button', { name: 'show the panchang' }).click();

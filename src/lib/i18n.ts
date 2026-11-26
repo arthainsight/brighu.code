@@ -14,6 +14,8 @@ export const LANGUAGES: { value: Language; label: string }[] = [
 ];
 
 export const FI: Record<string, string> = {
+  "waxing": "kasvava",
+  "waning": "vähenevä",
   "no pada": "ei padaa",
   "the birth pada": "syntymäpada",
   "the Moon is in pada": "Kuu on padassa",

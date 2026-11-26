@@ -2,6 +2,7 @@ import { ChartData } from '@/types';
 import { calcSolarTimes } from './solar';
 import { normalizeDegrees } from '../angles';
 import { NAKSHATRA_NAMES } from '../nakshatras';
+import { ayanaOf, clockMinutes, kalaOf, rituOf, samvatsaraOf } from './calendar';
 
 const TITHI_NAMES = [
   'Pratipada', 'Dvitiya', 'Tritiya', 'Chaturthi', 'Panchami',
@@ -94,6 +95,14 @@ export interface PanchangResult {
   solarNoon: string | null;
   ayanamsa: string;
   masa: string;
+  /** The year of the sixty-year cycle with its number and the Śaka year, "Parabhava (40) · Śaka 1948". */
+  samvatsara: string;
+  /** Uttarayana or Dakshinayana by the sidereal Sun, with the sāyana one when it is not the same. */
+  ayana: string;
+  /** The Ritu of the lunar month, with the solar one when it is not the same. */
+  ritu: string;
+  /** The part of the day (five by day, three by night) with its hours, "Madhyahna (10:48–13:12)"; null when the Sun does not rise and set. */
+  kala: string | null;
 }
 
 export function calculatePanchang(
@@ -216,6 +225,17 @@ export function calculatePanchang(
     ? `${chart.lunarMonth.adhika ? 'Adhika ' : ''}${MASA_NAMES[chart.lunarMonth.masaIndex]} (amānta)`
     : `${MASA_NAMES[(Math.floor(sun.longitude / 30) + 1) % 12]} (approx.)`;
 
+  // ── Samvatsara, Ayana, Ritu, Kāla ─────────────────────────────────────
+  const masaIndex = chart.lunarMonth?.masaIndex ?? null;
+  const samvatsaraParts = samvatsaraOf(year, month, day, masaIndex);
+  const samvatsara = `${samvatsaraParts.name} (${samvatsaraParts.number}) · Śaka ${samvatsaraParts.shaka}${samvatsaraParts.approximate ? ' (approx.)' : ''}`;
+  const ayanaParts = ayanaOf(sun.longitude, sun.longitude + (chart.debug?.ayanamsa ?? 0));
+  const ayana = ayanaParts.sayana ? `${ayanaParts.ayana} (sāyana: ${ayanaParts.sayana})` : ayanaParts.ayana;
+  const rituParts = rituOf(masaIndex, sun.longitude);
+  const ritu = masaIndex !== null && rituParts.solar !== rituParts.ritu ? `${rituParts.ritu} (solar: ${rituParts.solar})` : rituParts.ritu;
+  const kalaParts = kalaOf(localBirth, sunTimes.sunrise, sunTimes.sunset, sunTimes.nextSunrise, sunTimes.previousSunset);
+  const kala = kalaParts ? `${kalaParts.name} (${clockMinutes(kalaParts.from)}–${clockMinutes(kalaParts.to)})` : null;
+
   return {
     vara,
     varaLord,
@@ -233,5 +253,9 @@ export function calculatePanchang(
     solarNoon: sunTimes.solarNoon !== null ? fmtLocalHours(sunTimes.solarNoon) : null,
     ayanamsa,
     masa,
+    samvatsara,
+    ayana,
+    ritu,
+    kala,
   };
 }

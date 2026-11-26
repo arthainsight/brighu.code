@@ -54,6 +54,14 @@ function PanchangRows({ p }: { p: PanchangResult }) {
         <Row label="ayanamsa" value={p.ayanamsa} />
         <Row label="masa"     value={p.masa} />
       </div>
+
+      <div className="border-t border-zinc-100 dark:border-zinc-800 pt-3 space-y-2" data-panchang="sankalpa">
+        <Row label="samvatsara" value={p.samvatsara} />
+        <Row label="ayana"      value={p.ayana} />
+        <Row label="ritu"       value={p.ritu} />
+        <Row label="paksha"     value={`${p.paksha} (${p.paksha === 'Shukla' ? t('waxing') : t('waning')})`} />
+        <Row label="kala"       value={p.kala} />
+      </div>
     </div>
   );
 }

@@ -215,4 +215,34 @@ withMonth.lunarMonth = { masaIndex: 0, adhika: false };
 assert.equal(calculatePanchang(withMonth, '01.01.2000 12.00.00', 5.5, 'Lahiri').masa, 'Chaitra (amānta)');
 assert.match(run(0, 0).masa, /\(approx\.\)$/, 'without the chart month the sign-based estimate is labelled');
 
+// ---------------------------------------------------------------------------
+// The sankalpa: Samvatsara, Ayana, Ritu, Paksha and Kāla (calendar.ts has the rules).
+// ---------------------------------------------------------------------------
+const sankalpa = chartWithSun(6, 18, 30, -6);
+sankalpa.planets[0] = { ...sankalpa.planets[0], longitude: 200, sign: 7, degree: 20 };   // the Sun in Tula
+sankalpa.planets[1] = { ...sankalpa.planets[1], longitude: 320, sign: 11, degree: 20 };  // the Moon 120° on: the 11th tithi of the bright half
+sankalpa.lunarMonth = { masaIndex: 6, adhika: false };                                     // Ashwina
+const octoberDay = calculatePanchang(sankalpa, '10.10.2026 12.30.00', 5.5, 'Lahiri');
+assert.equal(octoberDay.samvatsara, 'Parabhava (40) · Śaka 1948');
+assert.equal(octoberDay.ayana, 'Dakshinayana');
+assert.equal(octoberDay.ritu, 'Sharad', 'Ashwina and the Sun in Tula: the two agree');
+assert.equal(octoberDay.paksha, 'Shukla');
+assert.equal(octoberDay.kala, 'Madhyahna (10:48–13:12)', 'the third fifth of 06:00–18:00');
+assert.equal(calculatePanchang(sankalpa, '10.10.2026 07.00.00', 5.5, 'Lahiri').kala, 'Pratah (06:00–08:24)');
+assert.equal(calculatePanchang(sankalpa, '10.10.2026 21.00.00', 5.5, 'Lahiri').kala, 'Pradosha (18:00–22:00)');
+assert.equal(calculatePanchang(sankalpa, '10.10.2026 04.00.00', 5.5, 'Lahiri').kala, 'Ushah (02:00–06:00)', 'before sunrise: the night before');
+// The sāyana Ayana turns a month before the sidereal one: the Sun at 255° sidereal is 279° tropical (the ayanāṁśa of the test chart is 24°).
+const december = chartWithSun(6, 18, 30, -6);
+december.planets[0] = { ...december.planets[0], longitude: 255, sign: 9, degree: 15 };
+december.lunarMonth = { masaIndex: 8, adhika: false };                                    // Margashirsha
+const decemberRun = calculatePanchang(december, '25.12.2026 12.00.00', 5.5, 'Lahiri');
+assert.equal(decemberRun.ayana, 'Dakshinayana (sāyana: Uttarayana)');
+assert.equal(decemberRun.ritu, 'Hemanta', 'the Sun in Dhanu and the month Margashirsha agree');
+assert.equal(decemberRun.samvatsara, 'Parabhava (40) · Śaka 1948', 'Margashirsha in December 2026 is the year of Ugadi 2026');
+// A chart without its lunar month tells the year and the Ritu from the date and the Sun, and says so.
+const roughRun = run(200, 320, '10.10.2026 12.00.00');
+assert.match(roughRun.samvatsara, /\(approx\.\)$/);
+assert.match(roughRun.kala!, /^Madhyahna \(/, 'without the chart\'s own times the NOAA sunrise stands in');
+assert.equal(polar.kala, null, 'where the Sun does not set there are no parts of the day');
+
 console.log('Panchang tests passed');

@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: 'v4.50',
+    date: '2026-11-26',
+    title: 'Panchang: Samvatsara, Ayana, Ritu, Paksha and Kāla',
+    changes: [
+      'The panchang of a chart now has the other members of the sankalpa: the Samvatsara (the year of the sixty-year cycle with its number and the Śaka year, e.g. Parabhava (40) · Śaka 1948, by the Chandramāna cycle that runs with the Śaka year and changes at Chaitra), the Ayana (Uttarayana or Dakshinayana by the sidereal Sun, with the sāyana one when it differs), the Ritu (two lunar months each from Chaitra, with the solar one when it differs), the Paksha (Shukla or Krishna, waxing or waning) and the Kāla (the day in five parts and the night in three, with their hours).',
+      'The night\'s three equal parts and the cycle of the South (not the Jupiter cycle of the North) are choices named in docs/panchang-calendar.md.',
+      'Updated the application version to v4.50.',
+    ],
+  },
+  {
     version: 'v4.49',
     date: '2026-11-19',
     title: 'Sarvatobhadra: the pada a vedha reaches',
