@@ -77,7 +77,10 @@ export function rituOf(masaIndex: number | null, siderealSun: number): { ritu: s
   return { ritu: masaIndex === null ? solar : RITU_NAMES[Math.floor(masaIndex / 2)], solar };
 }
 
-export const KALA_DAY = ['Pratah', 'Sangava', 'Madhyahna', 'Aparahna', 'Sayahna'] as const;
+/** The Kāla names, with what they mean (English; the page translates). */
+export const KALA_MEANING: Record<string, string> = {
+  'Pratyūsha': 'dawn', 'Sūryodaya': 'sunrise', 'Prātaḥ': 'morning', 'Saṅgava': 'forenoon', 'Madhyāhna': 'midday', 'Parāhna': 'afternoon', 'Sāyankāla': 'evening / twilight', 'Rātri': 'night',
+};
 export const KALA_NIGHT = ['Pradosha', 'Nishitha', 'Ushah'] as const;
 
 export interface Kala {
@@ -86,23 +89,42 @@ export interface Kala {
   /** The part in local hours, from and to (past 24 for the night that runs through midnight). */
   from: number;
   to: number;
+  /** Of the night, the third (Pradosha, Nishitha, Ushah) the moment is in. */
+  third?: string;
 }
 
 /**
- * The Kāla of the day for a sankalpa: the day from sunrise to sunset in five equal parts (Prātaḥ, Saṅgava, Madhyāhna, Aparāhṇa, Sāyāhna), and the night from sunset to the
- * next sunrise in three (Pradoṣa, Niśītha, Uṣaḥ) — the night's three is a choice made here, the texts name the parts but not an equal division. A birth before sunrise is in the
+ * The Kāla of the moment for a sankalpa, eight parts that run into one another all round the day:
+ *   Sūryodaya   the first muhūrta of the day (a fifteenth of the day) from sunrise;
+ *   Prātaḥ      the rest of the first fifth of the day;
+ *   Saṅgava, Madhyāhna, Parāhna   the second, third and fourth fifths (the Aparāhṇa of the dharmaśāstra is the Parāhna here);
+ *   Sāyankāla   the fifth fifth to sunset and on through the twilight, a fifteenth of the night (a night muhūrta);
+ *   Rātri       the night after that, with its third (Pradosha, Nishitha, Ushah) told beside it;
+ *   Pratyūsha   the last two muhūrtas of the night before sunrise (the Brahma muhūrta).
+ * The fifths of the day, the muhūrta of the day and of the night and the thirds of the night are choices made here (docs/panchang-calendar.md); a birth before sunrise is in the
  * night before. Null when the Sun does not rise and set.
  */
 export function kalaOf(local: number, sunrise: number | null, sunset: number | null, nextSunrise: number | null, previousSunset: number | null): Kala | null {
   if (sunrise === null || sunset === null) return null;
-  const part = (names: readonly string[], from: number, to: number, day: boolean): Kala => {
-    const index = Math.max(0, Math.min(names.length - 1, Math.floor(((local - from) / (to - from)) * names.length)));
-    const size = (to - from) / names.length;
-    return { name: names[index], day, from: from + index * size, to: from + (index + 1) * size };
+  const night = (from: number, to: number): Kala => {
+    const length = to - from;
+    const muhurta = length / 15;
+    if (local < from + muhurta && from === sunset) return { name: 'Sāyankāla', day: true, from: sunset - (sunset - sunrise) / 5, to: from + muhurta };
+    if (local >= to - 2 * muhurta) return { name: 'Pratyūsha', day: false, from: to - 2 * muhurta, to };
+    const index = Math.max(0, Math.min(2, Math.floor(((local - from) / length) * 3)));
+    return { name: 'Rātri', day: false, from: from + muhurta, to: to - 2 * muhurta, third: KALA_NIGHT[index] };
   };
-  if (local < sunrise) return previousSunset === null ? null : part(KALA_NIGHT, previousSunset, sunrise, false);
-  if (local < sunset) return part(KALA_DAY, sunrise, sunset, true);
-  return nextSunrise === null ? null : part(KALA_NIGHT, sunset, nextSunrise, false);
+  if (local < sunrise) return previousSunset === null ? null : night(previousSunset, sunrise);
+  if (local >= sunset) return nextSunrise === null ? null : night(sunset, nextSunrise);
+  const day = sunset - sunrise;
+  const fifth = day / 5;
+  const muhurta = day / 15;
+  const at = (name: string, from: number, to: number): Kala => ({ name, day: true, from, to });
+  if (local < sunrise + muhurta) return at('Sūryodaya', sunrise, sunrise + muhurta);
+  const index = Math.min(4, Math.floor((local - sunrise) / fifth));
+  const names = ['Prātaḥ', 'Saṅgava', 'Madhyāhna', 'Parāhna', 'Sāyankāla'] as const;
+  const from = sunrise + index * fifth;
+  return at(names[index], index === 0 ? sunrise + muhurta : from, index === 4 && nextSunrise !== null ? sunset + (nextSunrise - sunset) / 15 : from + fifth);
 }
 
 /** Local decimal hours as HH:MM, rounded to the minute (past 24 wraps to the next day). */

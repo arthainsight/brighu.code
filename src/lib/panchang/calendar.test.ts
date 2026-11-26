@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { ayanaOf, clockMinutes, kalaOf, lunarYearStart, rituOf, SAMVATSARA_NAMES, samvatsaraOf } from './calendar';
+import { ayanaOf, clockMinutes, KALA_MEANING, kalaOf, lunarYearStart, rituOf, SAMVATSARA_NAMES, samvatsaraOf } from './calendar';
 
 // --- The sixty names, and the cycle: Krodhi (38) from Ugadi 2024, Vishvavasu 2025, Parabhava 2026, Shobhakrit 2023 -------------------------------------
 assert.equal(SAMVATSARA_NAMES.length, 60);
@@ -57,26 +57,48 @@ assert.equal(rituOf(null, 280).solar, 'Shishira', 'Makara');
 assert.equal(rituOf(null, 240).solar, 'Hemanta', 'Dhanu');
 assert.deepEqual(rituOf(8, 200), { ritu: 'Hemanta', solar: 'Sharad' }, 'Margashirsha with the Sun still in Tula: the two differ');
 
-// --- The Kala of the day: five parts of the day, three of the night -----------------------------------------------------------------------------------------
+// --- The Kala: Suryodaya, Pratah, Sangava, Madhyahna, Parahna, Sayankala, Ratri and Pratyusha round the whole day -------------------------------------------------
 const rise = 6;
-const set = 18;   // a day of 12 hours: parts of 2 h 24 min
-assert.equal(kalaOf(6.5, rise, set, 30, -6)!.name, 'Pratah');
-assert.equal(kalaOf(9, rise, set, 30, -6)!.name, 'Sangava');
-assert.equal(kalaOf(12, rise, set, 30, -6)!.name, 'Madhyahna');
-assert.equal(kalaOf(15, rise, set, 30, -6)!.name, 'Aparahna');
-assert.equal(kalaOf(17.5, rise, set, 30, -6)!.name, 'Sayahna');
-const middle = kalaOf(12, rise, set, 30, -6)!;
-assert.equal(middle.day, true);
-assert.ok(Math.abs(middle.from - 10.8) < 1e-9 && Math.abs(middle.to - 13.2) < 1e-9, 'the third fifth of 06:00–18:00 is 10:48–13:12');
-// The night, 18:00 to 06:00 the next day, in three parts of four hours; a birth before sunrise is in the night before (from the previous sunset, -6 = 18:00 the day before).
-assert.equal(kalaOf(19, rise, set, 30, -6)!.name, 'Pradosha');
-assert.equal(kalaOf(23, rise, set, 30, -6)!.name, 'Nishitha');
-assert.equal(kalaOf(1, rise, set, 30, -6)!.name, 'Nishitha', '01:00 is in the middle part of 18:00–06:00 (22:00–02:00)');
-assert.equal(kalaOf(2, rise, set, 30, -6)!.name, 'Ushah', 'and 02:00 begins the last');
-assert.equal(kalaOf(4, rise, set, 30, -6)!.name, 'Ushah');
-assert.equal(kalaOf(4, rise, set, 30, -6)!.day, false);
+const set = 18;   // a day of 12 hours: fifths of 2 h 24 min, a muhurta of 48 min, and the same for the night
+const kala = (local: number) => kalaOf(local, rise, set, 30, -6)!;
+const named = (local: number) => `${kala(local).name}${kala(local).third ? ` · ${kala(local).third}` : ''}`;
+assert.equal(named(6), 'Sūryodaya', 'the first muhurta from sunrise');
+assert.equal(named(6.7), 'Sūryodaya');
+assert.equal(named(7), 'Prātaḥ', 'the rest of the first fifth');
+assert.equal(named(9), 'Saṅgava');
+assert.equal(named(12), 'Madhyāhna');
+assert.equal(named(15), 'Parāhna');
+assert.equal(named(17), 'Sāyankāla', 'the last fifth');
+assert.equal(named(18.5), 'Sāyankāla', 'and the twilight after sunset, a night muhurta');
+assert.equal(named(19), 'Rātri · Pradosha');
+assert.equal(named(23), 'Rātri · Nishitha');
+assert.equal(named(26.5), 'Rātri · Ushah');
+assert.equal(named(29), 'Pratyūsha', 'the last two muhurtas before sunrise');
+// Before sunrise it is the night before (the previous sunset -6 is 18:00 the day before).
+assert.equal(named(1), 'Rātri · Nishitha');
+assert.equal(named(4), 'Rātri · Ushah');
+assert.equal(named(5), 'Pratyūsha');
+assert.equal(named(5.99), 'Pratyūsha');
+// The hours of each part, and no gap between them.
+const bounds = (local: number) => [kala(local).from, kala(local).to];
+assert.deepEqual(bounds(6.5).map(value => Math.round(value * 60)), [360, 408], 'Suryodaya 06:00–06:48');
+assert.deepEqual(bounds(7).map(value => Math.round(value * 60)), [408, 504], 'Pratah 06:48–08:24');
+assert.deepEqual(bounds(12).map(value => Math.round(value * 60)), [648, 792], 'Madhyahna 10:48–13:12');
+assert.deepEqual(bounds(17).map(value => Math.round(value * 60)), [936, 1128], 'Sayankala 15:36–18:48');
+assert.deepEqual(bounds(23).map(value => Math.round(value * 60)), [1128, 1704], 'Ratri 18:48–04:24 the next day');
+assert.deepEqual(bounds(29).map(value => Math.round(value * 60)), [1704, 1800], 'Pratyusha 04:24–06:00');
+let last = kala(6).name;
+for (let minute = 361; minute < 1800; minute++) {
+  const found = kala(minute / 60);
+  assert.ok(found.from <= minute / 60 + 1e-9 && minute / 60 < found.to + 1e-9, `${minute} is inside its part`);
+  last = found.name;
+}
+assert.equal(last, 'Pratyūsha');
+assert.equal(KALA_MEANING['Madhyāhna'], 'midday');
 assert.equal(kalaOf(12, null, null, null, null), null, 'no sunrise, no parts');
 assert.equal(kalaOf(4, rise, set, 30, null), null, 'before sunrise without the previous sunset');
+assert.equal(kalaOf(20, rise, set, null, -6), null, 'after sunset without the next sunrise');
+
 assert.equal(clockMinutes(10.8), '10:48');
 assert.equal(clockMinutes(25.5), '01:30');
 assert.equal(clockMinutes(23.999), '00:00');

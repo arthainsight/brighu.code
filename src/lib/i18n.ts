@@ -14,6 +14,12 @@ export const LANGUAGES: { value: Language; label: string }[] = [
 ];
 
 export const FI: Record<string, string> = {
+  "dawn": "aamunkoitto",
+  "morning": "aamu",
+  "forenoon": "aamupäivä",
+  "midday": "keskipäivä",
+  "afternoon": "iltapäivä",
+  "evening / twilight": "ilta / hämärä",
   "waxing": "kasvava",
   "waning": "vähenevä",
   "no pada": "ei padaa",

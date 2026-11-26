@@ -227,10 +227,14 @@ assert.equal(octoberDay.samvatsara, 'Parabhava (40) · Śaka 1948');
 assert.equal(octoberDay.ayana, 'Dakshinayana');
 assert.equal(octoberDay.ritu, 'Sharad', 'Ashwina and the Sun in Tula: the two agree');
 assert.equal(octoberDay.paksha, 'Shukla');
-assert.equal(octoberDay.kala, 'Madhyahna (10:48–13:12)', 'the third fifth of 06:00–18:00');
-assert.equal(calculatePanchang(sankalpa, '10.10.2026 07.00.00', 5.5, 'Lahiri').kala, 'Pratah (06:00–08:24)');
-assert.equal(calculatePanchang(sankalpa, '10.10.2026 21.00.00', 5.5, 'Lahiri').kala, 'Pradosha (18:00–22:00)');
-assert.equal(calculatePanchang(sankalpa, '10.10.2026 04.00.00', 5.5, 'Lahiri').kala, 'Ushah (02:00–06:00)', 'before sunrise: the night before');
+assert.equal(octoberDay.kala, 'Madhyāhna (10:48–13:12)', 'the third fifth of 06:00–18:00');
+assert.equal(octoberDay.kalaMeaning, 'midday');
+assert.equal(calculatePanchang(sankalpa, '10.10.2026 06.20.00', 5.5, 'Lahiri').kala, 'Sūryodaya (06:00–06:48)');
+assert.equal(calculatePanchang(sankalpa, '10.10.2026 07.00.00', 5.5, 'Lahiri').kala, 'Prātaḥ (06:48–08:24)');
+assert.equal(calculatePanchang(sankalpa, '10.10.2026 18.30.00', 5.5, 'Lahiri').kala, 'Sāyankāla (15:36–18:48)');
+assert.equal(calculatePanchang(sankalpa, '10.10.2026 21.00.00', 5.5, 'Lahiri').kala, 'Rātri (18:48–04:24) · Pradosha');
+assert.equal(calculatePanchang(sankalpa, '10.10.2026 04.00.00', 5.5, 'Lahiri').kala, 'Rātri (18:48–04:24) · Ushah', 'before sunrise: the night before');
+assert.equal(calculatePanchang(sankalpa, '10.10.2026 05.00.00', 5.5, 'Lahiri').kala, 'Pratyūsha (04:24–06:00)');
 // The sāyana Ayana turns a month before the sidereal one: the Sun at 255° sidereal is 279° tropical (the ayanāṁśa of the test chart is 24°).
 const december = chartWithSun(6, 18, 30, -6);
 december.planets[0] = { ...december.planets[0], longitude: 255, sign: 9, degree: 15 };
@@ -242,7 +246,7 @@ assert.equal(decemberRun.samvatsara, 'Parabhava (40) · Śaka 1948', 'Margashirs
 // A chart without its lunar month tells the year and the Ritu from the date and the Sun, and says so.
 const roughRun = run(200, 320, '10.10.2026 12.00.00');
 assert.match(roughRun.samvatsara, /\(approx\.\)$/);
-assert.match(roughRun.kala!, /^Madhyahna \(/, 'without the chart\'s own times the NOAA sunrise stands in');
+assert.match(roughRun.kala!, /^Madhyāhna \(/, 'without the chart\'s own times the NOAA sunrise stands in');
 assert.equal(polar.kala, null, 'where the Sun does not set there are no parts of the day');
 
 console.log('Panchang tests passed');

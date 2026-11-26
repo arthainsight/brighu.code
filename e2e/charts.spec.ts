@@ -552,7 +552,7 @@ test('the panchang is in the chart view, and a graha moved to the next or the pr
   await expect(panchang.locator('[data-panchang-row="ayana"]')).toContainText(/Uttarayana|Dakshinayana/);
   await expect(panchang.locator('[data-panchang-row="ritu"]')).toContainText(/Vasanta|Grishma|Varsha|Sharad|Hemanta|Shishira/);
   await expect(panchang.locator('[data-panchang-row="paksha"]')).toContainText(/Shukla|Krishna/);
-  await expect(panchang.locator('[data-panchang-row="kala"]')).toContainText(/(Pratah|Sangava|Madhyahna|Aparahna|Sayahna|Pradosha|Nishitha|Ushah) \(\d{2}:\d{2}–\d{2}:\d{2}\)/);
+  await expect(panchang.locator('[data-panchang-row="kala"]')).toContainText(/(Pratyūsha|Sūryodaya|Prātaḥ|Saṅgava|Madhyāhna|Parāhna|Sāyankāla|Rātri) \(\d{2}:\d{2}–\d{2}:\d{2}\)/);
   await panchang.getByRole('button', { name: 'hide the panchang' }).click();
   await expect(panchang.locator('[data-panchang-row]')).toHaveCount(0);
   await panchang.getByRole('button', { name: 'show the panchang' }).click();

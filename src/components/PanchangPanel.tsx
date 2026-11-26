@@ -60,7 +60,7 @@ function PanchangRows({ p }: { p: PanchangResult }) {
         <Row label="ayana"      value={p.ayana} />
         <Row label="ritu"       value={p.ritu} />
         <Row label="paksha"     value={`${p.paksha} (${p.paksha === 'Shukla' ? t('waxing') : t('waning')})`} />
-        <Row label="kala"       value={p.kala} />
+        <Row label="kala"       value={p.kala === null ? null : p.kalaMeaning ? `${p.kala} · ${t(p.kalaMeaning)}` : p.kala} />
       </div>
     </div>
   );

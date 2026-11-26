@@ -1,5 +1,14 @@
 export const CHANGELOG = [
   {
+    version: 'v4.51',
+    date: '2026-11-26',
+    title: 'Panchang: the Kāla names',
+    changes: [
+      'The Kāla of the panchang now has eight parts that run round the whole day, named as a list the user gave: Pratyūsha (dawn), Sūryodaya (sunrise), Madhyāhna (midday), Parāhna (afternoon), Sāyankāla (evening / twilight) and Rātri (night), with Prātaḥ (morning) and Saṅgava (forenoon) between sunrise and midday. Each is shown with its hours and its meaning (in Finnish with the Finnish interface), and the night gives its third (Pradosha, Nishitha, Ushah) beside it. The boundaries (the fifths of the day, a muhūrta of the day for Sūryodaya, a muhūrta of the night for the twilight and two for Pratyūsha) are choices named in docs/panchang-calendar.md.',
+      'Updated the application version to v4.51.',
+    ],
+  },
+  {
     version: 'v4.50',
     date: '2026-11-26',
     title: 'Panchang: Samvatsara, Ayana, Ritu, Paksha and Kāla',

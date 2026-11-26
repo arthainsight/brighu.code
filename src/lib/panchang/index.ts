@@ -2,7 +2,7 @@ import { ChartData } from '@/types';
 import { calcSolarTimes } from './solar';
 import { normalizeDegrees } from '../angles';
 import { NAKSHATRA_NAMES } from '../nakshatras';
-import { ayanaOf, clockMinutes, kalaOf, rituOf, samvatsaraOf } from './calendar';
+import { ayanaOf, clockMinutes, KALA_MEANING, kalaOf, rituOf, samvatsaraOf } from './calendar';
 
 const TITHI_NAMES = [
   'Pratipada', 'Dvitiya', 'Tritiya', 'Chaturthi', 'Panchami',
@@ -101,8 +101,10 @@ export interface PanchangResult {
   ayana: string;
   /** The Ritu of the lunar month, with the solar one when it is not the same. */
   ritu: string;
-  /** The part of the day (five by day, three by night) with its hours, "Madhyahna (10:48–13:12)"; null when the Sun does not rise and set. */
+  /** The Kāla with its hours, "Madhyāhna (10:48–13:12)", the third of the night after Rātri ("Rātri (20:48–03:36) · Nishitha"); null when the Sun does not rise and set. */
   kala: string | null;
+  /** What the Kāla means (English: dawn, sunrise, morning, forenoon, midday, afternoon, evening / twilight, night), for the page to translate. */
+  kalaMeaning: string | null;
 }
 
 export function calculatePanchang(
@@ -234,7 +236,8 @@ export function calculatePanchang(
   const rituParts = rituOf(masaIndex, sun.longitude);
   const ritu = masaIndex !== null && rituParts.solar !== rituParts.ritu ? `${rituParts.ritu} (solar: ${rituParts.solar})` : rituParts.ritu;
   const kalaParts = kalaOf(localBirth, sunTimes.sunrise, sunTimes.sunset, sunTimes.nextSunrise, sunTimes.previousSunset);
-  const kala = kalaParts ? `${kalaParts.name} (${clockMinutes(kalaParts.from)}–${clockMinutes(kalaParts.to)})` : null;
+  const kala = kalaParts ? `${kalaParts.name} (${clockMinutes(kalaParts.from)}–${clockMinutes(kalaParts.to)})${kalaParts.third ? ` · ${kalaParts.third}` : ''}` : null;
+  const kalaMeaning = kalaParts ? KALA_MEANING[kalaParts.name] : null;
 
   return {
     vara,
@@ -257,5 +260,6 @@ export function calculatePanchang(
     ayana,
     ritu,
     kala,
+    kalaMeaning,
   };
 }
