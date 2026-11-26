@@ -52,10 +52,11 @@ async function findCrossing(
   longitude: number,
   fromHour: number,
   toHour: number,
+  horizon: number = HORIZON_ALTITUDE,
 ): Promise<number | undefined> {
   const offset = (hour: number) => jdMidnightUt + hour / 24;
-  let lowAltitude = (await sunAltitude(offset(fromHour), latitude, longitude)) - HORIZON_ALTITUDE;
-  const highAltitude = (await sunAltitude(offset(toHour), latitude, longitude)) - HORIZON_ALTITUDE;
+  let lowAltitude = (await sunAltitude(offset(fromHour), latitude, longitude)) - horizon;
+  const highAltitude = (await sunAltitude(offset(toHour), latitude, longitude)) - horizon;
   if (Math.sign(lowAltitude) === Math.sign(highAltitude)) return undefined;
 
   let low = fromHour;
@@ -63,7 +64,7 @@ async function findCrossing(
   // 40 halvings of a <=24 h window resolve to well under a millisecond.
   for (let iteration = 0; iteration < 40; iteration += 1) {
     const middle = (low + high) / 2;
-    const middleAltitude = (await sunAltitude(offset(middle), latitude, longitude)) - HORIZON_ALTITUDE;
+    const middleAltitude = (await sunAltitude(offset(middle), latitude, longitude)) - horizon;
     if (Math.sign(middleAltitude) === Math.sign(lowAltitude)) {
       low = middle;
       lowAltitude = middleAltitude;
@@ -83,6 +84,11 @@ export async function calculateSunTimes(
   jdLocalMidnight: number,
   latitude: number,
   longitude: number,
+  /**
+   * The altitude of the Sun's centre that counts as sunrise and sunset: −0.833° (the upper limb and the usual refraction) by default, or 0° for the centre of the disc on
+   * the geometric horizon without refraction, which is how Jagannatha Hora counts it (docs/panchanga-record.md).
+   */
+  horizon: number = HORIZON_ALTITUDE,
 ): Promise<SunTimes> {
   // Scan hour by hour across the local day and into the next one, so the
   // crossings stay correctly bracketed even at high latitudes where the day is
@@ -91,8 +97,8 @@ export async function calculateSunTimes(
   let previous = await sunAltitude(jdLocalMidnight, latitude, longitude);
   for (let hour = 1; hour <= 48; hour += 1) {
     const current = await sunAltitude(jdLocalMidnight + hour / 24, latitude, longitude);
-    if (Math.sign(previous - HORIZON_ALTITUDE) !== Math.sign(current - HORIZON_ALTITUDE)) {
-      const found = await findCrossing(jdLocalMidnight, latitude, longitude, hour - 1, hour);
+    if (Math.sign(previous - horizon) !== Math.sign(current - horizon)) {
+      const found = await findCrossing(jdLocalMidnight, latitude, longitude, hour - 1, hour, horizon);
       if (found !== undefined) crossings.push({ hour: found, rising: current > previous });
     }
     previous = current;

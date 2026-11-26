@@ -553,6 +553,17 @@ test('the panchang is in the chart view, and a graha moved to the next or the pr
   await expect(panchang.locator('[data-panchang-row="ritu"]')).toContainText(/Vasanta|Grishma|Varsha|Sharad|Hemanta|Shishira/);
   await expect(panchang.locator('[data-panchang-row="paksha"]')).toContainText(/Shukla|Krishna/);
   await expect(panchang.locator('[data-panchang-row="kala"]')).toContainText(/(Pratyūsha|Sūryodaya|Prātaḥ|Saṅgava|Madhyāhna|Parāhna|Sāyankāla|Rātri) \(\d{2}:\d{2}–\d{2}:\d{2}\)/);
+  // The % left of the limbs, and Jagannatha Hora's fields, each its own system.
+  await expect(panchang.locator('[data-panchang-row="tithi left"]')).toContainText(/\d+\.\d{2} %/);
+  const jhora = panchang.locator('[data-panchang="jhora"]');
+  await expect(jhora).toContainText('Jagannatha Hora');
+  await expect(jhora.locator('[data-panchang-row="hora lord"]')).toContainText(/(Sun|Venus|Mercury|Moon|Saturn|Jupiter|Mars) \(\d{1,2} \/ 24, \d{2}:\d{2}:\d{2}–\d{2}:\d{2}:\d{2}\)/);
+  await expect(jhora.locator('[data-panchang-row="mahakala hora"]')).toContainText('LMT');
+  await expect(jhora.locator('[data-panchang-row="janma ghatis"]')).toContainText(/\d+\.\d{4}/);
+  await expect(jhora.locator('[data-panchang-row="jhora sunrise"]')).toContainText(/\d{2}:\d{2}:\d{2}/);
+  // Its own Hora and sunrise are untouched beside them.
+  await expect(panchang.locator('[data-panchang-row="hora"]')).toBeVisible();
+  await expect(panchang.locator('[data-panchang-row="sunrise"]')).toBeVisible();
   await panchang.getByRole('button', { name: 'hide the panchang' }).click();
   await expect(panchang.locator('[data-panchang-row]')).toHaveCount(0);
   await panchang.getByRole('button', { name: 'show the panchang' }).click();

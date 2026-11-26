@@ -62,6 +62,38 @@ function PanchangRows({ p }: { p: PanchangResult }) {
         <Row label="paksha"     value={`${p.paksha} (${p.paksha === 'Shukla' ? t('waxing') : t('waning')})`} />
         <Row label="kala"       value={p.kala === null ? null : p.kalaMeaning ? `${p.kala} · ${t(p.kalaMeaning)}` : p.kala} />
       </div>
+
+      <div className="border-t border-zinc-100 dark:border-zinc-800 pt-3 space-y-2" data-panchang="left">
+        <Row label="tithi left"     value={`${p.left.tithi.toFixed(2)} %`} />
+        <Row label="nakshatra left" value={`${p.left.nakshatra.toFixed(2)} %`} />
+        <Row label="yoga left"      value={`${p.left.yoga.toFixed(2)} %`} />
+        <Row label="karana left"    value={`${p.left.karana.toFixed(2)} %`} />
+      </div>
+
+      {p.jhora && <JhoraRows jhora={p.jhora} />}
+    </div>
+  );
+}
+
+const horaText = (hora: { lord: string; number: number; from: string; to: string; fiveSign: string; fiveInferred: boolean }, t: (text: string) => string) =>
+  `${hora.lord} (${hora.number} / 24, ${hora.from.slice(0, 8)}–${hora.to.slice(0, 8)}) · ${t('5 min sign')}: ${t(hora.fiveSign)}${hora.fiveInferred ? ` (${t('inferred')})` : ''}`;
+
+/** The fields of Jagannatha Hora's panchanga, each its own system and kept apart from the app's own Hora, Kāla and sunrise above (docs/panchanga-record.md). */
+function JhoraRows({ jhora }: { jhora: NonNullable<PanchangResult['jhora']> }) {
+  const t = useT();
+  return (
+    <div className="border-t border-zinc-100 dark:border-zinc-800 pt-3 space-y-2" data-panchang="jhora">
+      <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600">{t('Jagannatha Hora’s fields')}</div>
+      <p className="text-[9px] font-mono text-zinc-400 dark:text-zinc-600">{t('Each field here follows Jagannatha Hora’s own rule and is not the same as the field of a similar name above: the sunrise is the centre of the Sun’s disc without refraction, the Hora Lord is equal hours, the Hora above is day and night in twelfths, and the Kala above is a five-fold day. The rules are read from JHora’s outputs, not from its manual.')}</p>
+      <Row label="jhora weekday"      value={jhora.vedicWeekday} />
+      <Row label="jhora sunrise"      value={jhora.sunrise} />
+      <Row label="jhora sunset"       value={jhora.sunset} />
+      <Row label="janma ghatis"       value={jhora.janmaGhatis.toFixed(4)} />
+      <Row label="sidereal time"      value={jhora.siderealTime} />
+      <Row label="hora lord"          value={horaText(jhora.horaLord, t)} />
+      <Row label="mahakala hora"      value={`${horaText(jhora.mahakalaHora, t)} · LMT ${jhora.mahakalaHora.lmt}`} />
+      <Row label="kaala lord"         value={jhora.kaalaLord ? `${jhora.kaalaLord.lord} (${jhora.kaalaLord.part} / 8, ${jhora.kaalaLord.from.slice(0, 8)}–${jhora.kaalaLord.to.slice(0, 8)})` : t('not given by night')} />
+      <Row label="kaala (mahakala)"   value={jhora.kaalaLordMahakala ? `${jhora.kaalaLordMahakala.lord} (${jhora.kaalaLordMahakala.part} / 8) · ${t('unconfirmed')}` : t('not given by night')} />
     </div>
   );
 }

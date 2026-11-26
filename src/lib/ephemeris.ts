@@ -3,7 +3,7 @@ import {
   SE_SUN, SE_MOON, SE_MARS, SE_MERCURY, SE_JUPITER, SE_VENUS, SE_SATURN,
   SE_URANUS, SE_NEPTUNE, SE_PLUTO,
   SE_MEAN_NODE, SE_TRUE_NODE,
-  sweJulday, sweGetAyanamsa, sweCalcUt, sweCalcUtEquatorial, sweGetAscendant, sweGetAngles, sweGetCusps, CUSP_SYSTEM_CODES, type CuspSystem, sweBodyData, sweObliquity, horizontal, swePheno,
+  sweJulday, sweSidtime, sweGetAyanamsa, sweCalcUt, sweCalcUtEquatorial, sweGetAscendant, sweGetAngles, sweGetCusps, CUSP_SYSTEM_CODES, type CuspSystem, sweBodyData, sweObliquity, horizontal, swePheno,
 } from "./ephemerisAdapter";
 import { AYANAMSA_OPTIONS, applyAyanamsaOffset, resolveAyanamsaMode } from './ayanamsas';
 import { calculateSunTimes } from './sunTimes';
@@ -202,6 +202,9 @@ export async function calculateChart(
   const previousDay = await calculateSunTimes(jdLocalMidnight - 1, lat, lng);
   const previousSunset = previousDay.sunset !== undefined ? previousDay.sunset - 24 : undefined;
   const previousSunrise = previousDay.sunrise !== undefined ? previousDay.sunrise - 24 : undefined;
+  // The same by the centre of the disc on the geometric horizon, which is what Jagannatha Hora counts as sunrise and sunset.
+  const centreDay = await calculateSunTimes(jdLocalMidnight, lat, lng, 0);
+  const centrePrevious = await calculateSunTimes(jdLocalMidnight - 1, lat, lng, 0);
 
   // The special lagnas run on the ishṭa, the time from sunrise to birth.
   const rahu = planets.find((p) => p.name === 'Rahu')!;
@@ -275,6 +278,14 @@ export async function calculateChart(
     nextSunriseLocalHours: sunTimes.nextSunrise,
     previousSunsetLocalHours: previousSunset,
     previousSunriseLocalHours: previousSunrise,
+    discCentre: {
+      sunrise: centreDay.sunrise,
+      sunset: centreDay.sunset,
+      nextSunrise: centreDay.nextSunrise,
+      previousSunrise: centrePrevious.sunrise !== undefined ? centrePrevious.sunrise - 24 : undefined,
+      previousSunset: centrePrevious.sunset !== undefined ? centrePrevious.sunset - 24 : undefined,
+    },
+    siderealTimeHours: (((await sweSidtime(jd)) + lng / 15) % 24 + 24) % 24,
   };
 
   return {

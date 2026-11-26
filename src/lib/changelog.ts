@@ -1,5 +1,15 @@
 export const CHANGELOG = [
   {
+    version: 'v4.53',
+    date: '2026-11-26',
+    title: 'Panchang: the fields of Jagannatha Hora',
+    changes: [
+      'The panchang of a chart now has, apart from the fields it had, the "% left" of the tithi, the nakṣatra, the yoga and the karaṇa and a group of Jagannatha Hora\'s own fields, each by its own rule and kept apart from the app\'s own: the sunrise and sunset by the centre of the Sun\'s disc without refraction (JHora\'s definition; the app\'s own are the upper limb with refraction), the weekday on that sunrise, the Janma Ghatis (ghaṭīs from sunrise to birth), the local sidereal time, the Hora Lord (equal hours from sunrise, the Kālahorā of Jātakapārijāta 9), the Mahakala Hora (the same horas from 06:00 local mean time), and the Kaala Lord (eight equal parts of the day, Rahu\'s the Rahu Kāla; not given by night). The five-minute sign of the horas is partly inferred and the page says so, as it does of the Mahakala reading of the Kaala Lord.',
+      'The rules are read from JHora\'s printed outputs (its own help is not available as text) and checked on the birth of 1 November 1963 in Kotka; docs/panchanga-record.md has the whole record of the app\'s and JHora\'s fields side by side, what each term is, why the sunrise, the ayanāṁśa and the Hora differ (a different sunrise definition, a different Lahiri, equal against unequal horas) and what remains unsettled.',
+      'Updated the application version to v4.53.',
+    ],
+  },
+  {
     version: 'v4.52',
     date: '2026-11-26',
     title: 'ANALYSIS → Vela',

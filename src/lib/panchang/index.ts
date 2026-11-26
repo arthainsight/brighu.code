@@ -3,6 +3,8 @@ import { calcSolarTimes } from './solar';
 import { normalizeDegrees } from '../angles';
 import { NAKSHATRA_NAMES } from '../nakshatras';
 import { ayanaOf, clockMinutes, KALA_MEANING, kalaOf, rituOf, samvatsaraOf } from './calendar';
+import { equalHora, janmaGhatis, kaalaLord, mahakalaHora, WEEKDAY_LORDS, weekdayAt, type HoraPart } from './jhora';
+import { SIGN_NAMES } from '../signs';
 
 const TITHI_NAMES = [
   'Pratipada', 'Dvitiya', 'Tritiya', 'Chaturthi', 'Panchami',
@@ -105,6 +107,41 @@ export interface PanchangResult {
   kala: string | null;
   /** What the Kāla means (English: dawn, sunrise, morning, forenoon, midday, afternoon, evening / twilight, night), for the page to translate. */
   kalaMeaning: string | null;
+  /** How much of the tithi, the nakṣatra, the yoga and the karaṇa was still to run at the moment, in per cent (the "% left" of Jagannatha Hora). */
+  left: { tithi: number; nakshatra: number; yoga: number; karana: number };
+  /** The fields of Jagannatha Hora's panchanga, each by its own rule and kept apart from the fields above (docs/panchanga-record.md); null for a chart without the sunrise it counts from. */
+  jhora: JhoraPanchang | null;
+}
+
+export interface JhoraHora {
+  lord: string;
+  /** 1–24, and the hours the hora runs, HH:MM:SS (local mean time for the Mahakala Hora). */
+  number: number;
+  from: string;
+  to: string;
+  /** The five-minute part (1–12) and its sign; `inferred` when the sign the parts start from for this lord and half is not one JHora has been seen to give. */
+  fivePart: number;
+  fiveSign: string;
+  fiveInferred: boolean;
+}
+
+export interface JhoraPanchang {
+  /** The weekday with the day changing at the sunrise below (the centre of the Sun's disc, no refraction). */
+  vedicWeekday: string;
+  sunrise: string;
+  sunset: string;
+  /** Ghaṭīs of 24 minutes from the last such sunrise to the birth. */
+  janmaGhatis: number;
+  /** The local sidereal time. */
+  siderealTime: string | null;
+  /** Equal horas of an hour from that sunrise, the first the weekday lord's. */
+  horaLord: JhoraHora;
+  /** The same horas from 06:00 of local mean time, the weekday changing then. `lmt` is the local mean time of the birth, HH:MM:SS. */
+  mahakalaHora: JhoraHora & { lmt: string };
+  /** The Kaala Lord by day: one of eight equal parts of the day from sunrise to sunset; null by night, for which no rule is known. */
+  kaalaLord: { lord: string; part: number; from: string; to: string } | null;
+  /** The bracket "(Mahakala: …)" of JHora's Kaala Lord, read as the eight parts of 06:00–18:00 of local mean time: not confirmed (only one of the two readings was checked, and it agrees here). */
+  kaalaLordMahakala: { lord: string; part: number } | null;
 }
 
 export function calculatePanchang(
@@ -227,6 +264,45 @@ export function calculatePanchang(
     ? `${chart.lunarMonth.adhika ? 'Adhika ' : ''}${MASA_NAMES[chart.lunarMonth.masaIndex]} (amānta)`
     : `${MASA_NAMES[(Math.floor(sun.longitude / 30) + 1) % 12]} (approx.)`;
 
+  // ── How much of each limb was still to run (JHora's "% left") ─────────────
+  const leftOf = (value: number, size: number) => (1 - ((value % size) / size)) * 100;
+  const left = {
+    tithi: leftOf(tithiDiff, 12),
+    nakshatra: leftOf(moonNakLon, nkWidth),
+    yoga: leftOf(norm360(sun.longitude + moon.longitude), nkWidth),
+    karana: leftOf(tithiDiff, 6),
+  };
+
+  // ── Jagannatha Hora's own fields ────────────────────────────────────────
+  let jhora: JhoraPanchang | null = null;
+  const centre = chart.debug?.discCentre;
+  if (centre && centre.sunrise !== undefined && centre.sunset !== undefined && centre.previousSunrise !== undefined) {
+    const weekday = weekdayAt(calendarWeekday, localBirth, centre.sunrise);
+    const sunriseUsed = localBirth < centre.sunrise ? centre.previousSunrise : centre.sunrise;
+    const isDay = localBirth >= centre.sunrise && localBirth < centre.sunset;
+    const clockText = (hours: number) => fmtLocalHours(hours);
+    const describe = (part: HoraPart): JhoraHora => ({
+      lord: part.lord, number: part.number, from: clockText(part.start), to: clockText(part.end),
+      fivePart: part.fivePart, fiveSign: SIGN_NAMES[part.fiveSign - 1], fiveInferred: part.fiveInferred,
+    });
+    const hora = equalHora(localBirth, sunriseUsed, weekday, isDay);
+    const mahakala = mahakalaHora(localBirth, utcOffsetHours, lng, calendarWeekday);
+    const kaala = isDay ? kaalaLord(localBirth, centre.sunrise, centre.sunset, weekday) : null;
+    const lmtWeekday = (((calendarWeekday + Math.floor((localBirth - utcOffsetHours + lng / 15) / 24)) % 7) + 7) % 7;
+    const kaalaMahakala = mahakala.lmt >= 6 && mahakala.lmt < 18 ? kaalaLord(mahakala.lmt, 6, 18, lmtWeekday) : null;
+    jhora = {
+      vedicWeekday: `${VARA_NAMES[weekday]} · ${WEEKDAY_LORDS[weekday]}`,
+      sunrise: fmtLocalHours(centre.sunrise),
+      sunset: fmtLocalHours(centre.sunset),
+      janmaGhatis: janmaGhatis(localBirth, sunriseUsed),
+      siderealTime: chart.debug?.siderealTimeHours !== undefined ? fmtLocalHours(chart.debug.siderealTimeHours) : null,
+      horaLord: describe(hora),
+      mahakalaHora: { ...describe(mahakala), lmt: fmtLocalHours(mahakala.lmt) },
+      kaalaLord: kaala ? { lord: kaala.lord, part: kaala.part, from: fmtLocalHours(kaala.start), to: fmtLocalHours(kaala.end) } : null,
+      kaalaLordMahakala: kaalaMahakala ? { lord: kaalaMahakala.lord, part: kaalaMahakala.part } : null,
+    };
+  }
+
   // ── Samvatsara, Ayana, Ritu, Kāla ─────────────────────────────────────
   const masaIndex = chart.lunarMonth?.masaIndex ?? null;
   const samvatsaraParts = samvatsaraOf(year, month, day, masaIndex);
@@ -261,5 +337,7 @@ export function calculatePanchang(
     ritu,
     kala,
     kalaMeaning,
+    left,
+    jhora,
   };
 }

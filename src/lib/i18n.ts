@@ -14,6 +14,12 @@ export const LANGUAGES: { value: Language; label: string }[] = [
 ];
 
 export const FI: Record<string, string> = {
+  "5 min sign": "5 min merkki",
+  "inferred": "pääteltyä",
+  "unconfirmed": "vahvistamaton",
+  "not given by night": "ei annettu yöllä",
+  "Jagannatha Hora’s fields": "Jagannatha Horan kentät",
+  "Each field here follows Jagannatha Hora’s own rule and is not the same as the field of a similar name above: the sunrise is the centre of the Sun’s disc without refraction, the Hora Lord is equal hours, the Hora above is day and night in twelfths, and the Kala above is a five-fold day. The rules are read from JHora’s outputs, not from its manual.": "Jokainen tämän osion kenttä noudattaa Jagannatha Horan omaa sääntöä eikä ole sama kuin yllä oleva samannimisen kaltainen kenttä: auringonnousu on Auringon kiekon keskipiste ilman taittumaa, Hora Lord on tasatunnit, yllä oleva Hora on päivä ja yö kahdestoistaosina ja yllä oleva Kala on viisiosainen päivä. Säännöt on luettu JHoran tulosteista, ei sen ohjekirjasta.",
   "The sunrise and sunset of the birth are missing from this chart (the Sun does not rise and set here, or the chart is an old save); calculate it again.": "Kartalta puuttuvat syntymän auringonnousu ja -lasku (aurinko ei nouse ja laske täällä, tai kartta on vanha tallennus); laske kartta uudelleen.",
   "Vela": "Vela",
   "The Vela of birth, Sattva, Rajas or Tamas: the weekday has 16 half-yāmas (ardha-yāma), and the Velas go Tamas, Sattva, Rajas, Tamas … in one unbroken cycle from the first half-yāma of Sunday, which is Tamas. It is not the Vara (the weekday), the Hora (the planetary hour), the Kāla (the time of day) or the Tithi.": "Syntymän Vela, Sattva, Rajas tai Tamas: viikonpäivällä on 16 puoli-yāmaa (ardha-yāma), ja Velat kulkevat Tamas, Sattva, Rajas, Tamas … yhtenä katkeamattomana kiertona sunnuntain ensimmäisestä puoli-yāmasta alkaen, joka on Tamas. Se ei ole Vara (viikonpäivä), Hora (planetaarinen tunti), Kāla (vuorokaudenaika) eikä Tithi.",

@@ -96,6 +96,19 @@ export interface DebugInfo {
   previousSunsetLocalHours?: number;
   /** The previous morning's sunrise on the same scale (negative). Ghaṭī for a pre-dawn birth count from it. */
   previousSunriseLocalHours?: number;
+  /**
+   * Sunrise and sunset by the other definition, the centre of the Sun's disc on the geometric horizon without refraction (the one Jagannatha Hora uses), on the same scale as the
+   * ones above (the next sunrise past 24, the previous ones negative). Kept apart from them: the two differ by about 8 minutes at each end at 60°N in November.
+   */
+  discCentre?: {
+    sunrise?: number;
+    sunset?: number;
+    nextSunrise?: number;
+    previousSunrise?: number;
+    previousSunset?: number;
+  };
+  /** The local sidereal time at the birth moment and place, in hours (0–24). */
+  siderealTimeHours?: number;
 }
 
 /** The time the special sphutas run on: the ishṭa, and the sunrise it was counted from. */
